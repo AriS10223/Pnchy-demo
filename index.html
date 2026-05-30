@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Instrument+Serif&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <style>
@@ -336,12 +336,18 @@
     }
 
     .splash-tagline {
+      font-family: 'Instrument Serif', serif;
       font-size: 15px;
       color: var(--text-mid);
       letter-spacing: 0.3px;
       margin-top: 12px;
-      padding: 0 24px;
+      width: 302px;
+      height: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
+      overflow: hidden;
       animation: fadeUp 0.8s 0.2s ease forwards;
       opacity: 0;
     }
@@ -355,9 +361,9 @@
       border: none;
       border-radius: 28px;
       padding: 18px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Instrument Serif', serif;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 400;
       cursor: pointer;
       width: calc(100% - 48px);
       animation: fadeUp 0.8s 0.4s ease forwards;
@@ -370,6 +376,7 @@
     }
 
     .splash-disclaimer {
+      font-family: 'Instrument Serif', serif;
       margin-top: 28px;
       padding: 0 24px;
       font-size: 13px;
