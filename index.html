@@ -320,152 +320,59 @@
      ONBOARDING / SPLASH
      ============================ */
     #screen-splash {
-      background: var(--text-dark);
+      background: var(--cream);
       justify-content: center;
       align-items: center;
       gap: 0;
+      padding: 0 28px;
     }
 
-    .splash-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 30% 30%, rgba(200, 216, 192, 0.2) 0%, transparent 60%),
-        radial-gradient(ellipse at 70% 70%, rgba(214, 208, 232, 0.2) 0%, transparent 60%);
-    }
-
-    .splash-logo {
-      font-family: 'Fraunces', serif;
-      font-size: 64px;
-      font-weight: 400;
-      color: var(--cream);
-      letter-spacing: -2px;
+    .splash-logo-img {
+      width: 78%;
+      max-width: 300px;
+      height: auto;
       animation: fadeUp 0.8s ease forwards;
-      position: relative;
-      z-index: 1;
-    }
-
-    .splash-logo span {
-      color: var(--sage);
     }
 
     .splash-tagline {
-      font-size: 14px;
-      color: rgba(247, 244, 239, 0.6);
-      letter-spacing: 0.5px;
-      margin-top: 8px;
+      font-size: 15px;
+      color: var(--text-mid);
+      letter-spacing: 0.3px;
+      margin-top: 12px;
+      text-align: center;
       animation: fadeUp 0.8s 0.2s ease forwards;
       opacity: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    .splash-dots {
-      display: flex;
-      gap: 6px;
-      margin-top: 60px;
-      animation: fadeUp 0.8s 0.4s ease forwards;
-      opacity: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    .splash-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      transition: all 0.3s;
-    }
-
-    .splash-dot.active {
-      width: 24px;
-      border-radius: 4px;
-      background: var(--sage);
-    }
-
-    .splash-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-top: 48px;
-      width: 100%;
-      padding: 0 28px;
-      animation: fadeUp 0.8s 0.3s ease forwards;
-      opacity: 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    .splash-card {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .splash-card-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .splash-card-text h4 {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--cream);
-    }
-
-    .splash-card-text p {
-      font-size: 12px;
-      color: rgba(247, 244, 239, 0.55);
-      margin-top: 2px;
     }
 
     .splash-btn {
-      margin: 32px 28px 0;
-      background: var(--sage);
-      color: var(--text-dark);
+      margin-top: 40px;
+      background: var(--accent-blue);
+      color: var(--white);
       border: none;
-      border-radius: 16px;
+      border-radius: 28px;
       padding: 18px;
       font-family: 'DM Sans', sans-serif;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      width: calc(100% - 56px);
-      animation: fadeUp 0.8s 0.5s ease forwards;
+      width: 100%;
+      animation: fadeUp 0.8s 0.4s ease forwards;
       opacity: 0;
-      position: relative;
-      z-index: 1;
-      transition: all 0.2s;
+      transition: opacity 0.2s, transform 0.15s;
     }
 
     .splash-btn:active {
       transform: scale(0.97);
     }
 
-    .splash-signin {
-      margin-top: 16px;
+    .splash-disclaimer {
+      margin-top: 28px;
       font-size: 13px;
-      color: rgba(247, 244, 239, 0.5);
+      color: var(--text-light);
+      text-align: center;
+      line-height: 1.55;
       animation: fadeUp 0.8s 0.6s ease forwards;
       opacity: 0;
-      position: relative;
-      z-index: 1;
-      cursor: pointer;
-    }
-
-    .splash-signin span {
-      color: var(--sage);
-      font-weight: 600;
     }
 
     /* ============================
@@ -2208,42 +2115,10 @@
          SPLASH / ONBOARDING
          ============================ -->
       <div class="screen active" id="screen-splash">
-        <div class="splash-bg"></div>
-        <div class="splash-logo">pnch<span>y</span></div>
-        <div class="splash-tagline">where communities unlock rewards</div>
-
-        <div class="splash-cards">
-          <div class="splash-card">
-            <div class="splash-card-icon" style="background: rgba(200,216,192,0.15);">📍</div>
-            <div class="splash-card-text">
-              <h4>Discover Local</h4>
-              <p>Find hidden gems on your block</p>
-            </div>
-          </div>
-          <div class="splash-card">
-            <div class="splash-card-icon" style="background: rgba(242,221,213,0.15);">🔥</div>
-            <div class="splash-card-text">
-              <h4>Density Drops</h4>
-              <p>Group rewards when crowds gather</p>
-            </div>
-          </div>
-          <div class="splash-card">
-            <div class="splash-card-icon" style="background: rgba(232,213,163,0.15);">🏆</div>
-            <div class="splash-card-text">
-              <h4>Own the Block</h4>
-              <p>Compete & climb the leaderboard</p>
-            </div>
-          </div>
-        </div>
-
+        <img class="splash-logo-img" src="logo.png" alt="Pnchy">
+        <div class="splash-tagline">Where Communities Unlock Rewards</div>
         <button class="splash-btn" onclick="showScreen('home')">Get Started</button>
-        <div class="splash-signin">Already have an account? <span>Sign in</span></div>
-
-        <div class="splash-dots" style="position:relative; z-index:1;">
-          <div class="splash-dot active"></div>
-          <div class="splash-dot"></div>
-          <div class="splash-dot"></div>
-        </div>
+        <div class="splash-disclaimer">This is a demo, showcasing what Pnchy can become with your support</div>
       </div>
 
       <!-- ============================
