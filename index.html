@@ -1,0 +1,3367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Pnchy — Where Communities Unlock Rewards</title>
+  <!-- PWA / installable web-app -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#F7F4EF">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pnchy">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <style>
+    :root {
+      --cream: #F7F4EF;
+      --blush: #F2DDD5;
+      --sage: #C8D8C0;
+      --lavender: #D6D0E8;
+      --sky: #C5DCE8;
+      --peach: #F0C9B0;
+      --muted-gold: #E8D5A3;
+      --text-dark: #2C2825;
+      --text-mid: #5A544E;
+      --text-light: #8A847E;
+      --white: #FFFFFF;
+      --surface: #FDFAF6;
+      --border: #EAE4DC;
+      --accent-green: #7BAF73;
+      --accent-rose: #C97B6A;
+      --accent-blue: #5A8FA8;
+      --accent-purple: #8B7BAF;
+      --shadow: rgba(44, 40, 37, 0.08);
+      --shadow-lg: rgba(44, 40, 37, 0.14);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #E8E4DF;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Phone shell */
+    .phone-shell {
+      width: 390px;
+      height: 844px;
+      background: var(--cream);
+      border-radius: 52px;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 255, 255, 0.3), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Status bar */
+    .status-bar {
+      height: 54px;
+      background: var(--cream);
+      display: flex;
+      align-items: flex-end;
+      padding: 0 28px 10px;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .status-bar .time {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .status-bar .icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .status-bar .icons span {
+      font-size: 13px;
+      color: var(--text-dark);
+    }
+
+    /* Dynamic island */
+    .dynamic-island {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 34px;
+      background: var(--text-dark);
+      border-radius: 20px;
+      z-index: 20;
+    }
+
+    /* Screen container */
+    .screens {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      background: var(--cream);
+      overflow: hidden;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Animations */
+    .screen.slide-in {
+      animation: slideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    .screen.slide-in-left {
+      animation: slideInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0);
+        opacity: 0.6;
+      }
+
+      100% {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        opacity: 0.4;
+      }
+
+      50% {
+        opacity: 0.9;
+      }
+
+      100% {
+        opacity: 0.4;
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    @keyframes countUp {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Bottom tab bar */
+    .tab-bar {
+      height: 88px;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      padding-top: 10px;
+      flex-shrink: 0;
+      box-shadow: 0 -4px 20px var(--shadow);
+    }
+
+    .tab-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px 0;
+      transition: all 0.2s;
+    }
+
+    .tab-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .tab-icon svg {
+      transition: all 0.2s;
+    }
+
+    .tab-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-light);
+      transition: all 0.2s;
+    }
+
+    .tab-item.active .tab-label {
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
+    .tab-item.active .tab-icon svg {
+      stroke: var(--accent-green);
+    }
+
+    .tab-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 16px;
+      height: 16px;
+      background: var(--accent-rose);
+      border-radius: 50%;
+      font-size: 9px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* ============================
+     ONBOARDING / SPLASH
+     ============================ */
+    #screen-splash {
+      background: var(--text-dark);
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+    }
+
+    .splash-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 30%, rgba(200, 216, 192, 0.2) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 70%, rgba(214, 208, 232, 0.2) 0%, transparent 60%);
+    }
+
+    .splash-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 64px;
+      font-weight: 400;
+      color: var(--cream);
+      letter-spacing: -2px;
+      animation: fadeUp 0.8s ease forwards;
+      position: relative;
+      z-index: 1;
+    }
+
+    .splash-logo span {
+      color: var(--sage);
+    }
+
+    .splash-tagline {
+      font-size: 14px;
+      color: rgba(247, 244, 239, 0.6);
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+      animation: fadeUp 0.8s 0.2s ease forwards;
+      opacity: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .splash-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 60px;
+      animation: fadeUp 0.8s 0.4s ease forwards;
+      opacity: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .splash-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: all 0.3s;
+    }
+
+    .splash-dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: var(--sage);
+    }
+
+    .splash-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 48px;
+      width: 100%;
+      padding: 0 28px;
+      animation: fadeUp 0.8s 0.3s ease forwards;
+      opacity: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .splash-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .splash-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .splash-card-text h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    .splash-card-text p {
+      font-size: 12px;
+      color: rgba(247, 244, 239, 0.55);
+      margin-top: 2px;
+    }
+
+    .splash-btn {
+      margin: 32px 28px 0;
+      background: var(--sage);
+      color: var(--text-dark);
+      border: none;
+      border-radius: 16px;
+      padding: 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: calc(100% - 56px);
+      animation: fadeUp 0.8s 0.5s ease forwards;
+      opacity: 0;
+      position: relative;
+      z-index: 1;
+      transition: all 0.2s;
+    }
+
+    .splash-btn:active {
+      transform: scale(0.97);
+    }
+
+    .splash-signin {
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(247, 244, 239, 0.5);
+      animation: fadeUp 0.8s 0.6s ease forwards;
+      opacity: 0;
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+    }
+
+    .splash-signin span {
+      color: var(--sage);
+      font-weight: 600;
+    }
+
+    /* ============================
+     HOME / MAP TAB
+     ============================ */
+    #screen-home {}
+
+    .map-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Real Leaflet map */
+    #pnchy-map {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    /* Override Leaflet tile filter for pastel look */
+    #pnchy-map .leaflet-tile {
+      filter: saturate(0.55) brightness(1.08) hue-rotate(5deg) sepia(0.12);
+    }
+
+    /* Leaflet attribution hide */
+    .leaflet-control-attribution {
+      display: none !important;
+    }
+
+    .leaflet-control-zoom {
+      display: none !important;
+    }
+
+    /* Custom marker styles */
+    .pnchy-pin {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 7px 11px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 4px 16px rgba(44, 40, 37, 0.18);
+      border: 1.5px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      position: relative;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .pnchy-pin.drop-active {
+      border-color: var(--accent-rose);
+      box-shadow: 0 4px 20px rgba(201, 123, 106, 0.35);
+    }
+
+    .pnchy-pin::after {
+      content: '';
+      position: absolute;
+      bottom: -7px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 10px;
+      height: 10px;
+      background: var(--white);
+      border-right: 1.5px solid var(--border);
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .pnchy-pin.drop-active::after {
+      border-right-color: var(--accent-rose);
+      border-bottom-color: var(--accent-rose);
+    }
+
+    .pnchy-pin-emoji {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .pnchy-pin-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .pnchy-pin-dots {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+    }
+
+    .pnchy-pin-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .pnchy-pin-dot.on {
+      background: var(--accent-green);
+    }
+
+    .pnchy-drop-badge {
+      position: absolute;
+      top: -7px;
+      right: -7px;
+      width: 17px;
+      height: 17px;
+      background: var(--accent-rose);
+      border-radius: 50%;
+      border: 2px solid white;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* User location dot */
+    .pnchy-user-dot {
+      width: 18px;
+      height: 18px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(90, 143, 168, 0.5);
+      position: relative;
+    }
+
+    .pnchy-user-dot::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: rgba(90, 143, 168, 0.2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Map header overlay */
+    .map-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 16px 20px 12px;
+      background: linear-gradient(to bottom, rgba(247, 244, 239, 0.97) 70%, transparent);
+    }
+
+    .map-greeting {
+      font-size: 13px;
+      color: var(--text-light);
+      font-weight: 400;
+    }
+
+    .map-title {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      color: var(--text-dark);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .map-title span {
+      color: var(--accent-green);
+    }
+
+    .map-search {
+      margin-top: 12px;
+      background: var(--white);
+      border-radius: 14px;
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 12px var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .map-search input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-dark);
+      outline: none;
+    }
+
+    .map-search input::placeholder {
+      color: var(--text-light);
+    }
+
+    .map-filters {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .map-filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--text-mid);
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .filter-chip.active {
+      background: var(--text-dark);
+      color: var(--cream);
+      border-color: var(--text-dark);
+    }
+
+    /* Merchant pins */
+    .map-pin {
+      position: absolute;
+      cursor: pointer;
+      transform: translate(-50%, -100%);
+      z-index: 4;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .map-pin:hover {
+      transform: translate(-50%, -100%) scale(1.1);
+    }
+
+    .map-pin:active {
+      transform: translate(-50%, -100%) scale(0.92);
+    }
+
+    .pin-bubble {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px var(--shadow-lg);
+      border: 1px solid var(--border);
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .pin-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .pin-emoji {
+      font-size: 16px;
+    }
+
+    .pin-info {}
+
+    .pin-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .pin-stamps {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+    }
+
+    .stamp-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .stamp-dot.filled {
+      background: var(--accent-green);
+    }
+
+    .pin-drop-indicator {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 18px;
+      height: 18px;
+      background: var(--accent-rose);
+      border-radius: 50%;
+      border: 2px solid white;
+      animation: pulse 1.5s ease-in-out infinite;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Map controls */
+    .map-controls {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 50;
+    }
+
+    .map-control-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .map-control-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Drop alert banner */
+    .drop-alert {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 50;
+      background: var(--text-dark);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(44, 40, 37, 0.25);
+      animation: fadeUp 0.4s ease forwards;
+    }
+
+    .drop-alert-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: var(--accent-rose);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .drop-alert-text {}
+
+    .drop-alert-label {
+      font-size: 11px;
+      color: rgba(247, 244, 239, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+    }
+
+    .drop-alert-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-top: 2px;
+    }
+
+    .drop-alert-sub {
+      font-size: 12px;
+      color: rgba(247, 244, 239, 0.6);
+      margin-top: 2px;
+    }
+
+    .drop-alert-progress {
+      margin-top: 10px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+
+    .drop-alert-progress-fill {
+      height: 100%;
+      width: 73%;
+      background: var(--accent-rose);
+      border-radius: 2px;
+    }
+
+    .drop-alert-chevron {
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* ============================
+     MERCHANT DETAIL BOTTOM SHEET
+     ============================ */
+    .bottom-sheet-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(44, 40, 37, 0.4);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+    }
+
+    .bottom-sheet-overlay.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .bottom-sheet {
+      width: 100%;
+      background: var(--cream);
+      border-radius: 28px 28px 0 0;
+      padding: 0 0 32px;
+      animation: slideUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 14px auto 0;
+    }
+
+    .sheet-header {
+      padding: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+    }
+
+    .sheet-action-top {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .sheet-action-top:hover {
+      transform: scale(1.05);
+      border-color: var(--accent-blue);
+    }
+
+    .sheet-action-top:active {
+      transform: scale(0.95);
+    }
+
+    .sheet-merchant-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .sheet-merchant-info {}
+
+    .sheet-merchant-name {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      color: var(--text-dark);
+      font-weight: 400;
+    }
+
+    .sheet-merchant-cat {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .sheet-merchant-rating {
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+
+    .sheet-tags {
+      padding: 16px 24px 0;
+      display: flex;
+      gap: 8px;
+    }
+
+    .sheet-tag {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--surface);
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+    }
+
+    .sheet-tag.highlight {
+      background: var(--sage);
+      color: var(--text-dark);
+      border-color: var(--sage);
+    }
+
+    .punch-card-section {
+      padding: 20px 24px 0;
+    }
+
+    .punch-card-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 12px;
+    }
+
+    .punch-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+    }
+
+    .punch-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .punch-card-reward {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+      margin-bottom: 14px;
+    }
+
+    .punches-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .punch {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border: 1.5px dashed var(--border);
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .punch.done {
+      background: var(--sage);
+      border-color: var(--sage);
+      border-style: solid;
+    }
+
+    .punch.done::after {
+      content: '✓';
+      font-size: 14px;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    .punch:not(.done) {
+      opacity: 0.4;
+    }
+
+    .punch-progress {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .punch-progress-text {
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+
+    .punch-progress-text span {
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .sheet-cta {
+      padding: 16px 24px 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: var(--text-dark);
+      color: var(--cream);
+      border: none;
+      border-radius: 16px;
+      padding: 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.96);
+    }
+
+    .btn-secondary {
+      width: 56px;
+      height: 56px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-secondary:active {
+      transform: scale(0.92);
+    }
+
+    /* ============================
+     DENSITY DROPS TAB
+     ============================ */
+    #screen-drops {
+      background: var(--cream);
+    }
+
+    .drops-header {
+      padding: 16px 24px 0;
+    }
+
+    .drops-subtitle {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .drops-title {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      color: var(--text-dark);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .drops-title span {
+      color: var(--accent-rose);
+      font-style: italic;
+    }
+
+    .drops-live-banner {
+      margin: 16px 24px 0;
+      background: var(--text-dark);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+    }
+
+    .live-pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-rose);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .live-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px solid var(--accent-rose);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .live-text {
+      flex: 1;
+    }
+
+    .live-label {
+      font-size: 11px;
+      color: rgba(247, 244, 239, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .live-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-top: 2px;
+    }
+
+    .live-count {
+      background: var(--accent-rose);
+      border-radius: 12px;
+      padding: 8px 12px;
+      text-align: center;
+    }
+
+    .live-count-num {
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+    }
+
+    .live-count-label {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .drops-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 20px 24px 12px;
+    }
+
+    .drops-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 24px;
+    }
+
+    .drops-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .drop-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .drop-card:active {
+      transform: scale(0.98);
+    }
+
+    .drop-card-glow {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      filter: blur(20px);
+      opacity: 0.3;
+    }
+
+    .drop-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .drop-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .drop-card-info {}
+
+    .drop-card-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .drop-card-merchant {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .drop-card-badge {
+      margin-left: auto;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .drop-card-progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .drop-card-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .drop-card-progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+
+    .drop-card-progress-label span {
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    .drop-card-progress-label strong {
+      font-size: 11px;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .drop-time-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .drop-time-chip {
+      padding: 4px 10px;
+      background: var(--surface);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+    }
+
+    /* ============================
+     QR / STAMP TAB
+     ============================ */
+    #screen-qr {
+      background: var(--text-dark);
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 0;
+    }
+
+    .qr-header {
+      width: 100%;
+      padding: 16px 24px 0;
+    }
+
+    .qr-back {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .qr-title {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      color: var(--cream);
+      font-weight: 400;
+    }
+
+    .qr-subtitle {
+      font-size: 13px;
+      color: rgba(247, 244, 239, 0.55);
+      margin-top: 4px;
+    }
+
+    .qr-frame {
+      margin: 28px auto 0;
+      width: 240px;
+      height: 240px;
+      position: relative;
+    }
+
+    .qr-frame-border {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Fake QR code */
+    .fake-qr {
+      width: 180px;
+      height: 180px;
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
+      gap: 2px;
+    }
+
+    .qr-cell {
+      border-radius: 1px;
+    }
+
+    .qr-timer-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: var(--sage);
+      animation: spin 60s linear infinite;
+    }
+
+    .qr-countdown {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .qr-countdown-num {
+      font-family: 'Fraunces', serif;
+      font-size: 48px;
+      color: var(--cream);
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .qr-countdown-label {
+      font-size: 12px;
+      color: rgba(247, 244, 239, 0.5);
+      margin-top: 4px;
+    }
+
+    .qr-merchant-row {
+      margin: 24px 24px 0;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: calc(100% - 48px);
+    }
+
+    .qr-merchant-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--sage);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .qr-merchant-text {}
+
+    .qr-merchant-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    .qr-merchant-sub {
+      font-size: 12px;
+      color: rgba(247, 244, 239, 0.5);
+      margin-top: 1px;
+    }
+
+    .qr-merchant-punches {
+      margin-left: auto;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .qr-merchant-count {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--sage);
+      line-height: 1;
+    }
+
+    .qr-merchant-count-label {
+      font-size: 10px;
+      color: rgba(247, 244, 239, 0.5);
+    }
+
+    .qr-regen-btn {
+      margin: 16px 24px 0;
+      width: calc(100% - 48px);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(247, 244, 239, 0.7);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .qr-pin-row {
+      margin: 12px 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: calc(100% - 48px);
+    }
+
+    .qr-pin-label {
+      font-size: 12px;
+      color: rgba(247, 244, 239, 0.4);
+    }
+
+    .qr-pin-code {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(247, 244, 239, 0.7);
+      letter-spacing: 2px;
+    }
+
+    /* ============================
+     LEADERBOARD TAB
+     ============================ */
+    #screen-leaderboard {
+      background: var(--cream);
+    }
+
+    .lb-header {
+      padding: 16px 24px 0;
+    }
+
+    .lb-subtitle {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .lb-title {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      color: var(--text-dark);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .lb-title span {
+      color: var(--muted-gold);
+      font-style: italic;
+    }
+
+    .lb-pod-selector {
+      margin: 16px 24px 0;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 4px;
+      display: flex;
+      border: 1px solid var(--border);
+    }
+
+    .lb-pod-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .lb-pod-btn.active {
+      background: var(--text-dark);
+      color: var(--cream);
+    }
+
+    .lb-category-scroll {
+      display: flex;
+      gap: 8px;
+      padding: 14px 24px 0;
+      overflow-x: auto;
+    }
+
+    .lb-category-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .lb-cat-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-mid);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .lb-cat-btn.active {
+      background: var(--muted-gold);
+      border-color: var(--muted-gold);
+      color: var(--text-dark);
+    }
+
+    .lb-top3 {
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      padding: 20px 24px 0;
+      justify-content: center;
+    }
+
+    .lb-podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+
+    .lb-podium-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border: 2px solid var(--border);
+      background: var(--white);
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .lb-podium-crown {
+      position: absolute;
+      top: -14px;
+      font-size: 16px;
+    }
+
+    .lb-podium-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dark);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .lb-podium-score {
+      font-size: 10px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .lb-podium-base {
+      width: 100%;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      color: white;
+      font-weight: 400;
+    }
+
+    .lb-podium-item:nth-child(1) .lb-podium-base {
+      height: 70px;
+      background: var(--accent-blue);
+    }
+
+    .lb-podium-item:nth-child(2) .lb-podium-base {
+      height: 90px;
+      background: var(--muted-gold);
+      color: var(--text-dark);
+    }
+
+    .lb-podium-item:nth-child(3) .lb-podium-base {
+      height: 55px;
+      background: var(--blush);
+      color: var(--text-dark);
+    }
+
+    .lb-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+
+    .lb-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .lb-row:last-child {
+      border-bottom: none;
+    }
+
+    .lb-row:active {
+      opacity: 0.7;
+    }
+
+    .lb-rank {
+      font-family: 'Fraunces', serif;
+      font-size: 18px;
+      color: var(--text-light);
+      font-weight: 400;
+      width: 28px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .lb-row-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .lb-row-info {
+      flex: 1;
+    }
+
+    .lb-row-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .lb-row-sub {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 1px;
+    }
+
+    .lb-row-score {
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      color: var(--text-dark);
+      font-weight: 400;
+      flex-shrink: 0;
+    }
+
+    .lb-row-change {
+      font-size: 10px;
+      color: var(--accent-green);
+      font-weight: 600;
+      margin-top: 2px;
+      text-align: right;
+    }
+
+    .lb-row-change.down {
+      color: var(--accent-rose);
+    }
+
+    /* ============================
+     PROFILE TAB
+     ============================ */
+    #screen-profile {
+      background: var(--cream);
+    }
+
+    .profile-header-bg {
+      height: 180px;
+      background: linear-gradient(135deg, var(--lavender) 0%, var(--sky) 100%);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar-wrap {
+      position: absolute;
+      bottom: -36px;
+      left: 24px;
+    }
+
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      background: var(--text-dark);
+      border: 3px solid var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 4px 16px var(--shadow-lg);
+    }
+
+    .profile-settings-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+
+    .profile-info {
+      padding: 48px 24px 0;
+    }
+
+    .profile-name {
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      color: var(--text-dark);
+      font-weight: 400;
+    }
+
+    .profile-handle {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .profile-pod {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 6px 12px;
+      background: var(--sage);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 20px 24px 0;
+    }
+
+    .profile-stat {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .profile-stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      color: var(--text-dark);
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .profile-stat-label {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    .profile-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 20px 24px 12px;
+    }
+
+    .loyalty-scroll {
+      display: flex;
+      gap: 12px;
+      padding: 0 24px;
+      overflow-x: auto;
+    }
+
+    .loyalty-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .loyalty-card {
+      width: 140px;
+      background: var(--white);
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .loyalty-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .loyalty-card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .loyalty-card-punches {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .lc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .lc-dot.filled {
+      background: var(--accent-green);
+    }
+
+    .loyalty-card-progress {
+      font-size: 10px;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+
+    .loyalty-card-progress span {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .profile-list {
+      padding: 0 24px;
+    }
+
+    .profile-list-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .profile-list-item:last-child {
+      border-bottom: none;
+    }
+
+    .profile-list-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-list-text {
+      flex: 1;
+    }
+
+    .profile-list-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .profile-list-sub {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 1px;
+    }
+
+    /* ============================
+     SUCCESS STATE
+     ============================ */
+    #screen-success {
+      background: var(--text-dark);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--sage);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      animation: countUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      margin-bottom: 28px;
+    }
+
+    .success-title {
+      font-family: 'Fraunces', serif;
+      font-size: 36px;
+      color: var(--cream);
+      font-weight: 400;
+      text-align: center;
+    }
+
+    .success-sub {
+      font-size: 15px;
+      color: rgba(247, 244, 239, 0.6);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .success-punches {
+      display: flex;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .success-punch {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--sage);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      border: 2px solid rgba(200, 216, 192, 0.4);
+    }
+
+    .success-punch.empty {
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    .success-next {
+      font-size: 12px;
+      color: rgba(247, 244, 239, 0.4);
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .success-btn {
+      margin-top: 40px;
+      background: var(--cream);
+      color: var(--text-dark);
+      border: none;
+      border-radius: 16px;
+      padding: 18px 48px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    /* Scrollable content */
+    .scroll-content {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .scroll-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Responsive: on small screens — full native-app look */
+    @media (max-width: 480px) {
+      body { background: var(--cream); overflow: hidden; }
+      .phone-shell {
+        width: 100vw;  width: 100dvw;
+        height: 100vh; height: 100dvh;   /* dvh fixes Safari toolbar resize */
+        border-radius: 0;
+        box-shadow: none;
+        /* clear notch; max() keeps 12px min breathing room when iOS already reserves the bar */
+        padding-top: max(env(safe-area-inset-top), 12px);
+      }
+      .dynamic-island, .status-bar { display: none; } /* hide fake chrome */
+      .tab-bar {
+        height: calc(88px + env(safe-area-inset-bottom));
+        padding-bottom: env(safe-area-inset-bottom); /* extend white bar over home indicator */
+      }
+    }
+
+    /* Nav highlight indicator */
+    .nav-indicator {
+      position: absolute;
+      bottom: 0;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="phone-shell">
+    <!-- Dynamic Island -->
+    <div class="dynamic-island"></div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="icons">
+        <span>●●●</span>
+        <span>WiFi</span>
+        <span>🔋</span>
+      </div>
+    </div>
+
+    <!-- Screens -->
+    <div class="screens">
+
+      <!-- ============================
+         SPLASH / ONBOARDING
+         ============================ -->
+      <div class="screen active" id="screen-splash">
+        <div class="splash-bg"></div>
+        <div class="splash-logo">pnch<span>y</span></div>
+        <div class="splash-tagline">where communities unlock rewards</div>
+
+        <div class="splash-cards">
+          <div class="splash-card">
+            <div class="splash-card-icon" style="background: rgba(200,216,192,0.15);">📍</div>
+            <div class="splash-card-text">
+              <h4>Discover Local</h4>
+              <p>Find hidden gems on your block</p>
+            </div>
+          </div>
+          <div class="splash-card">
+            <div class="splash-card-icon" style="background: rgba(242,221,213,0.15);">🔥</div>
+            <div class="splash-card-text">
+              <h4>Density Drops</h4>
+              <p>Group rewards when crowds gather</p>
+            </div>
+          </div>
+          <div class="splash-card">
+            <div class="splash-card-icon" style="background: rgba(232,213,163,0.15);">🏆</div>
+            <div class="splash-card-text">
+              <h4>Own the Block</h4>
+              <p>Compete & climb the leaderboard</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="splash-btn" onclick="showScreen('home')">Get Started</button>
+        <div class="splash-signin">Already have an account? <span>Sign in</span></div>
+
+        <div class="splash-dots" style="position:relative; z-index:1;">
+          <div class="splash-dot active"></div>
+          <div class="splash-dot"></div>
+          <div class="splash-dot"></div>
+        </div>
+      </div>
+
+      <!-- ============================
+         HOME / MAP
+         ============================ -->
+      <div class="screen" id="screen-home">
+        <div class="map-container">
+          <!-- Real Leaflet Map -->
+          <div id="pnchy-map"></div>
+
+          <!-- Header overlay -->
+          <div class="map-header">
+            <div class="map-greeting">Good morning, Jordan 👋</div>
+            <div class="map-title">Williamsburg, <span>Brooklyn</span></div>
+            <div class="map-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input type="text" placeholder="Search stores, drops, rewards...">
+            </div>
+            <div class="map-filters">
+              <div class="filter-chip active">🗺 All</div>
+              <div class="filter-chip">☕ Cafés</div>
+              <div class="filter-chip">✂️ Barbers</div>
+              <div class="filter-chip">🌮 Food</div>
+              <div class="filter-chip">👗 Boutiques</div>
+              <div class="filter-chip">💪 Fitness</div>
+            </div>
+          </div>
+
+          <!-- Map controls -->
+          <div class="map-controls">
+            <div class="map-control-btn" onclick="recenterMap()" title="My Location">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C2825" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.93-7.07-1.41 1.41M6.34 17.66l-1.41 1.41M17.66 17.66l-1.41-1.41M6.34 6.34 4.93 4.93" />
+              </svg>
+            </div>
+            <div class="map-control-btn" id="heat-toggle-btn" onclick="toggleHeatmap()" title="Toggle Heatmap"
+              style="background: var(--text-dark);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8D8C0" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2c0 6-8 6-8 12a8 8 0 0 0 16 0c0-6-8-6-8-12z" />
+                <path d="M12 22v-4" />
+                <path d="M8 18h8" />
+              </svg>
+            </div>
+            <div class="map-control-btn" onclick="zoomIn()" title="Zoom in">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C2825" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </div>
+            <div class="map-control-btn" onclick="zoomOut()" title="Zoom out">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2C2825" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Drop alert -->
+          <div class="drop-alert" onclick="showScreen('drops')">
+            <div class="drop-alert-icon">🔥</div>
+            <div class="drop-alert-text" style="flex:1;">
+              <div class="drop-alert-label">Drop Incoming</div>
+              <div class="drop-alert-title">Bloom Coffee Drop</div>
+              <div class="drop-alert-sub">11 of 15 needed • 2 min walk</div>
+              <div class="drop-alert-progress">
+                <div class="drop-alert-progress-fill"></div>
+              </div>
+            </div>
+            <div class="drop-alert-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,0.5)"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bottom sheet overlay -->
+          <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)">
+            <div class="bottom-sheet" id="bottom-sheet">
+              <div class="sheet-handle"></div>
+              <div class="sheet-header" id="sheet-header">
+                <!-- dynamic content -->
+              </div>
+              <div class="sheet-tags" id="sheet-tags"></div>
+              <div class="punch-card-section">
+                <div class="punch-card-label">Your Punch Card</div>
+                <div class="punch-card" id="sheet-punchcard">
+                  <!-- dynamic -->
+                </div>
+              </div>
+              <div class="sheet-cta">
+                <button class="btn-primary" onclick="showScreen('qr')">Get Stamped 🎯</button>
+                <div class="btn-secondary">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A544E" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================
+         DROPS TAB
+         ============================ -->
+      <div class="screen" id="screen-drops">
+        <div class="drops-header">
+          <div class="drops-subtitle">Near you in Williamsburg</div>
+          <div class="drops-title">Density <span>Drops</span></div>
+        </div>
+
+        <!-- Live drop banner -->
+        <div class="drops-live-banner" onclick="showDropDetail()">
+          <div class="live-pulse"></div>
+          <div class="live-text">
+            <div class="live-label">🔴 Live Now</div>
+            <div class="live-title">Bloom Coffee — Free Drink Drop!</div>
+          </div>
+          <div class="live-count">
+            <div class="live-count-num">13</div>
+            <div class="live-count-label">/ 15 needed</div>
+          </div>
+        </div>
+
+        <div class="drops-section-title">Upcoming Today</div>
+
+        <div class="drops-scroll">
+          <!-- Drop card 1 -->
+          <div class="drop-card" onclick="showScreen('drops')">
+            <div class="drop-card-glow" style="background: var(--peach);"></div>
+            <div class="drop-card-header">
+              <div class="drop-card-icon" style="background: var(--blush);">🌮</div>
+              <div class="drop-card-info">
+                <div class="drop-card-name">Taco Tuesday Freebie</div>
+                <div class="drop-card-merchant">Sol Tacos • 0.3 mi away</div>
+              </div>
+              <div class="drop-card-badge" style="background: var(--blush); color: var(--accent-rose);">5:00 PM</div>
+            </div>
+            <div class="drop-card-progress-bar">
+              <div class="drop-card-progress-fill" style="width: 40%; background: var(--accent-rose);"></div>
+            </div>
+            <div class="drop-card-progress-label">
+              <span>8 of 20 joined</span>
+              <strong>Free taco with any drink</strong>
+            </div>
+            <div class="drop-time-row">
+              <div class="drop-time-chip">⏰ Starts in 3h 20m</div>
+              <div class="drop-time-chip">👥 12 nearby</div>
+            </div>
+          </div>
+
+          <!-- Drop card 2 -->
+          <div class="drop-card">
+            <div class="drop-card-glow" style="background: var(--lavender);"></div>
+            <div class="drop-card-header">
+              <div class="drop-card-icon" style="background: var(--lavender);">✂️</div>
+              <div class="drop-card-info">
+                <div class="drop-card-name">Weekend Fade Deal</div>
+                <div class="drop-card-merchant">Fade Studio • 0.6 mi away</div>
+              </div>
+              <div class="drop-card-badge" style="background: var(--lavender); color: var(--accent-purple);">Sat 2 PM
+              </div>
+            </div>
+            <div class="drop-card-progress-bar">
+              <div class="drop-card-progress-fill" style="width: 20%; background: var(--accent-purple);"></div>
+            </div>
+            <div class="drop-card-progress-label">
+              <span>4 of 20 joined</span>
+              <strong>$5 off any cut</strong>
+            </div>
+            <div class="drop-time-row">
+              <div class="drop-time-chip">⏰ Tomorrow</div>
+              <div class="drop-time-chip">👥 8 nearby</div>
+            </div>
+          </div>
+
+          <!-- Drop card 3 -->
+          <div class="drop-card">
+            <div class="drop-card-glow" style="background: var(--sage);"></div>
+            <div class="drop-card-header">
+              <div class="drop-card-icon" style="background: var(--sage);">👗</div>
+              <div class="drop-card-info">
+                <div class="drop-card-name">New Arrivals Flash Sale</div>
+                <div class="drop-card-merchant">Vela Boutique • 0.4 mi away</div>
+              </div>
+              <div class="drop-card-badge" style="background: var(--sage); color: var(--accent-green);">Sat 4 PM</div>
+            </div>
+            <div class="drop-card-progress-bar">
+              <div class="drop-card-progress-fill" style="width: 60%; background: var(--accent-green);"></div>
+            </div>
+            <div class="drop-card-progress-label">
+              <span>12 of 20 joined</span>
+              <strong>20% off storewide</strong>
+            </div>
+            <div class="drop-time-row">
+              <div class="drop-time-chip">⏰ Tomorrow</div>
+              <div class="drop-time-chip">👥 18 nearby</div>
+            </div>
+          </div>
+
+          <!-- Drop card 4 -->
+          <div class="drop-card">
+            <div class="drop-card-glow" style="background: var(--sky);"></div>
+            <div class="drop-card-header">
+              <div class="drop-card-icon" style="background: var(--sky);">💪</div>
+              <div class="drop-card-info">
+                <div class="drop-card-name">Sunday Sweat Drop</div>
+                <div class="drop-card-merchant">Form Fitness • 0.8 mi away</div>
+              </div>
+              <div class="drop-card-badge" style="background: var(--sky); color: var(--accent-blue);">Sun 9 AM</div>
+            </div>
+            <div class="drop-card-progress-bar">
+              <div class="drop-card-progress-fill" style="width: 85%; background: var(--accent-blue);"></div>
+            </div>
+            <div class="drop-card-progress-label">
+              <span>17 of 20 joined</span>
+              <strong>Free class pass</strong>
+            </div>
+            <div class="drop-time-row">
+              <div class="drop-time-chip">⏰ Sunday</div>
+              <div class="drop-time-chip" style="color: var(--accent-green); border-color: var(--accent-green);">🔥
+                Almost there!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================
+         QR STAMP TAB
+         ============================ -->
+      <div class="screen" id="screen-qr" style="background: var(--text-dark);">
+        <div class="qr-header">
+          <div class="qr-back" onclick="showScreen('home')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,0.7)"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </div>
+          <div class="qr-title">Get Stamped</div>
+          <div class="qr-subtitle">Show this to the merchant to stamp your card</div>
+        </div>
+
+        <div class="qr-frame">
+          <div class="qr-timer-ring"></div>
+          <div class="qr-frame-border">
+            <!-- Fake QR -->
+            <div class="fake-qr" id="fake-qr"></div>
+          </div>
+        </div>
+
+        <div class="qr-countdown">
+          <div class="qr-countdown-num" id="qr-timer">58</div>
+          <div class="qr-countdown-label">seconds remaining</div>
+        </div>
+
+        <div class="qr-merchant-row">
+          <div class="qr-merchant-icon">☕</div>
+          <div class="qr-merchant-text">
+            <div class="qr-merchant-name">Bloom Coffee</div>
+            <div class="qr-merchant-sub">Williamsburg, Brooklyn</div>
+          </div>
+          <div class="qr-merchant-punches">
+            <div class="qr-merchant-count">3/5</div>
+            <div class="qr-merchant-count-label">punches</div>
+          </div>
+        </div>
+
+        <button class="qr-regen-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M8 16H3v5" />
+          </svg>
+          Regenerate QR Code
+        </button>
+
+        <div class="qr-pin-row">
+          <div class="qr-pin-label">PIN fallback:</div>
+          <div class="qr-pin-code">4 8 2 7</div>
+        </div>
+
+        <!-- Demo: tap QR to show success -->
+        <div style="position: absolute; bottom: 32px; left: 24px; right: 24px; text-align: center;">
+          <div style="font-size: 12px; color: rgba(247,244,239,0.3);">Tap QR to simulate scan ↑</div>
+        </div>
+      </div>
+
+      <!-- ============================
+         STAMP SUCCESS
+         ============================ -->
+      <div class="screen" id="screen-success">
+        <div class="success-circle">✓</div>
+        <div class="success-title">Stamped!</div>
+        <div class="success-sub">You're on punch 4 of 5 at Bloom Coffee</div>
+        <div class="success-punches">
+          <div class="success-punch">✓</div>
+          <div class="success-punch">✓</div>
+          <div class="success-punch">✓</div>
+          <div class="success-punch">✓</div>
+          <div class="success-punch empty"></div>
+        </div>
+        <div class="success-next">One more stamp for a free coffee ☕</div>
+        <button class="success-btn" onclick="showScreen('home')">Back to Map</button>
+      </div>
+
+      <!-- ============================
+         LEADERBOARD TAB
+         ============================ -->
+      <div class="screen" id="screen-leaderboard">
+        <div class="scroll-content">
+          <div class="lb-header">
+            <div class="lb-subtitle">Williamsburg, Brooklyn</div>
+            <div class="lb-title">Owner of <span>the Block</span></div>
+          </div>
+
+          <div class="lb-pod-selector">
+            <button class="lb-pod-btn active">☕ Coffee</button>
+            <button class="lb-pod-btn"
+              onclick="this.parentElement.querySelectorAll('.lb-pod-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">✂️
+              Barbers</button>
+            <button class="lb-pod-btn"
+              onclick="this.parentElement.querySelectorAll('.lb-pod-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">🌮
+              Food</button>
+          </div>
+
+          <div class="lb-category-scroll">
+            <button class="lb-cat-btn active">All Time</button>
+            <button class="lb-cat-btn" onclick="switchLbCat(this)">This Week</button>
+            <button class="lb-cat-btn" onclick="switchLbCat(this)">This Month</button>
+            <button class="lb-cat-btn" onclick="switchLbCat(this)">24 Hours</button>
+          </div>
+
+          <!-- Podium -->
+          <div class="lb-top3">
+            <div class="lb-podium-item">
+              <div class="lb-podium-icon" style="background: var(--sky);">🧋</div>
+              <div class="lb-podium-name">Boba & Co.</div>
+              <div class="lb-podium-score">1,204 pts</div>
+              <div class="lb-podium-base">3</div>
+            </div>
+            <div class="lb-podium-item">
+              <div class="lb-podium-icon" style="background: var(--sage);">☕</div>
+              <div class="lb-podium-crown">👑</div>
+              <div class="lb-podium-name">Bloom Coffee</div>
+              <div class="lb-podium-score">2,847 pts</div>
+              <div class="lb-podium-base">1</div>
+            </div>
+            <div class="lb-podium-item">
+              <div class="lb-podium-icon" style="background: var(--peach);">🍵</div>
+              <div class="lb-podium-name">Matcha House</div>
+              <div class="lb-podium-score">1,681 pts</div>
+              <div class="lb-podium-base">2</div>
+            </div>
+          </div>
+
+          <div class="lb-list">
+            <div class="lb-row">
+              <div class="lb-rank">4</div>
+              <div class="lb-row-icon">☕</div>
+              <div class="lb-row-info">
+                <div class="lb-row-name">Grounds & Co.</div>
+                <div class="lb-row-sub">234 visits this week</div>
+              </div>
+              <div>
+                <div class="lb-row-score">980</div>
+                <div class="lb-row-change">▲ +2</div>
+              </div>
+            </div>
+            <div class="lb-row">
+              <div class="lb-rank">5</div>
+              <div class="lb-row-icon">🫖</div>
+              <div class="lb-row-info">
+                <div class="lb-row-name">The Earl</div>
+                <div class="lb-row-sub">187 visits this week</div>
+              </div>
+              <div>
+                <div class="lb-row-score">842</div>
+                <div class="lb-row-change">▲ +1</div>
+              </div>
+            </div>
+            <div class="lb-row">
+              <div class="lb-rank">6</div>
+              <div class="lb-row-icon">☕</div>
+              <div class="lb-row-info">
+                <div class="lb-row-name">Daily Drip</div>
+                <div class="lb-row-sub">156 visits this week</div>
+              </div>
+              <div>
+                <div class="lb-row-score">710</div>
+                <div class="lb-row-change down">▼ -1</div>
+              </div>
+            </div>
+            <div class="lb-row">
+              <div class="lb-rank">7</div>
+              <div class="lb-row-icon">🫘</div>
+              <div class="lb-row-info">
+                <div class="lb-row-name">Bean Scene</div>
+                <div class="lb-row-sub">134 visits this week</div>
+              </div>
+              <div>
+                <div class="lb-row-score">604</div>
+                <div class="lb-row-change">–</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================
+         PROFILE TAB
+         ============================ -->
+      <div class="screen" id="screen-profile">
+        <div class="scroll-content">
+          <div class="profile-header-bg">
+            <div class="profile-settings-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(44,40,37,0.7)" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.93-7.07-1.41 1.41M6.34 17.66l-1.41 1.41M17.66 17.66l-1.41-1.41M6.34 6.34 4.93 4.93" />
+              </svg>
+            </div>
+            <div class="profile-avatar-wrap">
+              <div class="profile-avatar">🦊</div>
+            </div>
+          </div>
+
+          <div class="profile-info">
+            <div class="profile-name">Jordan Reyes</div>
+            <div class="profile-handle">@jordanr · Member since Jan 2026</div>
+            <div class="profile-pod">
+              <span>📍</span> Williamsburg Pod
+            </div>
+          </div>
+
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="profile-stat-num">47</div>
+              <div class="profile-stat-label">Visits</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-num">6</div>
+              <div class="profile-stat-label">Drops Hit</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-num">3</div>
+              <div class="profile-stat-label">Rewards</div>
+            </div>
+          </div>
+
+          <div class="profile-section-title">Active Cards</div>
+
+          <div class="loyalty-scroll">
+            <div class="loyalty-card">
+              <div class="loyalty-card-icon" style="background: var(--sage);">☕</div>
+              <div class="loyalty-card-name">Bloom Coffee</div>
+              <div class="loyalty-card-punches">
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot"></div>
+                <div class="lc-dot"></div>
+              </div>
+              <div class="loyalty-card-progress"><span>3 / 5</span> punches</div>
+            </div>
+            <div class="loyalty-card">
+              <div class="loyalty-card-icon" style="background: var(--lavender);">✂️</div>
+              <div class="loyalty-card-name">Fade Studio</div>
+              <div class="loyalty-card-punches">
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot"></div>
+                <div class="lc-dot"></div>
+                <div class="lc-dot"></div>
+              </div>
+              <div class="loyalty-card-progress"><span>2 / 5</span> punches</div>
+            </div>
+            <div class="loyalty-card">
+              <div class="loyalty-card-icon" style="background: var(--blush);">🌮</div>
+              <div class="loyalty-card-name">Sol Tacos</div>
+              <div class="loyalty-card-punches">
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot"></div>
+                <div class="lc-dot"></div>
+                <div class="lc-dot"></div>
+                <div class="lc-dot"></div>
+              </div>
+              <div class="loyalty-card-progress"><span>1 / 5</span> punches</div>
+            </div>
+            <div class="loyalty-card">
+              <div class="loyalty-card-icon" style="background: var(--sky);">👗</div>
+              <div class="loyalty-card-name">Vela Boutique</div>
+              <div class="loyalty-card-punches">
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot filled"></div>
+                <div class="lc-dot"></div>
+              </div>
+              <div class="loyalty-card-progress"><span>4 / 5</span> punches</div>
+            </div>
+          </div>
+
+          <div class="profile-section-title">Account</div>
+
+          <div class="profile-list" style="padding-bottom: 24px;">
+            <div class="profile-list-item">
+              <div class="profile-list-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A544E" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <div class="profile-list-text">
+                <div class="profile-list-label">Edit Profile</div>
+                <div class="profile-list-sub">Name, photo, neighborhood</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
+            <div class="profile-list-item">
+              <div class="profile-list-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A544E" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 20a6 6 0 0 0-12 0" />
+                  <circle cx="12" cy="10" r="4" />
+                  <path d="M6 20h12" />
+                </svg>
+              </div>
+              <div class="profile-list-text">
+                <div class="profile-list-label">My Community</div>
+                <div class="profile-list-sub">Williamsburg Pod • 1.2K members</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
+            <div class="profile-list-item">
+              <div class="profile-list-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A544E" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" />
+                </svg>
+              </div>
+              <div class="profile-list-text">
+                <div class="profile-list-label">Rewards History</div>
+                <div class="profile-list-sub">3 redeemed this month</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
+            <div class="profile-list-item">
+              <div class="profile-list-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A544E" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 20V10" />
+                  <path d="M12 20V4" />
+                  <path d="M6 20v-6" />
+                </svg>
+              </div>
+              <div class="profile-list-text">
+                <div class="profile-list-label">Notifications</div>
+                <div class="profile-list-sub">Drops, stamps, leaderboard</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /screens -->
+
+    <!-- Tab Bar (hidden on splash) -->
+    <div class="tab-bar" id="tab-bar" style="display:none;">
+      <div class="tab-item active" data-screen="home" onclick="switchTab(this, 'home')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7BAF73" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.93-7.07-1.41 1.41M6.34 17.66l-1.41 1.41M17.66 17.66l-1.41-1.41M6.34 6.34 4.93 4.93" />
+          </svg>
+          <div class="nav-indicator"></div>
+        </div>
+        <span class="tab-label">Explore</span>
+      </div>
+      <div class="tab-item" data-screen="drops" onclick="switchTab(this, 'drops')">
+        <div class="tab-icon" style="position:relative;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+          <div class="tab-badge">2</div>
+        </div>
+        <span class="tab-label">Drops</span>
+      </div>
+      <div class="tab-item" data-screen="qr" onclick="switchTab(this, 'qr')">
+        <div class="tab-icon" style="position:relative;">
+          <div
+            style="width: 50px; height: 50px; background: var(--text-dark); border-radius: 18px; display: flex; align-items: center; justify-content: center; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); box-shadow: 0 4px 16px rgba(44,40,37,0.3);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </svg>
+          </div>
+        </div>
+        <span class="tab-label" style="margin-top: 14px;">Stamp</span>
+      </div>
+      <div class="tab-item" data-screen="leaderboard" onclick="switchTab(this, 'leaderboard')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6l4-4 4 4" />
+            <path d="M12 2v20" />
+            <path d="M2 12l4 4 4-4" />
+            <path d="M2 16h8" />
+            <path d="M14 12l4 4 4-4" />
+            <path d="M14 16h8" />
+          </svg>
+        </div>
+        <span class="tab-label">Ranks</span>
+      </div>
+      <div class="tab-item" data-screen="profile" onclick="switchTab(this, 'profile')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <span class="tab-label">Profile</span>
+      </div>
+    </div>
+
+  </div><!-- /phone-shell -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+  <script>
+    // ===========================
+    // QR CODE GENERATION
+    // ===========================
+    function generateQR() {
+      const qr = document.getElementById('fake-qr');
+      if (!qr) return;
+      qr.innerHTML = '';
+      // Position markers pattern
+      const pattern = [
+        [1, 1, 1, 1, 1, 1, 1, 0, 0],
+        [1, 0, 0, 0, 0, 0, 1, 0, 1],
+        [1, 0, 1, 1, 1, 0, 1, 0, 0],
+        [1, 0, 1, 1, 1, 0, 1, 0, 1],
+        [1, 0, 1, 1, 1, 0, 1, 0, 0],
+        [1, 0, 0, 0, 0, 0, 1, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 1, 0, 0, 0, 1],
+      ];
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'qr-cell';
+          const isFixed = r < 7 && c < 7;
+          if (isFixed) {
+            cell.style.background = pattern[r][c] ? '#2C2825' : 'white';
+          } else {
+            cell.style.background = Math.random() > 0.5 ? '#2C2825' : 'white';
+          }
+          qr.appendChild(cell);
+        }
+      }
+    }
+
+    // Tap QR to show success
+    document.addEventListener('DOMContentLoaded', () => {
+      const qrFrame = document.getElementById('fake-qr');
+      if (qrFrame) {
+        qrFrame.parentElement.style.cursor = 'pointer';
+        qrFrame.parentElement.addEventListener('click', () => {
+          showScreen('success');
+        });
+      }
+    });
+
+    // ===========================
+    // QR COUNTDOWN
+    // ===========================
+    let qrInterval = null;
+    let qrSeconds = 58;
+
+    function startQRTimer() {
+      clearInterval(qrInterval);
+      qrSeconds = 58;
+      updateQRTimer();
+      qrInterval = setInterval(() => {
+        qrSeconds--;
+        if (qrSeconds <= 0) {
+          qrSeconds = 58;
+          generateQR();
+        }
+        updateQRTimer();
+      }, 1000);
+    }
+
+    function updateQRTimer() {
+      const el = document.getElementById('qr-timer');
+      if (el) el.textContent = qrSeconds;
+    }
+
+    // ===========================
+    // SCREEN NAVIGATION
+    // ===========================
+    function showScreen(name) {
+      document.querySelectorAll('.screen').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+      });
+      const target = document.getElementById('screen-' + name);
+      if (target) {
+        target.style.display = 'flex';
+        target.classList.add('active');
+      }
+
+      const tabBar = document.getElementById('tab-bar');
+      const mainTabs = ['home', 'drops', 'qr', 'leaderboard', 'profile'];
+
+      if (name === 'splash') {
+        tabBar.style.display = 'none';
+      } else if (name === 'success') {
+        tabBar.style.display = 'none';
+      } else if (name === 'qr') {
+        tabBar.style.display = 'flex';
+        generateQR();
+        startQRTimer();
+        updateTabHighlight('qr');
+      } else {
+        tabBar.style.display = 'flex';
+        if (mainTabs.includes(name)) updateTabHighlight(name);
+      }
+
+      // Initialize real map when home tab is first shown
+      if (name === 'home') {
+        setTimeout(initMap, 80);
+      }
+    }
+
+    function updateTabHighlight(screenName) {
+      document.querySelectorAll('.tab-item').forEach(t => {
+        const isActive = t.dataset.screen === screenName;
+        t.classList.toggle('active', isActive);
+        const svg = t.querySelector('svg');
+        if (svg) {
+          svg.style.stroke = isActive ? 'var(--accent-green)' : '#8A847E';
+        }
+        const label = t.querySelector('.tab-label');
+        if (label) {
+          label.style.color = isActive ? 'var(--accent-green)' : 'var(--text-light)';
+          label.style.fontWeight = isActive ? '600' : '500';
+        }
+        const navInd = t.querySelector('.nav-indicator');
+        if (navInd) navInd.style.display = isActive ? 'block' : 'none';
+      });
+    }
+
+    function switchTab(el, screenName) {
+      showScreen(screenName);
+    }
+
+    // ===========================
+    // BOTTOM SHEET
+    // ===========================
+    const merchants = {
+      coffee: {
+        icon: '☕', bg: 'var(--sage)', name: 'Bloom Coffee', cat: 'Specialty Coffee · 0.2 mi away',
+        rating: '4.8 ★  (234 reviews)', tags: ['Drop Active 🔥', 'Loyalty Member', 'Open Now'],
+        tagColors: ['var(--accent-rose)', 'var(--sage)', 'var(--border)'],
+        reward: 'Free drink after 5 stamps', punches: 3, total: 5
+      },
+      barber: {
+        icon: '✂️', bg: 'var(--lavender)', name: 'Fade Studio', cat: 'Barbershop · 0.6 mi away',
+        rating: '4.9 ★  (189 reviews)', tags: ['Top Ranked #1', 'Open Now'],
+        tagColors: ['var(--muted-gold)', 'var(--border)'],
+        reward: 'Free lineup after 5 cuts', punches: 2, total: 5
+      },
+      food: {
+        icon: '🌮', bg: 'var(--blush)', name: 'Sol Tacos', cat: 'Mexican · 0.3 mi away',
+        rating: '4.7 ★  (312 reviews)', tags: ['Drop at 5 PM', 'Open Now'],
+        tagColors: ['var(--peach)', 'var(--border)'],
+        reward: 'Free taco after 5 visits', punches: 1, total: 5
+      },
+      boutique: {
+        icon: '👗', bg: 'var(--sky)', name: 'Vela Boutique', cat: 'Fashion Boutique · 0.4 mi away',
+        rating: '4.6 ★  (98 reviews)', tags: ['Almost Loyal ⭐', 'Open Now'],
+        tagColors: ['var(--sky)', 'var(--border)'],
+        reward: '20% off after 5 visits', punches: 4, total: 5
+      }
+    };
+
+    function openSheet(type) {
+      const m = merchants[type];
+      const overlay = document.getElementById('sheet-overlay');
+
+      document.getElementById('sheet-header').innerHTML = `
+      <div class="sheet-merchant-icon" style="background: ${m.bg}">${m.icon}</div>
+      <div class="sheet-merchant-info">
+        <div class="sheet-merchant-name">${m.name}</div>
+        <div class="sheet-merchant-cat">${m.cat}</div>
+        <div class="sheet-merchant-rating">${m.rating}</div>
+      </div>
+      <div class="sheet-action-top" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(m.name + ' Williamsburg Brooklyn')}', '_blank')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      </div>
+    `;
+
+      const tagsEl = document.getElementById('sheet-tags');
+      tagsEl.innerHTML = m.tags.map((t, i) => {
+        const bg = m.tagColors[i] || 'var(--border)';
+        const isFirst = i === 0;
+        return `<div class="sheet-tag ${isFirst ? 'highlight' : ''}" style="${isFirst ? `background:${bg}; border-color:${bg};` : ''}">${t}</div>`;
+      }).join('');
+
+      let punches = '';
+      for (let i = 0; i < m.total; i++) {
+        punches += `<div class="punch${i < m.punches ? ' done' : ''}"></div>`;
+      }
+      document.getElementById('sheet-punchcard').innerHTML = `
+      <div class="punch-card-title">${m.reward}</div>
+      <div class="punch-card-reward">Complete your card for a reward</div>
+      <div class="punches-grid">${punches}</div>
+      <div class="punch-progress">
+        <div class="punch-progress-text"><span>${m.punches}</span> of ${m.total} punches</div>
+        <div class="punch-progress-text">${m.total - m.punches} more to go!</div>
+      </div>
+    `;
+
+      overlay.classList.add('open');
+    }
+
+    function closeSheet(e) {
+      if (e.target === document.getElementById('sheet-overlay')) {
+        document.getElementById('sheet-overlay').classList.remove('open');
+      }
+    }
+
+    function showDropDetail() {
+      // just navigate to drops
+      switchTab(null, 'drops');
+    }
+
+    function switchLbCat(el) {
+      document.querySelectorAll('.lb-cat-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // ===========================
+    // LEAFLET MAP
+    // ===========================
+    let pnchyMap = null;
+    let heatLayer = null;
+    let mapInitialized = false;
+
+    // Williamsburg, Brooklyn center
+    const MAP_CENTER = [40.7141, -73.9570];
+    const MAP_ZOOM = 16;
+
+    // Merchant data with real-ish Williamsburg coords
+    const mapMerchants = [
+      {
+        id: 'coffee',
+        name: 'Bloom Coffee',
+        emoji: '☕',
+        lat: 40.7155, lng: -73.9585,
+        punches: 3, total: 5,
+        drop: true,
+        color: '#C8D8C0'
+      },
+      {
+        id: 'barber',
+        name: 'Fade Studio',
+        emoji: '✂️',
+        lat: 40.7168, lng: -73.9548,
+        punches: 2, total: 5,
+        drop: false,
+        color: '#D6D0E8'
+      },
+      {
+        id: 'food',
+        name: 'Sol Tacos',
+        emoji: '🌮',
+        lat: 40.7128, lng: -73.9602,
+        punches: 1, total: 5,
+        drop: false,
+        color: '#F2DDD5'
+      },
+      {
+        id: 'boutique',
+        name: 'Vela Boutique',
+        emoji: '👗',
+        lat: 40.7138, lng: -73.9555,
+        punches: 4, total: 5,
+        drop: false,
+        color: '#C5DCE8'
+      },
+      {
+        id: 'fitness',
+        name: 'Form Fitness',
+        emoji: '💪',
+        lat: 40.7148, lng: -73.9620,
+        punches: 0, total: 5,
+        drop: false,
+        color: '#E8D5A3'
+      }
+    ];
+
+    // Heatmap data — simulated foot traffic clusters
+    const heatData = [
+      // Around Bloom Coffee (hot spot — active drop)
+      [40.7155, -73.9585, 1.0],
+      [40.7156, -73.9583, 0.9],
+      [40.7154, -73.9587, 0.85],
+      [40.7157, -73.9582, 0.8],
+      [40.7153, -73.9589, 0.75],
+      [40.7158, -73.9580, 0.7],
+      [40.7152, -73.9591, 0.65],
+      [40.7159, -73.9578, 0.6],
+      [40.7160, -73.9586, 0.55],
+      [40.7151, -73.9592, 0.5],
+      // Around Sol Tacos (medium cluster)
+      [40.7128, -73.9602, 0.6],
+      [40.7129, -73.9600, 0.55],
+      [40.7127, -73.9604, 0.5],
+      [40.7130, -73.9598, 0.45],
+      [40.7126, -73.9606, 0.4],
+      // Around Vela Boutique (light activity)
+      [40.7138, -73.9555, 0.45],
+      [40.7139, -73.9553, 0.4],
+      [40.7137, -73.9557, 0.35],
+      // Fade Studio cluster
+      [40.7168, -73.9548, 0.5],
+      [40.7169, -73.9546, 0.45],
+      [40.7167, -73.9550, 0.4],
+      // Scattered foot traffic
+      [40.7145, -73.9570, 0.3],
+      [40.7142, -73.9575, 0.25],
+      [40.7150, -73.9562, 0.3],
+      [40.7133, -73.9580, 0.2],
+      [40.7161, -73.9565, 0.25],
+      [40.7123, -73.9590, 0.2],
+    ];
+
+    function buildPinHTML(m) {
+      let dots = '';
+      for (let i = 0; i < m.total; i++) {
+        dots += `<div class="pnchy-pin-dot${i < m.punches ? ' on' : ''}"></div>`;
+      }
+      const dropBadge = m.drop ? '<div class="pnchy-drop-badge">🔥</div>' : '';
+      return `
+      <div class="pnchy-pin${m.drop ? ' drop-active' : ''}" onclick="openSheet('${m.id}')">
+        ${dropBadge}
+        <span class="pnchy-pin-emoji">${m.emoji}</span>
+        <div>
+          <div class="pnchy-pin-name">${m.name}</div>
+          <div class="pnchy-pin-dots">${dots}</div>
+        </div>
+      </div>
+    `;
+    }
+
+    function initMap() {
+      if (mapInitialized) {
+        setTimeout(() => pnchyMap && pnchyMap.invalidateSize(), 100);
+        return;
+      }
+      if (typeof L === 'undefined') return; // Leaflet not loaded yet
+      mapInitialized = true;
+
+      pnchyMap = L.map('pnchy-map', {
+        center: MAP_CENTER,
+        zoom: MAP_ZOOM,
+        zoomControl: false,
+        attributionControl: false,
+        dragging: true,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+      });
+
+      // Stamen Toner Lite — clean, works well with pastel filter
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+      }).addTo(pnchyMap);
+
+      // Add heatmap layer
+      heatLayer = L.heatLayer(heatData, {
+        radius: 28,
+        blur: 22,
+        maxZoom: 18,
+        max: 1.0,
+        gradient: {
+          0.0: 'rgba(200,216,192,0)',
+          0.3: 'rgba(200,216,192,0.5)',
+          0.5: 'rgba(240,201,176,0.7)',
+          0.75: 'rgba(201,123,106,0.75)',
+          1.0: 'rgba(185,75,58,0.85)'
+        }
+      }).addTo(pnchyMap);
+
+      // Add merchant markers
+      mapMerchants.forEach(m => {
+        const icon = L.divIcon({
+          className: '',
+          html: buildPinHTML(m),
+          iconAnchor: [60, 54],
+          iconSize: [120, 54],
+        });
+        L.marker([m.lat, m.lng], { icon }).addTo(pnchyMap);
+      });
+
+      // User location marker
+      const userIcon = L.divIcon({
+        className: '',
+        html: '<div class="pnchy-user-dot"></div>',
+        iconAnchor: [9, 9],
+        iconSize: [18, 18],
+      });
+      L.marker([40.7144, -73.9572], { icon: userIcon }).addTo(pnchyMap);
+
+      // Geofence circle around Bloom Coffee (active drop zone)
+      L.circle([40.7155, -73.9585], {
+        radius: 80,
+        color: '#C97B6A',
+        fillColor: '#C97B6A',
+        fillOpacity: 0.08,
+        weight: 1.5,
+        dashArray: '4 4',
+      }).addTo(pnchyMap);
+    }
+
+    let heatmapVisible = true;
+
+    function toggleHeatmap() {
+      if (!pnchyMap || !heatLayer) return;
+      const btn = document.getElementById('heat-toggle-btn');
+      if (heatmapVisible) {
+        pnchyMap.removeLayer(heatLayer);
+        btn.style.background = 'var(--white)';
+        btn.querySelector('svg').style.stroke = '#8A847E';
+      } else {
+        heatLayer.addTo(pnchyMap);
+        btn.style.background = 'var(--text-dark)';
+        btn.querySelector('svg').style.stroke = '#C8D8C0';
+      }
+      heatmapVisible = !heatmapVisible;
+    }
+
+    function recenterMap() {
+      if (!pnchyMap) return;
+      pnchyMap.flyTo(MAP_CENTER, MAP_ZOOM, { duration: 0.8 });
+    }
+
+    function zoomIn() {
+      if (!pnchyMap) return;
+      pnchyMap.zoomIn();
+    }
+
+    function zoomOut() {
+      if (!pnchyMap) return;
+      pnchyMap.zoomOut();
+    }
+
+    // Init
+    generateQR();
+  </script>
+
+  <!-- PWA service worker (network-first, required for Android installability) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</body>
+
+</html>
