@@ -324,13 +324,13 @@
       justify-content: center;
       align-items: center;
       gap: 0;
-      padding: 0 16px;
+      padding: 0;
+      overflow: hidden;
     }
 
     .splash-logo-img {
-      width: 344px;
-      height: 193px;
-      max-width: 100%;
+      width: 545px;
+      height: 228px;
       object-fit: contain;
       animation: fadeUp 0.8s ease forwards;
     }
@@ -340,6 +340,7 @@
       color: var(--text-mid);
       letter-spacing: 0.3px;
       margin-top: 12px;
+      padding: 0 24px;
       text-align: center;
       animation: fadeUp 0.8s 0.2s ease forwards;
       opacity: 0;
@@ -347,6 +348,8 @@
 
     .splash-btn {
       margin-top: 40px;
+      margin-left: 24px;
+      margin-right: 24px;
       background: var(--accent-blue);
       color: var(--white);
       border: none;
@@ -356,7 +359,7 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      width: 100%;
+      width: calc(100% - 48px);
       animation: fadeUp 0.8s 0.4s ease forwards;
       opacity: 0;
       transition: opacity 0.2s, transform 0.15s;
@@ -368,6 +371,7 @@
 
     .splash-disclaimer {
       margin-top: 28px;
+      padding: 0 24px;
       font-size: 13px;
       color: var(--text-light);
       text-align: center;
