@@ -574,6 +574,114 @@
       color: var(--text-light);
     }
 
+    .map-search-wrap {
+      position: relative;
+    }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 12px 32px var(--shadow-lg);
+      overflow: hidden auto;
+      max-height: 300px;
+      z-index: 60;
+      animation: fadeUp 0.25s ease both;
+    }
+
+    .search-result {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .search-result:last-child {
+      border-bottom: none;
+    }
+
+    .search-result:hover {
+      background: var(--cream);
+    }
+
+    .search-result-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .search-result-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .search-result-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .search-result-cat {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-result-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .search-status {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .search-status.open {
+      background: var(--sage);
+      color: var(--text-dark);
+    }
+
+    .search-status.closed {
+      background: var(--blush);
+      color: var(--accent-rose);
+    }
+
+    .search-result-dist {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-mid);
+    }
+
+    .search-empty {
+      padding: 18px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
     .map-filters {
       display: flex;
       gap: 8px;
@@ -2142,13 +2250,17 @@
           <div class="map-header">
             <div class="map-greeting">Good morning, Jordan 👋</div>
             <div class="map-title">Williamsburg, <span>Brooklyn</span></div>
-            <div class="map-search">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-              <input type="text" placeholder="Search stores, drops, rewards...">
+            <div class="map-search-wrap">
+              <div class="map-search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" id="map-search-input" placeholder="Search stores, drops, rewards..."
+                  oninput="onSearchInput(this.value)" autocomplete="off">
+              </div>
+              <div class="search-results" id="search-results" style="display: none;"></div>
             </div>
             <div class="map-filters">
               <div class="filter-chip active">🗺 All</div>
@@ -2940,27 +3052,102 @@
         icon: '☕', bg: 'var(--sage)', name: 'Bloom Coffee', cat: 'Specialty Coffee · 0.2 mi away',
         rating: '4.8 ★  (234 reviews)', tags: ['Drop Active 🔥', 'Loyalty Member', 'Open Now'],
         tagColors: ['var(--accent-rose)', 'var(--sage)', 'var(--border)'],
-        reward: 'Free drink after 5 stamps', punches: 3, total: 5
+        reward: 'Free drink after 5 stamps', punches: 3, total: 5,
+        dist: '0.2 mi', hours: { open: '07:00', close: '14:00' }
       },
       barber: {
         icon: '✂️', bg: 'var(--lavender)', name: 'Fade Studio', cat: 'Barbershop · 0.6 mi away',
         rating: '4.9 ★  (189 reviews)', tags: ['Top Ranked #1', 'Open Now'],
         tagColors: ['var(--muted-gold)', 'var(--border)'],
-        reward: 'Free lineup after 5 cuts', punches: 2, total: 5
+        reward: 'Free lineup after 5 cuts', punches: 2, total: 5,
+        dist: '0.6 mi', hours: { open: '10:00', close: '20:00' }
       },
       food: {
         icon: '🌮', bg: 'var(--blush)', name: 'Sol Tacos', cat: 'Mexican · 0.3 mi away',
         rating: '4.7 ★  (312 reviews)', tags: ['Drop at 5 PM', 'Open Now'],
         tagColors: ['var(--peach)', 'var(--border)'],
-        reward: 'Free taco after 5 visits', punches: 1, total: 5
+        reward: 'Free taco after 5 visits', punches: 1, total: 5,
+        dist: '0.3 mi', hours: { open: '17:00', close: '23:00' }
       },
       boutique: {
         icon: '👗', bg: 'var(--sky)', name: 'Vela Boutique', cat: 'Fashion Boutique · 0.4 mi away',
         rating: '4.6 ★  (98 reviews)', tags: ['Almost Loyal ⭐', 'Open Now'],
         tagColors: ['var(--sky)', 'var(--border)'],
-        reward: '20% off after 5 visits', punches: 4, total: 5
+        reward: '20% off after 5 visits', punches: 4, total: 5,
+        dist: '0.4 mi', hours: { open: '11:00', close: '19:00' }
       }
     };
+
+    // ===========================
+    // SEARCH
+    // ===========================
+    // Open/closed from mock hours, computed against the current time.
+    // Supports overnight spans (open > close, e.g. a bar) and 24h (open === close).
+    function isOpenNow(m, now = new Date()) {
+      const [oh, om] = m.hours.open.split(':').map(Number);
+      const [ch, cm] = m.hours.close.split(':').map(Number);
+      const mins = now.getHours() * 60 + now.getMinutes();
+      const openM = oh * 60 + om;
+      const closeM = ch * 60 + cm;
+      if (openM === closeM) return true;
+      if (openM < closeM) return mins >= openM && mins < closeM;
+      return mins >= openM || mins < closeM;
+    }
+
+    function onSearchInput(value) {
+      const panel = document.getElementById('search-results');
+      const q = value.trim().toLowerCase();
+      if (!q) {
+        panel.style.display = 'none';
+        panel.innerHTML = '';
+        return;
+      }
+
+      const matches = Object.entries(merchants).filter(([, m]) =>
+        `${m.name} ${m.cat} ${m.reward}`.toLowerCase().includes(q)
+      );
+
+      if (matches.length === 0) {
+        panel.innerHTML = `<div class="search-empty">No spots match "${value.trim().replace(/</g, '&lt;')}" — try a store, category, or reward</div>`;
+      } else {
+        panel.innerHTML = matches.map(([key, m]) => {
+          const open = isOpenNow(m);
+          return `
+          <div class="search-result" onclick="selectSearchResult('${key}')">
+            <div class="search-result-icon" style="background: ${m.bg}">${m.icon}</div>
+            <div class="search-result-info">
+              <div class="search-result-name">${m.name}</div>
+              <div class="search-result-cat">${m.cat.split(' · ')[0]} · ${m.reward}</div>
+            </div>
+            <div class="search-result-meta">
+              <div class="search-status ${open ? 'open' : 'closed'}">${open ? 'Open' : 'Closed'}</div>
+              <div class="search-result-dist">${m.dist}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+      panel.style.display = 'block';
+    }
+
+    function hideSearchResults() {
+      const panel = document.getElementById('search-results');
+      if (panel) {
+        panel.style.display = 'none';
+        panel.innerHTML = '';
+      }
+    }
+
+    function selectSearchResult(key) {
+      const input = document.getElementById('map-search-input');
+      if (input) input.value = '';
+      hideSearchResults();
+      openSheet(key);
+    }
+
+    // Dismiss results when tapping anywhere outside the search area.
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.map-search-wrap')) hideSearchResults();
+    });
 
     function openSheet(type) {
       const m = merchants[type];
@@ -2979,7 +3166,11 @@
     `;
 
       const tagsEl = document.getElementById('sheet-tags');
-      tagsEl.innerHTML = m.tags.map((t, i) => {
+      // Keep the static 'Open Now' tag honest — swap it for the live status.
+      const liveTags = m.tags.map((t) =>
+        t === 'Open Now' ? (isOpenNow(m) ? 'Open Now' : 'Closed') : t
+      );
+      tagsEl.innerHTML = liveTags.map((t, i) => {
         const bg = m.tagColors[i] || 'var(--border)';
         const isFirst = i === 0;
         return `<div class="sheet-tag ${isFirst ? 'highlight' : ''}" style="${isFirst ? `background:${bg}; border-color:${bg};` : ''}">${t}</div>`;
