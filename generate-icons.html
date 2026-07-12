@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pnchy Icon Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px;
+      gap: 32px;
+    }
+    h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+    .note {
+      font-size: 13px;
+      color: #999;
+      text-align: center;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+    .note strong { color: #ddd; }
+    .icons-row {
+      display: flex;
+      gap: 32px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .icon-item canvas {
+      /* Simulate iOS rounded icon shape in preview */
+      border-radius: 22.5%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .icon-label {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      line-height: 1.4;
+    }
+    button {
+      padding: 9px 18px;
+      background: #5A8FA8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+    button:hover { background: #4a7a93; }
+    button:active { background: #3d6a82; }
+    .step {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      max-width: 520px;
+      line-height: 1.7;
+      background: #252525;
+      padding: 16px 20px;
+      border-radius: 10px;
+      border: 1px solid #333;
+    }
+    .step code {
+      background: #333;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #aaa;
+      font-size: 11px;
+    }
+    .download-all {
+      background: #5A8FA8;
+      font-size: 15px;
+      padding: 13px 32px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Pnchy Icon Generator</h1>
+
+  <p class="note">
+    Generates full-bleed icons with <strong>no card border</strong> — fixing the white border bug on iOS and Android home screens.
+  </p>
+
+  <div class="icons-row" id="icons-row"></div>
+
+  <button class="download-all" id="download-all">Download All 3 Icons</button>
+
+  <div class="step">
+    <strong style="color:#ddd;">After downloading:</strong><br>
+    1. Copy the 3 files into <code>pnchy-demo/</code>, replacing the old ones.<br>
+    2. In <code>sw.js</code>, change <code>pnchy-demo-v2</code> → <code>pnchy-demo-v3</code> to force cache refresh.<br>
+    3. In your browser: DevTools → Application → Service Workers → Unregister, then hard-reload.<br>
+    4. Add to home screen again to see the fixed icon.
+  </div>
+
+  <script>
+    // ─── P-dots layout ──────────────────────────────────────────────────────────
+    // Grid: col 0-2, row 0-4
+    // Each dot: [col, row, color]
+    const DOTS = [
+      [0, 0, '#6B4EA0'],  // purple
+      [1, 0, '#578A78'],  // sage
+      [2, 0, '#E8B468'],  // peach
+      [0, 1, '#5480A8'],  // blue
+      [2, 1, '#B86060'],  // rose
+      [0, 2, '#B86060'],  // rose
+      [1, 2, '#6B4EA0'],  // purple
+      [2, 2, '#5480A8'],  // blue
+      [0, 3, '#E8B468'],  // peach
+      [0, 4, '#578A78'],  // sage
+    ];
+
+    const BG = '#EDE8DA'; // warm cream — matches the logo mark background
+
+    // ─── Canvas rendering ───────────────────────────────────────────────────────
+    function drawIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Full-bleed cream background (no border, no padding frame)
+      ctx.fillStyle = BG;
+      ctx.fillRect(0, 0, size, size);
+
+      // Grid geometry: 3 cols (span = 2×step), 5 rows (span = 4×step)
+      // Padding is baked in via step sizing so dots are centered with breathing room
+      const step = size * 0.178;
+      const r    = size * 0.074;
+
+      // Center the grid bounding box (first-to-last dot center)
+      const startX = (size - 2 * step) / 2;
+      const startY = (size - 4 * step) / 2;
+
+      for (const [col, row, color] of DOTS) {
+        ctx.beginPath();
+        ctx.arc(startX + col * step, startY + row * step, r, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      }
+
+      return canvas;
+    }
+
+    // ─── Build UI ───────────────────────────────────────────────────────────────
+    const ICONS = [
+      { size: 512, file: 'icon-512.png',        label: 'Android (512 × 512)',    display: 160 },
+      { size: 192, file: 'icon-192.png',        label: 'Android (192 × 192)',    display: 120 },
+      { size: 180, file: 'apple-touch-icon.png', label: 'iOS apple-touch-icon\n(180 × 180)', display: 112 },
+    ];
+
+    const canvasMap = new Map();
+    const row = document.getElementById('icons-row');
+
+    for (const icon of ICONS) {
+      const canvas = drawIcon(icon.size);
+      canvasMap.set(icon.file, canvas);
+
+      // Preview canvas (visually scaled down)
+      const preview = document.createElement('canvas');
+      preview.width  = icon.display;
+      preview.height = icon.display;
+      preview.getContext('2d').drawImage(canvas, 0, 0, icon.display, icon.display);
+
+      const btn = document.createElement('button');
+      btn.textContent = `↓ ${icon.file}`;
+      btn.onclick = () => download(canvas, icon.file);
+
+      const label = document.createElement('div');
+      label.className = 'icon-label';
+      label.textContent = icon.label;
+
+      const item = document.createElement('div');
+      item.className = 'icon-item';
+      item.appendChild(label);
+      item.appendChild(preview);
+      item.appendChild(btn);
+      row.appendChild(item);
+    }
+
+    document.getElementById('download-all').onclick = () => {
+      for (const icon of ICONS) {
+        download(canvasMap.get(icon.file), icon.file);
+      }
+    };
+
+    function download(canvas, filename) {
+      const a = document.createElement('a');
+      a.download = filename;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+  </script>
+
+</body>
+</html>
