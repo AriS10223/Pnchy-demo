@@ -935,11 +935,20 @@
 
     .bottom-sheet {
       width: 100%;
+      max-height: 82%;
       background: var(--cream);
       border-radius: 28px 28px 0 0;
       padding: 0 0 32px;
       animation: slideUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
       position: relative;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .bottom-sheet::-webkit-scrollbar {
+      display: none;
     }
 
     @keyframes slideUp {
@@ -1014,19 +1023,23 @@
       font-weight: 400;
     }
 
+    .sheet-merchant-tagline {
+      font-size: 12px;
+      color: var(--text-mid);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
     .sheet-merchant-cat {
       font-size: 13px;
       color: var(--text-light);
       margin-top: 2px;
     }
 
-    .sheet-merchant-rating {
+    .sheet-merchant-address {
       margin-top: 4px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
       font-size: 12px;
-      color: var(--text-mid);
+      color: var(--text-light);
     }
 
     .sheet-tags {
@@ -2206,6 +2219,481 @@
       left: 50%;
       transform: translateX(-50%);
     }
+
+    /* ===========================
+       HOURS / WEBSITE / PHONE / MENU
+       =========================== */
+    .sheet-info {
+      padding: 18px 24px 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 10px;
+    }
+
+    .info-card-dark {
+      background: var(--text-dark);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .info-card-icon {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .info-card-label-dark {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(247, 244, 239, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .info-hours-line {
+      font-size: 12px;
+      color: var(--cream);
+      line-height: 1.5;
+    }
+
+    .info-side-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info-card-light,
+    .info-card-dark-small {
+      border-radius: 18px;
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .info-card-light {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .info-card-icon-light {
+      font-size: 18px;
+    }
+
+    .info-card-text-light {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-green);
+      margin-top: 4px;
+    }
+
+    .info-card-dark-small {
+      background: var(--text-dark);
+    }
+
+    .info-card-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-top: 4px;
+    }
+
+    .menu-toggle-btn {
+      width: 100%;
+      margin-top: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    .menu-highlights {
+      margin-top: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .menu-highlight-item {
+      font-size: 13px;
+      color: var(--text-dark);
+      line-height: 1.7;
+    }
+
+    /* ===========================
+       FRIEND REVIEWS
+       =========================== */
+    .sheet-reviews {
+      padding: 20px 24px 0;
+    }
+
+    .reviews-heading-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .reviews-heading-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      flex: 1;
+    }
+
+    .reviews-carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 10px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .reviews-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .reviews-carousel.dragging {
+      cursor: grabbing;
+      scroll-snap-type: none;
+    }
+
+    .review-card {
+      scroll-snap-align: start;
+      flex: 0 0 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .review-card.mine {
+      background: rgba(232, 213, 163, 0.25);
+      border-color: var(--muted-gold);
+    }
+
+    .review-emoji-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .review-card.mine .review-emoji-circle {
+      background: rgba(232, 213, 163, 0.4);
+      border-color: var(--muted-gold);
+    }
+
+    .review-text {
+      font-size: 13px;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    .review-author-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .review-author-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .review-author-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-mid);
+    }
+
+    .review-mine-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-rose);
+    }
+
+    /* Locked (unfriended author) card */
+    .review-card.locked {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .review-card.locked .review-author-name {
+      font-size: 12px;
+    }
+
+    .review-add-btn {
+      background: var(--text-dark);
+      color: var(--cream);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .reviews-dots {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .reviews-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      padding: 6px;
+      background-clip: content-box;
+      transition: all 0.2s;
+    }
+
+    .reviews-dot.active {
+      background: var(--accent-rose);
+      width: 14px;
+      border-radius: 3px;
+    }
+
+    .reviews-empty {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reviews-empty-emoji {
+      font-size: 24px;
+    }
+
+    .reviews-empty-text {
+      font-size: 12px;
+      color: var(--text-mid);
+      line-height: 1.4;
+    }
+
+    .review-compose-btn {
+      width: 100%;
+      margin-top: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    /* Review composer modal — mirrors .bottom-sheet-overlay/.bottom-sheet */
+    .review-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(44, 40, 37, 0.4);
+      z-index: 110;
+      display: none;
+      align-items: flex-end;
+    }
+
+    .review-overlay.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .review-modal {
+      width: 100%;
+      max-height: 86%;
+      background: var(--cream);
+      border-radius: 28px 28px 0 0;
+      padding: 0 0 28px;
+      animation: slideUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .review-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .review-modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .review-modal-cancel {
+      font-size: 14px;
+      color: var(--text-mid);
+      cursor: pointer;
+    }
+
+    .review-modal-save {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-rose);
+      cursor: pointer;
+    }
+
+    .review-modal-save.disabled {
+      color: var(--text-light);
+      cursor: default;
+    }
+
+    .review-modal-body {
+      padding: 20px 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .review-modal-merchant {
+      font-size: 13px;
+      color: var(--text-mid);
+    }
+
+    .review-modal-merchant span {
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .review-modal-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .review-emoji-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .review-emoji-option {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .review-emoji-option.selected {
+      background: rgba(232, 213, 163, 0.4);
+      border-color: var(--muted-gold);
+    }
+
+    .review-emoji-hint {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+
+    .review-emoji-hint.picked {
+      color: var(--accent-green);
+    }
+
+    .review-textarea-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .review-char-counter {
+      font-size: 11px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .review-char-counter.urgent {
+      color: var(--accent-rose);
+    }
+
+    .review-textarea {
+      width: 100%;
+      min-height: 84px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-dark);
+      resize: none;
+    }
+
+    .review-textarea:focus {
+      outline: none;
+      border-color: var(--muted-gold);
+    }
+
+    .review-modal-hint {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 12px;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
   </style>
 </head>
 
@@ -2343,6 +2831,12 @@
                   <!-- dynamic -->
                 </div>
               </div>
+              <div class="sheet-info" id="sheet-info">
+                <!-- dynamic -->
+              </div>
+              <div class="sheet-reviews" id="sheet-reviews">
+                <!-- dynamic -->
+              </div>
               <div class="sheet-cta">
                 <button class="btn-primary" onclick="showScreen('qr')">Get Stamped 🎯</button>
                 <div class="btn-secondary">
@@ -2351,6 +2845,40 @@
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review composer overlay -->
+          <div class="review-overlay" id="review-overlay" onclick="closeReview(event)">
+            <div class="review-modal" id="review-modal">
+              <div class="sheet-handle"></div>
+              <div class="review-modal-header">
+                <div class="review-modal-cancel" onclick="closeReview()">Cancel</div>
+                <div class="review-modal-title" id="review-modal-title">Leave a review</div>
+                <div class="review-modal-save disabled" id="review-modal-save" onclick="saveReview()">Save</div>
+              </div>
+              <div class="review-modal-body">
+                <div class="review-modal-merchant">Reviewing <span id="review-modal-merchant-name"></span></div>
+
+                <div>
+                  <div class="review-modal-label">Choose your vibe emoji *</div>
+                  <div class="review-emoji-picker" id="review-emoji-picker"></div>
+                  <div class="review-emoji-hint" id="review-emoji-hint">An emoji is required to save.</div>
+                </div>
+
+                <div>
+                  <div class="review-textarea-row">
+                    <div class="review-modal-label" style="margin-bottom:0;">Your one-liner</div>
+                    <div class="review-char-counter" id="review-char-counter">100/100</div>
+                  </div>
+                  <textarea class="review-textarea" id="review-textarea" maxlength="100"
+                    placeholder="What made this place stand out?" oninput="onReviewTextInput()"></textarea>
+                </div>
+
+                <div class="review-modal-hint">
+                  Keep it short and honest. Your friends can only see reviews from people they follow.
                 </div>
               </div>
             </div>
@@ -3050,33 +3578,280 @@
     const merchants = {
       coffee: {
         icon: '☕', bg: 'var(--sage)', name: 'Bloom Coffee', cat: 'Specialty Coffee · 0.2 mi away',
-        rating: '4.8 ★  (234 reviews)', tags: ['Drop Active 🔥', 'Loyalty Member', 'Open Now'],
+        tags: ['Drop Active 🔥', 'Loyalty Member', 'Open Now'],
         tagColors: ['var(--accent-rose)', 'var(--sage)', 'var(--border)'],
         reward: 'Free drink after 5 stamps', punches: 3, total: 5,
-        dist: '0.2 mi', hours: { open: '07:00', close: '14:00' }
+        dist: '0.2 mi', hours: { open: '07:00', close: '14:00' },
+        tagline: 'Neighborhood coffee, roasted with a little extra care.',
+        address: '412 Bedford Ave, Brooklyn, NY',
+        website: 'bloomcoffeewilliamsburg.com', phone: '(718) 555-0142',
+        hoursDisplay: ['Mon–Fri: 7am–2pm', 'Sat–Sun: 8am–3pm'],
+        menuHighlights: ['Honey oat latte', 'Cold brew', 'Morning bun']
       },
       barber: {
         icon: '✂️', bg: 'var(--lavender)', name: 'Fade Studio', cat: 'Barbershop · 0.6 mi away',
-        rating: '4.9 ★  (189 reviews)', tags: ['Top Ranked #1', 'Open Now'],
+        tags: ['Top Ranked #1', 'Open Now'],
         tagColors: ['var(--muted-gold)', 'var(--border)'],
         reward: 'Free lineup after 5 cuts', punches: 2, total: 5,
-        dist: '0.6 mi', hours: { open: '10:00', close: '20:00' }
+        dist: '0.6 mi', hours: { open: '10:00', close: '20:00' },
+        tagline: 'Sharp cuts, easy conversation, and neighborhood style.',
+        address: '187 Grand St, Brooklyn, NY',
+        website: 'fadestudiobk.com', phone: '(718) 555-0189',
+        hoursDisplay: ['Tue–Sat: 10am–8pm', 'Sun–Mon: Closed'],
+        menuHighlights: ['Classic cut', 'Skin fade', 'Beard shape-up']
       },
       food: {
         icon: '🌮', bg: 'var(--blush)', name: 'Sol Tacos', cat: 'Mexican · 0.3 mi away',
-        rating: '4.7 ★  (312 reviews)', tags: ['Drop at 5 PM', 'Open Now'],
+        tags: ['Drop at 5 PM', 'Open Now'],
         tagColors: ['var(--peach)', 'var(--border)'],
         reward: 'Free taco after 5 visits', punches: 1, total: 5,
-        dist: '0.3 mi', hours: { open: '17:00', close: '23:00' }
+        dist: '0.3 mi', hours: { open: '17:00', close: '23:00' },
+        tagline: 'Big flavor, warm tortillas, and a table for everyone.',
+        address: '96 Metropolitan Ave, Brooklyn, NY',
+        website: 'soltacosbk.com', phone: '(718) 555-0215',
+        hoursDisplay: ['Daily: 5pm–11pm'],
+        menuHighlights: ['Al pastor taco', 'Birria quesadilla', 'Horchata']
       },
       boutique: {
         icon: '👗', bg: 'var(--sky)', name: 'Vela Boutique', cat: 'Fashion Boutique · 0.4 mi away',
-        rating: '4.6 ★  (98 reviews)', tags: ['Almost Loyal ⭐', 'Open Now'],
+        tags: ['Almost Loyal ⭐', 'Open Now'],
         tagColors: ['var(--sky)', 'var(--border)'],
         reward: '20% off after 5 visits', punches: 4, total: 5,
-        dist: '0.4 mi', hours: { open: '11:00', close: '19:00' }
+        dist: '0.4 mi', hours: { open: '11:00', close: '19:00' },
+        tagline: 'Independent pieces with personality and a softer footprint.',
+        address: '224 Bedford Ave, Brooklyn, NY',
+        website: 'velaboutiquebk.com', phone: '(718) 555-0067',
+        hoursDisplay: ['Mon–Sat: 11am–7pm', 'Sunday: 12pm–5pm'],
+        menuHighlights: ['New arrivals', 'Local designers', 'Vintage edit']
       }
     };
+
+    // ===========================
+    // FRIEND REVIEWS (dummy demo data)
+    // ===========================
+    const communityUsers = {
+      user_maya: { username: 'maya', avatar: '🌿' },
+      user_sam:  { username: 'sam',  avatar: '📷' },
+      user_lex:  { username: 'lex',  avatar: '🎧' },
+      user_kai:  { username: 'kai',  avatar: '🛹' },
+      user_jade: { username: 'jade', avatar: '💃' },
+      user_zoe:  { username: 'zoe',  avatar: '🧘' },
+    };
+
+    // Keyed by merchant KEY (coffee/barber/food/boutique), not name.
+    // preFriend:true → already a friend, review shows immediately.
+    // preFriend:false → locked behind an "Add" tap (the befriend → unlock moment).
+    // Boutique intentionally has no seed reviews — demos the empty state.
+    const seedFriendReviews = {
+      coffee: [
+        { authorId: 'user_maya', emoji: '☕', text: 'Best oat latte on the block. Always cozy.', preFriend: true },
+        { authorId: 'user_sam',  emoji: '😎', text: 'Perfect WFH spot — fast wifi, great drip.', preFriend: true },
+        { authorId: 'user_lex',  emoji: '🌟', text: 'Get the almond croissant. Trust me.', preFriend: false },
+      ],
+      barber: [
+        { authorId: 'user_zoe', emoji: '💈', text: 'Cleanest fade in Williamsburg, no contest.', preFriend: true },
+        { authorId: 'user_kai', emoji: '🔥', text: 'Ask for Marcus. Best line-up hands down.', preFriend: false },
+      ],
+      food: [
+        { authorId: 'user_maya', emoji: '🌮', text: 'The birria tacos are genuinely life-changing.', preFriend: true },
+        { authorId: 'user_jade', emoji: '😋', text: 'Tuesday specials are unbeatable. Go early.', preFriend: false },
+      ],
+      boutique: [],
+    };
+
+    const REVIEW_EMOJIS = ['😍', '🔥', '✨', '😋', '💯', '🥰', '👌', '😌'];
+    const REVIEW_MAX_CHARS = 100;
+
+    // In-memory only — resets on reload, same as the rest of this demo (no localStorage).
+    const reviewState = {
+      friends: new Set(
+        Object.values(seedFriendReviews).flat().filter(r => r.preFriend).map(r => r.authorId)
+      ),
+      myReviews: {},           // { [merchantKey]: { emoji, text } }
+      activeMerchantKey: null, // set by openSheet / openReview
+      composeEmoji: '',        // currently selected emoji in the open composer
+    };
+
+    function addFriend(userId) {
+      reviewState.friends.add(userId);
+      renderReviews(reviewState.activeMerchantKey);
+    }
+
+    function updateReviewsDots(container, dotsEl) {
+      if (!dotsEl || !container.clientWidth) return;
+      const idx = Math.round(container.scrollLeft / container.clientWidth);
+      [...dotsEl.children].forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+
+    function scrollReviewsTo(idx) {
+      const el = document.getElementById('reviews-carousel');
+      if (!el || !el.clientWidth) return;
+      el.scrollTo({ left: idx * el.clientWidth, behavior: 'smooth' });
+    }
+
+    // Click-and-drag horizontal scroll for the reviews carousel — native swipe
+    // only works via touch/trackpad, desktop mouse users have no other way in.
+    // One shared drag state + one set of document listeners avoids re-attaching
+    // window listeners (and leaking them) every time the carousel re-renders.
+    const reviewsDragState = { active: false, el: null, startX: 0, startScroll: 0 };
+
+    document.addEventListener('mousemove', (e) => {
+      if (!reviewsDragState.active) return;
+      e.preventDefault();
+      reviewsDragState.el.scrollLeft = reviewsDragState.startScroll - (e.pageX - reviewsDragState.startX);
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!reviewsDragState.active) return;
+      const el = reviewsDragState.el;
+      el.classList.remove('dragging');
+      reviewsDragState.active = false;
+      if (el.clientWidth) {
+        const idx = Math.round(el.scrollLeft / el.clientWidth);
+        el.scrollTo({ left: idx * el.clientWidth, behavior: 'smooth' });
+      }
+    });
+
+    function enableReviewsDragScroll(el) {
+      el.addEventListener('mousedown', (e) => {
+        reviewsDragState.active = true;
+        reviewsDragState.el = el;
+        reviewsDragState.startX = e.pageX;
+        reviewsDragState.startScroll = el.scrollLeft;
+        el.classList.add('dragging');
+      });
+    }
+
+    function renderReviews(key) {
+      const el = document.getElementById('sheet-reviews');
+      if (!el || !key) return;
+      const m = merchants[key];
+      const seeds = seedFriendReviews[key] || [];
+      const mine = reviewState.myReviews[key];
+
+      const cards = [];
+      if (mine) {
+        cards.push(`
+          <div class="review-card mine">
+            <div class="review-emoji-circle">${mine.emoji}</div>
+            <div class="review-text">${mine.text ? mine.text.replace(/</g, '&lt;') : 'No comment — just the vibe.'}</div>
+            <div class="review-mine-label">Your review</div>
+          </div>`);
+      }
+      seeds.forEach((r) => {
+        const user = communityUsers[r.authorId] || { username: r.authorId, avatar: '🧑' };
+        if (reviewState.friends.has(r.authorId)) {
+          cards.push(`
+            <div class="review-card">
+              <div class="review-emoji-circle">${r.emoji}</div>
+              <div class="review-text">${r.text}</div>
+              <div class="review-author-row">
+                <div class="review-author-avatar">${user.avatar}</div>
+                <div class="review-author-name">@${user.username}</div>
+              </div>
+            </div>`);
+        } else {
+          cards.push(`
+            <div class="review-card locked">
+              <div class="review-emoji-circle">🔒</div>
+              <div class="review-author-name">@${user.username} reviewed this spot</div>
+              <button class="review-add-btn" onclick="addFriend('${r.authorId}')">＋ Add ${user.username}</button>
+            </div>`);
+        }
+      });
+
+      if (cards.length === 0) {
+        el.innerHTML = `
+          <div class="reviews-heading-row">
+            <div class="reviews-heading-title">Friends' reviews</div>
+          </div>
+          <div class="reviews-empty">
+            <div class="reviews-empty-emoji">🤷</div>
+            <div class="reviews-empty-text">None of your friends have reviewed ${m.name} yet</div>
+          </div>
+          <button class="review-compose-btn" onclick="openReview('${key}')">Leave a review ✍️</button>
+        `;
+        return;
+      }
+
+      el.innerHTML = `
+        <div class="reviews-heading-row">
+          <div class="reviews-heading-title">Friends' reviews</div>
+        </div>
+        <div class="reviews-carousel" id="reviews-carousel">${cards.join('')}</div>
+        ${cards.length > 1 ? `<div class="reviews-dots" id="reviews-dots">${cards.map((_, i) => `<div class="reviews-dot${i === 0 ? ' active' : ''}" onclick="scrollReviewsTo(${i})"></div>`).join('')}</div>` : ''}
+        <button class="review-compose-btn" onclick="openReview('${key}')">${mine ? 'Edit your review ✏️' : 'Leave a review ✍️'}</button>
+      `;
+
+      const carousel = document.getElementById('reviews-carousel');
+      const dots = document.getElementById('reviews-dots');
+      if (carousel) enableReviewsDragScroll(carousel);
+      if (carousel && dots) {
+        carousel.addEventListener('scroll', () => updateReviewsDots(carousel, dots));
+      }
+    }
+
+    // ── Review composer ──────────────────────────────────────────────────────
+    function openReview(key) {
+      reviewState.activeMerchantKey = key;
+      const m = merchants[key];
+      const existing = reviewState.myReviews[key];
+      reviewState.composeEmoji = existing ? existing.emoji : '';
+
+      document.getElementById('review-modal-title').textContent = existing ? 'Edit review' : 'Leave a review';
+      document.getElementById('review-modal-merchant-name').textContent = m.name;
+      document.getElementById('review-textarea').value = existing ? existing.text : '';
+
+      document.getElementById('review-emoji-picker').innerHTML = REVIEW_EMOJIS.map((e) =>
+        `<div class="review-emoji-option${e === reviewState.composeEmoji ? ' selected' : ''}" onclick="pickReviewEmoji('${e}')">${e}</div>`
+      ).join('');
+
+      updateReviewComposerState();
+      document.getElementById('review-overlay').classList.add('open');
+    }
+
+    function closeReview(e) {
+      if (!e || e.target === document.getElementById('review-overlay')) {
+        document.getElementById('review-overlay').classList.remove('open');
+      }
+    }
+
+    function pickReviewEmoji(emoji) {
+      reviewState.composeEmoji = emoji;
+      document.querySelectorAll('.review-emoji-option').forEach((opt) => {
+        opt.classList.toggle('selected', opt.textContent === emoji);
+      });
+      updateReviewComposerState();
+    }
+
+    function onReviewTextInput() {
+      updateReviewComposerState();
+    }
+
+    function updateReviewComposerState() {
+      const text = document.getElementById('review-textarea').value;
+      const left = REVIEW_MAX_CHARS - text.length;
+      const counter = document.getElementById('review-char-counter');
+      counter.textContent = `${left}/${REVIEW_MAX_CHARS}`;
+      counter.classList.toggle('urgent', left < 20);
+
+      const hint = document.getElementById('review-emoji-hint');
+      const picked = !!reviewState.composeEmoji;
+      hint.textContent = picked ? `Selected: ${reviewState.composeEmoji}` : 'An emoji is required to save.';
+      hint.classList.toggle('picked', picked);
+
+      const save = document.getElementById('review-modal-save');
+      save.classList.toggle('disabled', !picked);
+    }
+
+    function saveReview() {
+      if (!reviewState.composeEmoji) return;
+      const key = reviewState.activeMerchantKey;
+      const text = document.getElementById('review-textarea').value.trim();
+      reviewState.myReviews[key] = { emoji: reviewState.composeEmoji, text };
+      closeReview();
+      renderReviews(key);
+    }
 
     // ===========================
     // SEARCH
@@ -3157,8 +3932,9 @@
       <div class="sheet-merchant-icon" style="background: ${m.bg}">${m.icon}</div>
       <div class="sheet-merchant-info">
         <div class="sheet-merchant-name">${m.name}</div>
+        <div class="sheet-merchant-tagline">${m.tagline}</div>
         <div class="sheet-merchant-cat">${m.cat}</div>
-        <div class="sheet-merchant-rating">${m.rating}</div>
+        <div class="sheet-merchant-address">📍 ${m.address}</div>
       </div>
       <div class="sheet-action-top" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(m.name + ' Williamsburg Brooklyn')}', '_blank')">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
@@ -3190,7 +3966,49 @@
       </div>
     `;
 
+      renderInfo(type);
+
+      reviewState.activeMerchantKey = type;
+      renderReviews(type);
+
       overlay.classList.add('open');
+    }
+
+    // ── Hours / website / phone / menu ──────────────────────────────────────
+    function renderInfo(key) {
+      const el = document.getElementById('sheet-info');
+      const m = merchants[key];
+      if (!el || !m) return;
+      const telHref = 'tel:' + m.phone.replace(/[^\d+]/g, '');
+
+      el.innerHTML = `
+        <div class="info-grid">
+          <div class="info-card-dark">
+            <div class="info-card-icon">🕐</div>
+            <div class="info-card-label-dark">HOURS</div>
+            ${m.hoursDisplay.map((l) => `<div class="info-hours-line">${l}</div>`).join('')}
+          </div>
+          <div class="info-side-col">
+            <a class="info-card-light" href="https://www.google.com/search?q=${encodeURIComponent(m.website)}" target="_blank" rel="noopener">
+              <div class="info-card-icon-light">🌐</div>
+              <div class="info-card-text-light">Website</div>
+            </a>
+            <a class="info-card-dark-small" href="${telHref}">
+              <div class="info-card-icon">📞</div>
+              <div class="info-card-text">${m.phone}</div>
+            </a>
+          </div>
+        </div>
+        <button class="menu-toggle-btn" onclick="toggleMenu()">🍽️ Menu highlights</button>
+        <div class="menu-highlights" id="menu-highlights" style="display:none;">
+          ${m.menuHighlights.map((item) => `<div class="menu-highlight-item">• ${item}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    function toggleMenu() {
+      const el = document.getElementById('menu-highlights');
+      if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
 
     function closeSheet(e) {
