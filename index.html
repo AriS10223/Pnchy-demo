@@ -2694,6 +2694,378 @@
       color: var(--text-mid);
       line-height: 1.5;
     }
+
+    /* ============================
+       ROLE / EMPLOYEE / OWNER DEMOS
+       ============================ */
+
+    /* Shared elevated center tab button (employee/owner Scan) */
+    .tab-center-btn {
+      width: 50px;
+      height: 50px;
+      background: var(--text-dark);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 4px 16px rgba(44, 40, 37, 0.3);
+    }
+
+    /* Role picker */
+    #screen-role-picker { background: var(--cream); }
+    .rp-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 32px 24px;
+      gap: 14px;
+      overflow-y: auto;
+    }
+    .rp-head { margin-bottom: 10px; }
+    .rp-brand {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 22px;
+      color: var(--accent-rose);
+      margin-bottom: 10px;
+    }
+    .rp-title {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.15;
+    }
+    .rp-sub {
+      font-size: 15px;
+      color: var(--text-mid);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    .rp-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      cursor: pointer;
+      text-align: left;
+      box-shadow: 0 2px 10px var(--shadow);
+      transition: transform 0.15s, box-shadow 0.2s;
+      animation: fadeUp 0.5s ease forwards;
+    }
+    .rp-card:active { transform: scale(0.98); }
+    .rp-card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .rp-card-body { flex: 1; }
+    .rp-card-title { font-size: 17px; font-weight: 700; color: var(--text-dark); }
+    .rp-card-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; line-height: 1.35; }
+    .rp-card-chevron { font-size: 24px; color: var(--text-light); font-weight: 600; }
+    .rp-note {
+      font-size: 12px;
+      color: var(--text-light);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* ---- Shared app layout (employee + owner) ---- */
+    .a-pad { padding: 20px 20px 32px; display: flex; flex-direction: column; gap: 16px; }
+    .a-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+    .a-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text-light); text-transform: uppercase; }
+    .a-card-title { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+
+    /* App header (dashboard tops) */
+    .a-head { display: flex; justify-content: space-between; align-items: flex-start; }
+    .a-brand { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: var(--accent-rose); letter-spacing: 0.5px; }
+    .a-greet { font-size: 22px; font-weight: 700; color: var(--text-dark); margin-top: 2px; }
+    .a-biz { font-size: 13px; font-weight: 500; color: var(--text-light); margin-top: 1px; }
+    .a-gear {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 17px; cursor: pointer;
+    }
+
+    /* Tier badge */
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text-mid);
+    }
+    .tier-badge.pro { background: linear-gradient(135deg, #F6E3B4, #E8D5A3); border-color: #E0C98A; color: #6B5A2E; }
+    .tier-badge.locked { opacity: 0.7; }
+
+    /* Employee hero (scans today) */
+    .a-hero {
+      background: var(--accent-green); border-radius: 20px; padding: 22px;
+      display: flex; align-items: center; justify-content: space-between; color: #fff;
+    }
+    .a-hero-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: rgba(255,255,255,0.75); }
+    .a-hero-num { font-family: 'Fraunces', serif; font-size: 50px; line-height: 1; color: #fff; }
+    .a-hero-unit { font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.9); margin-left: 4px; }
+    .a-hero-icon { font-size: 46px; opacity: 0.45; }
+
+    /* Density drop strip */
+    .a-strip-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .a-chip {
+      background: var(--muted-gold); color: #6B5A2E; border-radius: 999px;
+      padding: 2px 9px; font-size: 10px; font-weight: 700;
+    }
+    .a-meter-track { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .a-meter-fill { height: 100%; background: linear-gradient(90deg, var(--accent-rose), var(--muted-gold)); border-radius: 999px; }
+    .a-strip-sub { font-size: 12px; color: var(--text-mid); margin-top: 8px; }
+
+    /* Shift tally pill */
+    .a-tally {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(123,175,115,0.12); border: 1px solid var(--accent-green);
+      border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 600; color: #3f6b4d;
+    }
+
+    /* Metric pair / trio */
+    .a-metrics { display: flex; gap: 12px; }
+    .a-metric { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 14px; box-shadow: 0 2px 10px var(--shadow); }
+    .a-metric.center { text-align: center; }
+    .a-metric-emoji { font-size: 20px; }
+    .a-metric-period { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; color: var(--text-light); text-transform: uppercase; }
+    .a-metric-val { font-size: 26px; font-weight: 700; color: var(--text-dark); margin-top: 4px; }
+    .a-metric-label { font-size: 11px; font-weight: 500; color: var(--text-light); margin-top: 2px; }
+
+    /* Bar chart (activity trend) */
+    .a-bars { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; gap: 6px; margin-top: 12px; }
+    .a-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .a-bar { width: 70%; border-radius: 6px; background: var(--border); }
+    .a-bar.today { background: var(--accent-green); }
+    .a-day { font-size: 9px; font-weight: 500; color: var(--text-light); }
+    .a-day.today { color: var(--accent-green); font-weight: 700; }
+
+    /* Daily goal */
+    .a-goal-head { display: flex; justify-content: space-between; align-items: center; }
+    .a-goal-count { font-size: 16px; font-weight: 700; color: var(--accent-green); }
+    .a-goal-sub { font-size: 13px; color: var(--text-mid); margin: 8px 0 10px; }
+    .a-prog-track { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .a-prog-fill { height: 100%; background: var(--accent-green); border-radius: 999px; }
+
+    /* Recent punches list */
+    .a-list { display: flex; flex-direction: column; gap: 8px; }
+    .a-punch-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: 0 2px 8px var(--shadow); }
+    .a-punch-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .a-punch-info { flex: 1; }
+    .a-punch-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+    .a-punch-sub { font-size: 11px; color: var(--text-light); }
+    .a-punch-badge { background: var(--muted-gold); color: #6B5A2E; border-radius: 999px; padding: 3px 9px; font-size: 12px; font-weight: 700; }
+
+    /* Dark scan screen */
+    .a-scan { background: var(--text-dark); justify-content: center; align-items: center; }
+    .a-scan-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 32px; gap: 20px; width: 100%; }
+    .a-scan-emoji { font-size: 62px; }
+    .a-scan-name { font-size: 20px; font-weight: 700; color: var(--cream); }
+    .a-scan-hint { font-size: 14px; color: rgba(247,244,239,0.55); }
+    .a-scan-btn {
+      background: var(--accent-rose); border: none; border-radius: 26px; padding: 22px;
+      width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(201,123,106,0.45); transition: transform 0.15s;
+    }
+    .a-scan-btn:active { transform: scale(0.97); }
+    .a-scan-btn-emoji { font-size: 30px; }
+    .a-scan-btn-text { font-size: 16px; font-weight: 700; color: #fff; }
+    .a-scan-note { font-size: 12px; color: rgba(247,244,239,0.55); line-height: 1.4; }
+    .a-pro-widget {
+      display: inline-flex; align-items: center; gap: 8px; align-self: center; margin-top: 20px;
+      background: rgba(247,244,239,0.06); border: 1px solid rgba(247,244,239,0.14);
+      border-radius: 999px; padding: 8px 16px; font-size: 13px; color: rgba(247,244,239,0.65);
+    }
+    .a-pro-widget b { color: var(--muted-gold); font-size: 15px; }
+
+    /* Scan success overlay (inline) */
+    .a-scan-success {
+      position: absolute; inset: 0; background: var(--text-dark);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 30;
+    }
+    .a-scan-success.show { opacity: 1; pointer-events: auto; }
+    .a-check-circle {
+      width: 92px; height: 92px; border-radius: 50%; border: 3px solid var(--accent-green);
+      display: flex; align-items: center; justify-content: center; font-size: 44px; color: var(--accent-green);
+      animation: countUp 0.4s ease;
+    }
+    .a-success-title { font-size: 22px; font-weight: 700; color: var(--cream); }
+    .a-success-sub { font-size: 14px; color: rgba(247,244,239,0.6); }
+
+    /* Toggles / quick tiles / info rows */
+    .a-tiles { display: flex; flex-wrap: wrap; gap: 10px; }
+    .a-tile { width: calc(50% - 5px); border-radius: 18px; padding: 16px; min-height: 84px; display: flex; flex-direction: column; justify-content: space-between; color: #fff; cursor: pointer; }
+    .a-tile-emoji { font-size: 22px; }
+    .a-tile-label { font-size: 13px; font-weight: 600; }
+    .a-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+    .a-row + .a-row { border-top: 1px solid var(--border); }
+    .a-row-k { font-size: 11px; font-weight: 500; letter-spacing: 0.4px; color: var(--text-light); text-transform: uppercase; }
+    .a-row-v { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .a-toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; gap: 12px; }
+    .a-toggle-row + .a-toggle-row { border-top: 1px solid var(--border); }
+    .a-toggle-label { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+    .a-toggle-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .a-toggle { width: 44px; height: 26px; border-radius: 999px; background: var(--border); position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+    .a-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .a-toggle.on { background: var(--accent-green); }
+    .a-toggle.on::after { transform: translateX(18px); }
+
+    /* Primary / secondary pill buttons */
+    .a-btn { border: none; border-radius: 999px; padding: 13px; width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
+    .a-btn:active { transform: scale(0.98); }
+    .a-btn-green { background: var(--accent-green); color: #fff; }
+    .a-btn-dark { background: var(--text-dark); color: var(--cream); }
+    .a-btn-outline { background: var(--surface); border: 1px solid var(--border); color: var(--text-dark); }
+
+    /* Logout / switch role section */
+    .a-logout { background: var(--blush); border: 1px solid var(--accent-rose); border-radius: 20px; padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .a-logout-title { font-family: 'Fraunces', serif; font-style: italic; font-size: 22px; color: var(--accent-rose); }
+    .a-logout-sub { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
+    .a-btn-rose { background: var(--accent-rose); color: #fff; }
+    .a-switch-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 13px; width: 100%; font-size: 14px; font-weight: 600; color: var(--text-dark); cursor: pointer; }
+
+    /* Pills (period selectors) */
+    .a-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .a-pill { padding: 7px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; font-weight: 500; color: var(--text-mid); cursor: pointer; white-space: nowrap; }
+    .a-pill.active { background: var(--text-dark); border-color: var(--text-dark); color: var(--cream); }
+
+    /* Locked / insight cards */
+    .a-locked { display: flex; align-items: center; gap: 10px; opacity: 0.75; }
+    .a-locked-text { flex: 1; font-size: 13px; color: var(--text-light); }
+    .a-insight-val { font-size: 15px; color: var(--text-mid); margin-top: 6px; }
+    .a-insight-val b { color: var(--accent-green); }
+    .a-insight-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+    /* Age histogram */
+    .a-hist { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .a-hist-row { display: flex; align-items: center; gap: 10px; }
+    .a-hist-label { font-size: 11px; font-weight: 500; color: var(--text-light); width: 42px; }
+    .a-hist-track { flex: 1; height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .a-hist-fill { height: 100%; background: var(--accent-rose); border-radius: 999px; }
+    .a-hist-pct { font-size: 11px; font-weight: 500; color: var(--text-mid); width: 34px; text-align: right; }
+
+    /* Owner drop location map card */
+    .a-map-card { padding: 0; overflow: hidden; }
+    .a-map {
+      height: 170px; position: relative;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(123,175,115,0.18), transparent 40%),
+        repeating-linear-gradient(45deg, #E7E1D6, #E7E1D6 22px, #EFEAE0 22px, #EFEAE0 24px);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .a-map-pin { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-rose); box-shadow: 0 0 0 6px rgba(201,123,106,0.25), 0 0 0 14px rgba(201,123,106,0.12); z-index: 2; }
+    .a-map-ripple { position: absolute; width: 30px; height: 30px; border-radius: 50%; background: rgba(201,123,106,0.4); animation: ripple 2.4s ease-out infinite; }
+    .a-map-foot { display: flex; align-items: center; gap: 10px; padding: 14px 18px; }
+    .a-live { font-size: 11px; font-weight: 700; color: var(--accent-green); }
+    .a-coord { font-size: 12px; font-weight: 500; color: var(--text-mid); }
+    .a-rank-chip { background: var(--muted-gold); color: #6B5A2E; border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+
+    /* Nav rows */
+    .a-navrow { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 14px 18px; box-shadow: 0 2px 8px var(--shadow); cursor: pointer; }
+    .a-navrow-label { font-size: 14px; font-weight: 500; color: var(--text-dark); }
+    .a-navrow-chev { font-size: 20px; color: var(--text-light); font-weight: 600; }
+
+    /* Density drop button (circular, pulsing) */
+    .a-drop-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 12px 0; }
+    .a-drop-btn {
+      width: 168px; height: 168px; border-radius: 50%; border: none; cursor: pointer; position: relative;
+      background: radial-gradient(circle at 50% 40%, #FF9F1C, #F15BB5 70%, #9B5DE5);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #fff;
+      box-shadow: 0 10px 30px rgba(155,93,229,0.4);
+    }
+    .a-drop-btn.locked { background: radial-gradient(circle at 50% 40%, #B7B0A5, #948C80); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+    .a-drop-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(155,93,229,0.5); animation: ripple 2.6s ease-out infinite; }
+    .a-drop-btn.locked .a-drop-ring { display: none; }
+    .a-drop-emoji { font-size: 40px; }
+    .a-drop-btn-label { font-size: 14px; font-weight: 700; }
+    .a-drop-count { font-size: 13px; color: var(--text-mid); text-align: center; }
+
+    /* Info "how it works" rows */
+    .a-info-row { display: flex; align-items: flex-start; gap: 10px; }
+    .a-info-row + .a-info-row { margin-top: 12px; }
+    .a-info-emoji { font-size: 18px; }
+    .a-info-text { flex: 1; font-size: 14px; color: var(--text-mid); line-height: 1.4; }
+
+    /* Paywall card */
+    .a-paywall { background: rgba(123,175,115,0.08); border: 1.5px solid var(--accent-green); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
+    .a-paywall-title { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+    .a-paywall-sub { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
+    .a-paywall-btn { background: var(--accent-green); color: #fff; border-radius: 999px; padding: 12px; text-align: center; font-size: 14px; font-weight: 700; }
+
+    /* Payment success overlay */
+    .a-pay-overlay { position: absolute; inset: 0; background: var(--accent-green); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.35s; z-index: 40; }
+    .a-pay-overlay.show { opacity: 1; pointer-events: auto; }
+    .a-pay-circle { width: 96px; height: 96px; border-radius: 50%; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 46px; color: #fff; animation: countUp 0.5s ease; }
+    .a-pay-title { font-size: 24px; font-weight: 700; color: #fff; }
+    .a-pay-amount { font-size: 15px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+    .a-pay-unlock { font-size: 15px; color: rgba(255,255,255,0.95); margin-top: 4px; }
+
+    /* Team roster */
+    .a-roster-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: 0 2px 8px var(--shadow); }
+    .a-roster-avatar { font-size: 22px; width: 38px; text-align: center; }
+    .a-roster-info { flex: 1; }
+    .a-roster-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+    .a-roster-sub { font-size: 12px; color: var(--text-light); }
+    .a-remove-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--accent-rose); cursor: pointer; }
+    .a-code-card { background: rgba(232,213,163,0.18); border: 1px solid var(--muted-gold); border-radius: 18px; padding: 14px; margin-top: 8px; }
+    .a-code-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-top: 10px; }
+    .a-code-text { font-size: 16px; font-weight: 700; color: var(--text-dark); letter-spacing: 1px; }
+    .a-copy-btn { background: var(--accent-rose); color: #fff; border: none; border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+    /* Team leaderboard rows */
+    .a-team-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: 0 2px 8px var(--shadow); }
+    .a-team-rank { font-size: 18px; width: 30px; text-align: center; font-weight: 700; color: var(--text-dark); }
+    .a-team-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; }
+    .a-team-info { flex: 1; }
+    .a-team-name { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+    .a-team-trend { font-size: 11px; font-weight: 500; }
+    .a-team-trend.up { color: var(--accent-green); }
+    .a-team-trend.down { color: var(--accent-rose); }
+    .a-team-scans { font-size: 17px; font-weight: 700; color: var(--text-dark); }
+
+    /* Owner profile identity */
+    .a-identity { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 0; }
+    .a-avatar-lg { width: 74px; height: 74px; border-radius: 50%; background: var(--accent-rose); display: flex; align-items: center; justify-content: center; font-size: 36px; color: #fff; position: relative; }
+    .a-avatar-edit { position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px; border-radius: 50%; background: var(--cream); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .a-id-name { font-size: 22px; font-weight: 700; color: var(--text-dark); }
+    .a-id-meta { font-size: 13px; color: var(--text-light); }
+    .a-plan-price { font-size: 22px; font-weight: 700; color: var(--text-dark); }
+    .a-plan-price span { font-size: 14px; font-weight: 400; color: var(--text-light); }
+    .a-reward-row { display: flex; align-items: center; gap: 12px; }
+    .a-reward-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-rose); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+    .a-reward-text { flex: 1; font-size: 14px; color: var(--text-mid); }
+
+    /* Employee ranks podium (avatar-based) */
+    .a-podium { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+    .a-podium-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .a-podium-avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+    .a-podium-avatar.me { border: 3px solid var(--muted-gold); }
+    .a-podium-crown { font-size: 18px; }
+    .a-podium-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .a-podium-scans { font-size: 10px; font-weight: 500; color: var(--text-light); }
+    .a-hero-ranks-top { font-size: 32px; font-weight: 700; color: var(--text-dark); line-height: 1.1; }
+    .a-hero-ranks-accent { font-family: 'Fraunces', serif; font-style: italic; font-size: 40px; color: var(--accent-rose); line-height: 1.1; }
+    .a-hero-ranks-sub { font-size: 13px; color: var(--text-mid); margin-top: 8px; line-height: 1.4; }
+    .a-you-badge { display: inline-block; background: var(--muted-gold); color: #6B5A2E; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 700; }
   </style>
 </head>
 
@@ -2722,8 +3094,50 @@
       <div class="screen active" id="screen-splash">
         <img class="splash-logo-img" src="logo.png" alt="Pnchy">
         <div class="splash-tagline">Where Communities Unlock Rewards</div>
-        <button class="splash-btn" onclick="showScreen('home')">Get Started</button>
+        <button class="splash-btn" onclick="showScreen('role-picker')">Get Started</button>
         <div class="splash-disclaimer">This is a demo, showcasing what Pnchy can become with your support</div>
+      </div>
+
+      <!-- ============================
+         ROLE PICKER
+         ============================ -->
+      <div class="screen" id="screen-role-picker">
+        <div class="rp-wrap">
+          <div class="rp-head">
+            <div class="rp-brand">Pnchy</div>
+            <div class="rp-title">Choose a demo</div>
+            <div class="rp-sub">Explore Pnchy from every side of the counter.</div>
+          </div>
+
+          <button class="rp-card" onclick="enterRole('customer')">
+            <div class="rp-card-icon" style="background: var(--sage);">🎴</div>
+            <div class="rp-card-body">
+              <div class="rp-card-title">Customer</div>
+              <div class="rp-card-sub">Discover shops, collect stamps, hit drops</div>
+            </div>
+            <div class="rp-card-chevron">›</div>
+          </button>
+
+          <button class="rp-card" onclick="enterRole('employee')">
+            <div class="rp-card-icon" style="background: var(--lavender);">📲</div>
+            <div class="rp-card-body">
+              <div class="rp-card-title">Employee</div>
+              <div class="rp-card-sub">Scan customers, track your shift, climb the ranks</div>
+            </div>
+            <div class="rp-card-chevron">›</div>
+          </button>
+
+          <button class="rp-card" onclick="enterRole('owner')">
+            <div class="rp-card-icon" style="background: var(--peach);">🏪</div>
+            <div class="rp-card-body">
+              <div class="rp-card-title">Business Owner</div>
+              <div class="rp-card-sub">Analytics, density drops, your team & rewards</div>
+            </div>
+            <div class="rp-card-chevron">›</div>
+          </button>
+
+          <div class="rp-note">You can switch roles anytime from the Profile tab.</div>
+        </div>
       </div>
 
       <!-- ============================
@@ -3367,6 +3781,480 @@
               </svg>
             </div>
           </div>
+          <div style="padding: 0 20px 28px;">
+            <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ EMPLOYEE — HOME ============================ -->
+      <div class="screen" id="screen-emp-home">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div class="a-head">
+              <div>
+                <div class="a-brand">Pnchy</div>
+                <div class="a-greet">Good morning, Jordan 👋</div>
+                <div class="a-biz">☕ Bloom Coffee</div>
+              </div>
+              <div class="a-gear" onclick="showScreen('emp-profile')">⚙️</div>
+            </div>
+
+            <div class="a-hero">
+              <div>
+                <div class="a-hero-label">SCANS TODAY</div>
+                <div style="margin-top:4px;"><span class="a-hero-num">24</span><span class="a-hero-unit">punches</span></div>
+              </div>
+              <div class="a-hero-icon">📲</div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-strip-head">
+                <span class="a-label">Density Drop</span>
+                <span class="a-navrow-chev">›</span>
+              </div>
+              <div class="a-meter-track"><div class="a-meter-fill" style="width:68%;"></div></div>
+              <div class="a-strip-sub">Building · 34 of 50 people nearby</div>
+            </div>
+
+            <div class="a-tally">🎁 3 Drop passes redeemed this shift</div>
+
+            <div class="a-metrics">
+              <div class="a-metric"><div class="a-metric-period">This Week</div><div class="a-metric-val">142</div></div>
+              <div class="a-metric"><div class="a-metric-period">This Month</div><div class="a-metric-val">589</div></div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title">Activity Trends</div>
+              <div class="a-bars">
+                <div class="a-bar-col"><div class="a-bar" style="height:56px;"></div><div class="a-day">MON</div></div>
+                <div class="a-bar-col"><div class="a-bar" style="height:75px;"></div><div class="a-day">TUE</div></div>
+                <div class="a-bar-col"><div class="a-bar" style="height:62px;"></div><div class="a-day">WED</div></div>
+                <div class="a-bar-col"><div class="a-bar" style="height:88px;"></div><div class="a-day">THU</div></div>
+                <div class="a-bar-col"><div class="a-bar" style="height:100px;"></div><div class="a-day">FRI</div></div>
+                <div class="a-bar-col"><div class="a-bar" style="height:38px;"></div><div class="a-day">SAT</div></div>
+                <div class="a-bar-col"><div class="a-bar today" style="height:75px;"></div><div class="a-day today">SUN</div></div>
+              </div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-goal-head">
+                <div class="a-card-title">Daily Goal</div>
+                <div class="a-goal-count">24/30</div>
+              </div>
+              <div class="a-goal-sub">6 more scans to reach your peak.</div>
+              <div class="a-prog-track"><div class="a-prog-fill" style="width:80%;"></div></div>
+            </div>
+
+            <div>
+              <div class="a-label" style="margin-bottom:8px;">Recent Pnches</div>
+              <div class="a-list">
+                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--sage);">☕</div><div class="a-punch-info"><div class="a-punch-name">Bloom Coffee</div><div class="a-punch-sub">Williamsburg · 2M AGO</div></div><div class="a-punch-badge">+1</div></div>
+                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--lavender);">✂️</div><div class="a-punch-info"><div class="a-punch-name">Fade Studio</div><div class="a-punch-sub">Williamsburg · 15M AGO</div></div><div class="a-punch-badge">+1</div></div>
+                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--blush);">🌮</div><div class="a-punch-info"><div class="a-punch-name">Sol Tacos</div><div class="a-punch-sub">Williamsburg · 45M AGO</div></div><div class="a-punch-badge">+1</div></div>
+                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--sky);">👗</div><div class="a-punch-info"><div class="a-punch-name">Vela Boutique</div><div class="a-punch-sub">Williamsburg · 1H AGO</div></div><div class="a-punch-badge">+1</div></div>
+                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--peach);">💪</div><div class="a-punch-info"><div class="a-punch-name">Form Fitness</div><div class="a-punch-sub">Williamsburg · 2H AGO</div></div><div class="a-punch-badge">+1</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ EMPLOYEE — SCAN ============================ -->
+      <div class="screen a-scan" id="screen-emp-scan">
+        <div class="a-scan-center">
+          <div class="a-scan-emoji">☕</div>
+          <div class="a-scan-name">Bloom Coffee</div>
+          <div class="a-scan-hint">Ready to stamp a customer or redeem a Drop pass?</div>
+          <button class="a-scan-btn" onclick="demoScan('emp')">
+            <span class="a-scan-btn-emoji">📲</span>
+            <span class="a-scan-btn-text">Tap to scan customer QR or Drop pass</span>
+          </button>
+          <div class="a-scan-note">Your customer shows their QR code in the Pnchy app — a customer QR adds a stamp, a Drop pass QR redeems their reward.</div>
+        </div>
+        <div class="a-scan-success" id="emp-scan-success">
+          <div class="a-check-circle">✓</div>
+          <div class="a-success-title">Punch added!</div>
+          <div class="a-success-sub">Nice — that's a stamp for Maya ☕</div>
+        </div>
+      </div>
+
+      <!-- ============================ EMPLOYEE — RANKS ============================ -->
+      <div class="screen" id="screen-emp-ranks">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div>
+              <div class="a-hero-ranks-top">The Weekly</div>
+              <div class="a-hero-ranks-accent">Pulse</div>
+              <div class="a-hero-ranks-sub">Celebrating the high-energy champions of our local community ecosystem.</div>
+            </div>
+
+            <div class="a-pills">
+              <div class="a-pill active" onclick="switchAPill(this)">This Week</div>
+              <div class="a-pill" onclick="switchAPill(this)">All Time</div>
+            </div>
+
+            <div class="a-podium">
+              <div class="a-podium-item">
+                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:20px;background:var(--accent-rose);">A</div>
+                <div class="a-podium-name">Alex</div>
+                <div class="a-podium-scans">126 SCANS</div>
+              </div>
+              <div class="a-podium-item">
+                <div class="a-podium-crown">👑</div>
+                <div class="a-podium-avatar me" style="width:72px;height:72px;font-size:26px;background:var(--accent-green);">J</div>
+                <div class="a-podium-name">Jordan</div>
+                <div class="a-podium-scans">189 SCANS</div>
+              </div>
+              <div class="a-podium-item">
+                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:20px;background:var(--muted-gold);">S</div>
+                <div class="a-podium-name">Sam</div>
+                <div class="a-podium-scans">142 SCANS</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="a-label" style="margin-bottom:8px;">Staff Performance Ranking</div>
+              <div class="a-list">
+                <div class="a-team-row"><div class="a-team-rank">#4</div><div class="a-team-avatar" style="background:var(--accent-blue);">J</div><div class="a-team-info"><div class="a-team-name">Jordan Reed</div><div class="a-roster-sub">Community Lead</div></div><div class="a-team-scans">112</div></div>
+                <div class="a-team-row"><div class="a-team-rank">#5</div><div class="a-team-avatar" style="background:var(--accent-rose);">L</div><div class="a-team-info"><div class="a-team-name">Lila Chen</div><div class="a-roster-sub">Growth Specialist</div></div><div class="a-team-scans">98</div></div>
+                <div class="a-team-row"><div class="a-team-rank">#6</div><div class="a-team-avatar" style="background:var(--accent-purple);">O</div><div class="a-team-info"><div class="a-team-name">Oscar Wilde</div><div class="a-roster-sub">Brand Ambassador</div></div><div class="a-team-scans">85</div></div>
+                <div class="a-team-row"><div class="a-team-rank">#7</div><div class="a-team-avatar" style="background:var(--text-light);">M</div><div class="a-team-info"><div class="a-team-name">Maya Angelou</div><div class="a-roster-sub">Curator</div></div><div class="a-team-scans">74</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ EMPLOYEE — PROFILE ============================ -->
+      <div class="screen" id="screen-emp-profile">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div>
+              <div class="a-biz" style="letter-spacing:0.5px;">My Work</div>
+              <div class="a-logout-title" style="font-size:34px;color:var(--text-dark);">Settings</div>
+              <div class="a-hero-ranks-sub" style="margin-top:2px;">Manage your shifts, view performance, and update personal details.</div>
+            </div>
+
+            <div class="a-tiles">
+              <div class="a-tile" style="background:var(--muted-gold);color:#6B5A2E;"><div class="a-tile-emoji">📅</div><div class="a-tile-label">My Shifts</div></div>
+              <div class="a-tile" style="background:var(--accent-green);"><div class="a-tile-emoji">🕐</div><div class="a-tile-label">Work History</div></div>
+              <div class="a-tile" style="background:var(--accent-blue);"><div class="a-tile-emoji">📋</div><div class="a-tile-label">Availability</div></div>
+              <div class="a-tile" style="background:var(--accent-purple);"><div class="a-tile-emoji">📈</div><div class="a-tile-label">Performance Goals</div></div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title" style="margin-bottom:6px;">My Performance</div>
+              <div class="a-row"><span class="a-row-k">Total Scans</span><span class="a-row-v">2,840</span></div>
+              <div class="a-row"><span class="a-row-k">Rating</span><span class="a-row-v">4.9/5</span></div>
+              <div class="a-row"><span class="a-row-k">Shift Hours</span><span class="a-row-v">156h</span></div>
+              <button class="a-btn a-btn-green" style="margin-top:14px;">View My Analytics</button>
+            </div>
+
+            <div class="a-card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <div class="a-card-title">Profile Info</div>
+                <div class="a-gear" style="cursor:default;">🧑‍💼</div>
+              </div>
+              <div class="a-row"><span class="a-row-k">Employee ID</span><span class="a-row-v" style="font-size:14px;">PNCHY-8847</span></div>
+              <div class="a-row"><span class="a-row-k">Department</span><span class="a-row-v" style="font-size:14px;">Logistics Operations</span></div>
+              <div class="a-row"><span class="a-row-k">Full Name</span><span class="a-row-v" style="font-size:14px;">Jordan Lee</span></div>
+              <div class="a-row"><span class="a-row-k">Email</span><span class="a-row-v" style="font-size:14px;">jordan@bloomcoffee.com</span></div>
+              <button class="a-btn a-btn-dark" style="margin-top:14px;">Edit Profile</button>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title" style="margin-bottom:6px;">App Settings</div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Shift Notifications</div><div class="a-toggle-sub">Notify for upcoming assignments</div></div><div class="a-toggle on" onclick="toggleSwitch(this)"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Dark Mode</div><div class="a-toggle-sub">Reduced glare for night shifts</div></div><div class="a-toggle" onclick="toggleSwitch(this)"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Haptic Feedback</div><div class="a-toggle-sub">Tactile response on interactions</div></div><div class="a-toggle on" onclick="toggleSwitch(this)"></div></div>
+            </div>
+
+            <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
+
+            <div class="a-logout">
+              <div class="a-logout-title">Logout</div>
+              <div class="a-logout-sub">Logging out will end your current session. Ensure you have clocked out before signing out of the terminal.</div>
+              <button class="a-btn a-btn-rose" onclick="switchRole()">↪  Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — DASHBOARD ============================ -->
+      <div class="screen" id="screen-own-dashboard">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div class="a-head">
+              <div>
+                <div class="a-greet" style="font-size:13px;font-weight:400;color:var(--text-light);">Good morning, Jordan 👋</div>
+                <div class="a-greet" style="margin-top:2px;">☕ Bloom Coffee</div>
+              </div>
+              <div class="tier-badge pro">👑 Pro</div>
+            </div>
+
+            <div class="a-card a-map-card">
+              <div style="padding:14px 18px 8px;"><span class="a-label">Active Drop Location</span></div>
+              <div class="a-map">
+                <div class="a-map-ripple"></div>
+                <div class="a-map-pin"></div>
+              </div>
+              <div class="a-map-foot"><span class="a-live">● LIVE</span><span class="a-coord">40.7243° N · 73.9985° W</span></div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-strip-head"><span class="a-label">Density Drop</span></div>
+              <div class="a-strip-sub" style="margin-top:0;">Building · armed at 50 people nearby</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:10px;">
+                <span style="font-size:12px;color:var(--text-mid);">3 drops · 47 redemptions <span style="color:var(--text-light);">since launch</span></span>
+                <span class="a-rank-chip">#2 on the block</span>
+              </div>
+            </div>
+
+            <div class="a-pills">
+              <div class="a-pill active" onclick="switchAPill(this)">This week</div>
+              <div class="a-pill" onclick="switchAPill(this)">This month</div>
+              <div class="a-pill" onclick="switchAPill(this)">This year</div>
+            </div>
+
+            <div class="a-metrics">
+              <div class="a-metric center"><div class="a-metric-emoji">👥</div><div class="a-metric-val">142</div><div class="a-metric-label">Visitors</div></div>
+              <div class="a-metric center"><div class="a-metric-emoji">📲</div><div class="a-metric-val">118</div><div class="a-metric-label">Scans</div></div>
+              <div class="a-metric center"><div class="a-metric-emoji">💵</div><div class="a-metric-val">$9.5</div><div class="a-metric-label">Avg spend</div></div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title">🔮 Prediction</div>
+              <div class="a-insight-val">Next week: <b>~+12% visitors</b></div>
+              <div class="a-insight-sub">Based on your last 4 weeks of foot traffic</div>
+            </div>
+
+            <div class="a-card">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div class="a-card-title">👤 Visitor Age</div>
+                <div class="a-pills">
+                  <div class="a-pill active" onclick="switchAPill(this)">Week</div>
+                  <div class="a-pill" onclick="switchAPill(this)">Month</div>
+                  <div class="a-pill" onclick="switchAPill(this)">3 Months</div>
+                </div>
+              </div>
+              <div class="a-insight-val" style="margin-top:10px;">Avg age: <b style="color:var(--text-dark);font-size:26px;">33</b></div>
+              <div class="a-hist">
+                <div class="a-hist-row"><span class="a-hist-label">18–24</span><div class="a-hist-track"><div class="a-hist-fill" style="width:18%;"></div></div><span class="a-hist-pct">18%</span></div>
+                <div class="a-hist-row"><span class="a-hist-label">25–34</span><div class="a-hist-track"><div class="a-hist-fill" style="width:41%;"></div></div><span class="a-hist-pct">41%</span></div>
+                <div class="a-hist-row"><span class="a-hist-label">35–44</span><div class="a-hist-track"><div class="a-hist-fill" style="width:24%;"></div></div><span class="a-hist-pct">24%</span></div>
+                <div class="a-hist-row"><span class="a-hist-label">45–54</span><div class="a-hist-track"><div class="a-hist-fill" style="width:11%;"></div></div><span class="a-hist-pct">11%</span></div>
+                <div class="a-hist-row"><span class="a-hist-label">55+</span><div class="a-hist-track"><div class="a-hist-fill" style="width:6%;"></div></div><span class="a-hist-pct">6%</span></div>
+              </div>
+            </div>
+
+            <button class="a-switch-btn">💬 Tell us what to build next</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — DROPS ============================ -->
+      <div class="screen" id="screen-own-drops">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div class="a-card">
+              <div class="a-strip-head"><span class="a-label">Density Drop</span><span class="a-chip">Armed</span></div>
+              <div class="a-strip-sub" style="margin-top:0;">Fires when 50 people gather nearby</div>
+            </div>
+
+            <div class="a-navrow"><span class="a-navrow-label">Drop settings</span><span class="a-navrow-chev">›</span></div>
+            <div class="a-navrow"><span class="a-navrow-label">Drop analytics</span><span class="a-navrow-chev">›</span></div>
+
+            <div>
+              <div class="a-greet" style="font-size:26px;">Density Drop</div>
+              <div class="a-hero-ranks-sub" style="margin-top:6px;">Bring your neighborhood together. You can activate once every 2 weeks.</div>
+            </div>
+
+            <div class="a-drop-wrap">
+              <button class="a-drop-btn locked">
+                <span class="a-drop-emoji">🔒</span>
+                <span class="a-drop-btn-label">Locked</span>
+              </button>
+              <div class="a-drop-count">Next drop in 9 days</div>
+            </div>
+
+            <div class="a-card">
+              <span class="a-label">Your Drop Reward</span>
+              <div class="a-reward-text" style="margin-top:8px;color:var(--text-dark);font-weight:500;">Free pastry + coffee for everyone who shows 🥐</div>
+            </div>
+
+            <div class="a-card">
+              <span class="a-label">How It Works</span>
+              <div style="margin-top:10px;">
+                <div class="a-info-row"><span class="a-info-emoji">⏰</span><span class="a-info-text">You pick a time window (e.g. next 2 hours)</span></div>
+                <div class="a-info-row"><span class="a-info-emoji">👥</span><span class="a-info-text">Customers gather outside your spot</span></div>
+                <div class="a-info-row"><span class="a-info-emoji">🎁</span><span class="a-info-text">Everyone who shows up earns the reward</span></div>
+              </div>
+            </div>
+
+            <div class="a-paywall" onclick="ownerPayDrop()">
+              <div class="a-paywall-title">Need another drop now? 💰</div>
+              <div class="a-paywall-sub">Unlock an extra density drop for a one-time payment of $20.</div>
+              <div class="a-paywall-btn">Unlock for $20 →</div>
+            </div>
+          </div>
+        </div>
+        <div class="a-pay-overlay" id="own-pay-overlay">
+          <div class="a-pay-circle">✓</div>
+          <div style="text-align:center;">
+            <div class="a-pay-title">Payment Successful</div>
+            <div class="a-pay-amount">$20 charged</div>
+            <div class="a-pay-unlock">Extra drop unlocked 💥</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — SCAN ============================ -->
+      <div class="screen a-scan" id="screen-own-scan">
+        <div class="a-pro-widget">📲 <b>23</b> scans today</div>
+        <div class="a-scan-center">
+          <div class="a-scan-emoji">☕</div>
+          <div class="a-scan-name">Bloom Coffee</div>
+          <div class="a-scan-hint">Ready to stamp a customer?</div>
+          <button class="a-scan-btn" onclick="demoScan('own')">
+            <span class="a-scan-btn-emoji">📲</span>
+            <span class="a-scan-btn-text">Tap to scan customer QR</span>
+          </button>
+          <div class="a-scan-note">Your customer shows their QR code in the Pnchy app — point your camera at it to add a stamp.</div>
+        </div>
+        <div class="a-scan-success" id="own-scan-success">
+          <div class="a-check-circle">✓</div>
+          <div class="a-success-title">Stamp added!</div>
+          <div class="a-success-sub">Bloom Coffee · +1 for Maya ☕</div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — TEAM ============================ -->
+      <div class="screen" id="screen-own-team">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div>
+              <div class="a-greet" style="font-size:26px;">Your Team</div>
+              <div class="a-biz">7 employees · 826 total scans</div>
+            </div>
+
+            <div>
+              <div class="a-card-title" style="margin-bottom:8px;">Density Drop team</div>
+              <div class="a-list">
+                <div class="a-roster-row"><div class="a-roster-avatar">🌿</div><div class="a-roster-info"><div class="a-roster-name">Maya</div><div class="a-roster-sub">@maya · barista</div></div><div class="a-remove-btn">Remove</div></div>
+                <div class="a-roster-row"><div class="a-roster-avatar">📷</div><div class="a-roster-info"><div class="a-roster-name">Sam</div><div class="a-roster-sub">@sam · cashier</div></div><div class="a-remove-btn">Remove</div></div>
+                <div class="a-roster-row"><div class="a-roster-avatar">🎧</div><div class="a-roster-info"><div class="a-roster-name">Lex</div><div class="a-roster-sub">@lex · floor</div></div><div class="a-remove-btn">Remove</div></div>
+              </div>
+              <div class="a-code-card">
+                <div class="a-card-title" style="font-size:14px;">Add staff</div>
+                <div class="a-paywall-sub" style="margin-top:4px;">Share your access code — anyone who signs up with it joins your team automatically.</div>
+                <div class="a-code-row"><span class="a-code-text" id="own-access-code">BLOOM-4417</span><button class="a-copy-btn" onclick="copyAccessCode(this)">Copy</button></div>
+              </div>
+            </div>
+
+            <div class="a-pills">
+              <div class="a-pill" onclick="switchAPill(this)">Today</div>
+              <div class="a-pill active" onclick="switchAPill(this)">This week</div>
+              <div class="a-pill" onclick="switchAPill(this)">This month</div>
+              <div class="a-pill" onclick="switchAPill(this)">This year</div>
+            </div>
+
+            <div class="a-list">
+              <div class="a-team-row"><div class="a-team-rank">🥇</div><div class="a-team-avatar" style="background:var(--accent-green);">J</div><div class="a-team-info"><div class="a-team-name">Jordan Lee</div><div class="a-team-trend up">▲ +3 vs prev week</div></div><div class="a-team-scans">189</div></div>
+              <div class="a-team-row"><div class="a-team-rank">🥈</div><div class="a-team-avatar" style="background:var(--muted-gold);color:#6B5A2E;">S</div><div class="a-team-info"><div class="a-team-name">Sam Rivera</div><div class="a-team-trend down">▼ -1 vs prev week</div></div><div class="a-team-scans">142</div></div>
+              <div class="a-team-row"><div class="a-team-rank">🥉</div><div class="a-team-avatar" style="background:var(--accent-rose);">A</div><div class="a-team-info"><div class="a-team-name">Alex Kim</div><div class="a-team-trend up">▲ +5 vs prev week</div></div><div class="a-team-scans">126</div></div>
+              <div class="a-team-row"><div class="a-team-rank">#4</div><div class="a-team-avatar" style="background:var(--accent-blue);">J</div><div class="a-team-info"><div class="a-team-name">Jordan Reed</div></div><div class="a-team-scans">112</div></div>
+              <div class="a-team-row"><div class="a-team-rank">#5</div><div class="a-team-avatar" style="background:var(--accent-rose);">L</div><div class="a-team-info"><div class="a-team-name">Lila Chen</div><div class="a-team-trend up">▲ +2 vs prev week</div></div><div class="a-team-scans">98</div></div>
+              <div class="a-team-row"><div class="a-team-rank">#6</div><div class="a-team-avatar" style="background:var(--accent-purple);">O</div><div class="a-team-info"><div class="a-team-name">Oscar Wilde</div><div class="a-team-trend down">▼ -2 vs prev week</div></div><div class="a-team-scans">85</div></div>
+              <div class="a-team-row"><div class="a-team-rank">#7</div><div class="a-team-avatar" style="background:var(--text-light);">M</div><div class="a-team-info"><div class="a-team-name">Maya Angelou</div></div><div class="a-team-scans">74</div></div>
+            </div>
+
+            <div class="a-card" style="padding:14px 16px;"><span style="font-size:12px;color:var(--text-light);">📊 Trend arrows compare to the previous week</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — RANKS ============================ -->
+      <div class="screen" id="screen-own-ranks">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div>
+              <div class="a-biz" style="letter-spacing:0.3px;">Williamsburg, Brooklyn</div>
+              <div class="a-greet" style="font-size:26px;line-height:1.2;">Neighborhood<br><span class="a-hero-ranks-accent" style="font-size:26px;">Leaderboard</span></div>
+              <div style="margin-top:10px;"><span class="a-you-badge">You're #1 🏆</span></div>
+            </div>
+
+            <div class="a-pills">
+              <div class="a-pill active" onclick="switchAPill(this)">All time</div>
+              <div class="a-pill" onclick="switchAPill(this)">Week</div>
+              <div class="a-pill" onclick="switchAPill(this)">Month</div>
+            </div>
+
+            <div class="a-podium">
+              <div class="a-podium-item">
+                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:24px;background:var(--sage);">🌮</div>
+                <div class="a-podium-name">La Taqueria</div>
+                <div class="a-podium-scans">11,200 pts</div>
+              </div>
+              <div class="a-podium-item">
+                <div class="a-podium-crown">👑</div>
+                <div class="a-podium-avatar me" style="width:72px;height:72px;font-size:30px;background:var(--blush);">☕</div>
+                <div class="a-podium-name">Bloom Coffee</div>
+                <div class="a-podium-scans">12,840 pts</div>
+              </div>
+              <div class="a-podium-item">
+                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:24px;background:var(--sage);">💈</div>
+                <div class="a-podium-name">Fade &amp; Co.</div>
+                <div class="a-podium-scans">9,840 pts</div>
+              </div>
+            </div>
+
+            <div class="a-list">
+              <div class="a-team-row"><div class="a-team-rank">4</div><div class="a-punch-icon" style="background:var(--muted-gold);">🍺</div><div class="a-team-info"><div class="a-team-name">The Rusty Nail</div><div class="a-roster-sub">2,240 total visits</div></div><div class="a-team-scans">8,960</div></div>
+              <div class="a-team-row"><div class="a-team-rank">5</div><div class="a-punch-icon" style="background:var(--sage);">🍵</div><div class="a-team-info"><div class="a-team-name">Matcha House</div><div class="a-roster-sub">2,160 total visits</div></div><div class="a-team-scans">8,640</div></div>
+              <div class="a-team-row"><div class="a-team-rank">6</div><div class="a-punch-icon" style="background:var(--peach);">🥪</div><div class="a-team-info"><div class="a-team-name">Katz Deli</div><div class="a-roster-sub">1,980 total visits</div></div><div class="a-team-scans">7,920</div></div>
+              <div class="a-team-row"><div class="a-team-rank">7</div><div class="a-punch-icon" style="background:var(--blush);">✂️</div><div class="a-team-info"><div class="a-team-name">Manny's Cuts</div><div class="a-roster-sub">1,920 total visits</div></div><div class="a-team-scans">7,680</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — PROFILE ============================ -->
+      <div class="screen" id="screen-own-profile">
+        <div class="scroll-content">
+          <div class="a-pad">
+            <div class="a-identity">
+              <div class="a-avatar-lg">☕<div class="a-avatar-edit">✏️</div></div>
+              <div class="a-id-name">☕ Bloom Coffee</div>
+              <div class="a-id-meta">📍 Williamsburg, Brooklyn</div>
+              <div class="a-id-meta" style="font-weight:500;color:var(--text-mid);">@jordanr</div>
+              <div class="a-id-meta">hello@bloomcoffee.com</div>
+              <button class="a-switch-btn" style="width:auto;padding:8px 20px;font-size:13px;margin-top:4px;">Edit Profile</button>
+            </div>
+
+            <div class="a-card">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="a-row-k">Current plan</span>
+                <div class="tier-badge pro">👑 Pro</div>
+              </div>
+              <div class="a-plan-price" style="margin-top:12px;">$79 <span>per month</span></div>
+              <button class="a-btn a-btn-outline" style="margin-top:12px;">Manage plan →</button>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title" style="font-size:14px;margin-bottom:12px;">🎯 Your Stamp Rewards</div>
+              <div class="a-reward-row" style="margin-bottom:12px;"><div class="a-reward-badge">5</div><div class="a-reward-text">Free drink of your choice</div></div>
+              <div class="a-reward-row"><div class="a-reward-badge">10</div><div class="a-reward-text">Free pastry + drink combo</div></div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title" style="font-size:14px;margin-bottom:8px;">💥 Density Drop Reward</div>
+              <div class="a-reward-text">Free pastry + coffee for everyone who shows 🥐</div>
+            </div>
+
+            <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
+            <button class="a-btn" style="background:transparent;border:1.5px solid var(--accent-rose);color:var(--accent-rose);" onclick="switchRole()">Sign out</button>
+          </div>
         </div>
       </div>
 
@@ -3432,6 +4320,102 @@
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <span class="tab-label">Profile</span>
+      </div>
+    </div>
+
+    <!-- Employee tab bar -->
+    <div class="tab-bar" id="tab-bar-emp" style="display:none;">
+      <div class="tab-item" data-screen="emp-home" onclick="showScreen('emp-home')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9.5 12 3l9 6.5" /><path d="M5 10v10h14V10" />
+          </svg>
+          <div class="nav-indicator" style="display:none;"></div>
+        </div>
+        <span class="tab-label">Home</span>
+      </div>
+      <div class="tab-item" data-screen="emp-scan" onclick="showScreen('emp-scan')">
+        <div class="tab-icon" style="position:relative;">
+          <div class="tab-center-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" />
+            </svg>
+          </div>
+        </div>
+        <span class="tab-label" style="margin-top: 14px;">Scan</span>
+      </div>
+      <div class="tab-item" data-screen="emp-ranks" onclick="showScreen('emp-ranks')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
+          </svg>
+        </div>
+        <span class="tab-label">Ranks</span>
+      </div>
+      <div class="tab-item" data-screen="emp-profile" onclick="showScreen('emp-profile')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <span class="tab-label">Profile</span>
+      </div>
+    </div>
+
+    <!-- Owner tab bar -->
+    <div class="tab-bar" id="tab-bar-own" style="display:none;">
+      <div class="tab-item" data-screen="own-dashboard" onclick="showScreen('own-dashboard')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" />
+          </svg>
+          <div class="nav-indicator" style="display:none;"></div>
+        </div>
+        <span class="tab-label">Home</span>
+      </div>
+      <div class="tab-item" data-screen="own-drops" onclick="showScreen('own-drops')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v6" /><path d="M12 22a7 7 0 0 0 7-7c0-3-2.5-5.5-7-11-4.5 5.5-7 8-7 11a7 7 0 0 0 7 7z" />
+          </svg>
+        </div>
+        <span class="tab-label">Drops</span>
+      </div>
+      <div class="tab-item" data-screen="own-scan" onclick="showScreen('own-scan')">
+        <div class="tab-icon" style="position:relative;">
+          <div class="tab-center-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" />
+            </svg>
+          </div>
+        </div>
+        <span class="tab-label" style="margin-top: 14px;">Scan</span>
+      </div>
+      <div class="tab-item" data-screen="own-team" onclick="showScreen('own-team')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <span class="tab-label">Team</span>
+      </div>
+      <div class="tab-item" data-screen="own-ranks" onclick="showScreen('own-ranks')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
+          </svg>
+        </div>
+        <span class="tab-label">Ranks</span>
+      </div>
+      <div class="tab-item" data-screen="own-profile" onclick="showScreen('own-profile')">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
           </svg>
         </div>
         <span class="tab-label">Profile</span>
@@ -3516,6 +4500,17 @@
     // ===========================
     // SCREEN NAVIGATION
     // ===========================
+    // Each app screen belongs to a role; the target screen's role decides which
+    // tab bar shows. Screens with no role (splash, role picker, success) show none.
+    const SCREEN_ROLE = {
+      home: 'customer', drops: 'customer', qr: 'customer', leaderboard: 'customer', profile: 'customer',
+      'emp-home': 'employee', 'emp-scan': 'employee', 'emp-ranks': 'employee', 'emp-profile': 'employee',
+      'own-dashboard': 'owner', 'own-drops': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
+      'own-ranks': 'owner', 'own-profile': 'owner',
+    };
+    const ROLE_TABBAR = { customer: 'tab-bar', employee: 'tab-bar-emp', owner: 'tab-bar-own' };
+    const NO_CHROME = ['splash', 'role-picker', 'success'];
+
     function showScreen(name) {
       document.querySelectorAll('.screen').forEach(s => {
         s.classList.remove('active');
@@ -3525,29 +4520,77 @@
       if (target) {
         target.style.display = 'flex';
         target.classList.add('active');
+        const sc = target.querySelector('.scroll-content');
+        if (sc) sc.scrollTop = 0;
       }
 
-      const tabBar = document.getElementById('tab-bar');
-      const mainTabs = ['home', 'drops', 'qr', 'leaderboard', 'profile'];
+      // Show the tab bar for the target screen's role; hide all others.
+      document.querySelectorAll('.tab-bar').forEach(tb => { tb.style.display = 'none'; });
+      const role = SCREEN_ROLE[name];
+      if (!NO_CHROME.includes(name) && role) {
+        const bar = document.getElementById(ROLE_TABBAR[role]);
+        if (bar) bar.style.display = 'flex';
+        updateTabHighlight(name);
+      }
 
-      if (name === 'splash') {
-        tabBar.style.display = 'none';
-      } else if (name === 'success') {
-        tabBar.style.display = 'none';
-      } else if (name === 'qr') {
-        tabBar.style.display = 'flex';
+      // Customer special-cases (preserved from the original demo)
+      if (name === 'qr') {
         generateQR();
         startQRTimer();
-        updateTabHighlight('qr');
-      } else {
-        tabBar.style.display = 'flex';
-        if (mainTabs.includes(name)) updateTabHighlight(name);
       }
-
-      // Initialize real map when home tab is first shown
       if (name === 'home') {
         setTimeout(initMap, 80);
       }
+    }
+
+    // Role picker → first screen of the chosen role's app
+    function enterRole(role) {
+      if (role === 'employee') showScreen('emp-home');
+      else if (role === 'owner') showScreen('own-dashboard');
+      else showScreen('home');
+    }
+
+    // "Switch demo role" — back to the picker from any Profile tab
+    function switchRole() {
+      showScreen('role-picker');
+    }
+
+    // Inline scan success flash for employee/owner scan screens (no blocking dialogs)
+    function demoScan(role) {
+      const overlay = document.getElementById(role + '-scan-success');
+      if (!overlay) return;
+      overlay.classList.add('show');
+      setTimeout(() => overlay.classList.remove('show'), 2400);
+    }
+
+    // Owner density-drop "Unlock for $20" → animated payment-success overlay
+    function ownerPayDrop() {
+      const overlay = document.getElementById('own-pay-overlay');
+      if (!overlay) return;
+      overlay.classList.add('show');
+      setTimeout(() => overlay.classList.remove('show'), 3200);
+    }
+
+    // Period/segment pills — highlight the tapped pill within its own group
+    function switchAPill(el) {
+      el.parentElement.querySelectorAll('.a-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // Settings toggle switches (visual only)
+    function toggleSwitch(el) {
+      el.classList.toggle('on');
+    }
+
+    // Copy the owner's access code without a blocking dialog
+    function copyAccessCode(btn) {
+      const code = document.getElementById('own-access-code');
+      if (code && navigator.clipboard) {
+        navigator.clipboard.writeText(code.textContent.trim()).catch(() => {});
+      }
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = original; }, 1500);
     }
 
     function updateTabHighlight(screenName) {

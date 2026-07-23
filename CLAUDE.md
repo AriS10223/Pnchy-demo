@@ -13,10 +13,16 @@ To preview: open `index.html` directly in a browser, or serve it with any static
 Everything is in one file (`index.html`):
 
 - **CSS** — CSS custom properties design system (`--cream`, `--sage`, `--blush`, etc.) defined in `:root`. All color tokens are here; never use raw hex in new styles.
-- **HTML** — Six screens inside `.screens > .screen`: `splash`, `home`, `drops`, `qr`, `success`, `leaderboard`, `profile`. Only the `.active` screen is shown.
+- **HTML** — Screens inside `.screens > .screen`, three role apps plus shared entry screens. Only the `.active` screen is shown.
+  - **Entry:** `splash` → `role-picker` (3 buttons: Customer / Employee / Business Owner).
+  - **Customer:** `home`, `drops`, `qr`, `success`, `leaderboard`, `profile`.
+  - **Employee:** `emp-home`, `emp-scan`, `emp-ranks`, `emp-profile`.
+  - **Owner (Pro tier):** `own-dashboard`, `own-drops`, `own-scan`, `own-team`, `own-ranks`, `own-profile`.
 - **JavaScript** — At the bottom, plain JS handles navigation, map, and QR logic.
 
-**Screen navigation:** `showScreen(name)` swaps `.active` on screens and controls tab-bar visibility. Tab bar is hidden on `splash` and `success`. Calling `switchTab(el, screenName)` delegates to `showScreen`.
+**Screen navigation:** `showScreen(name)` swaps `.active` on screens and picks the tab bar. Each screen's role is looked up in `SCREEN_ROLE`; `ROLE_TABBAR` maps the role to one of three tab bars (`tab-bar` customer / `tab-bar-emp` / `tab-bar-own`). `NO_CHROME` screens (`splash`, `role-picker`, `success`) show no tab bar. `enterRole(role)` jumps to a role's first screen; `switchRole()` returns to the picker (wired to every Profile tab). Customer special-cases (`qr` → `generateQR()`/`startQRTimer()`, `home` → `initMap()`) are preserved inside `showScreen`. Calling `switchTab(el, screenName)` delegates to `showScreen`.
+
+**Employee/Owner content** is a static port of the Pnchy MVP (`../pnchy-mvp`) staging screens, restyled onto the demo's tokens. Both roles represent **Bloom Coffee**; business names stay consistent with the demo's 5 merchants + coffee-pod leaderboard. Interactions with no static analog use inline overlays, never `alert()`/`confirm()`: `demoScan(role)` (scan-success flash), `ownerPayDrop()` ($20 payment-success overlay), `copyAccessCode()`, `toggleSwitch()`, `switchAPill()`.
 
 **Map (Explore tab):** Leaflet 1.9.4 + leaflet-heat 0.2.0, loaded from CDN. `initMap()` is called lazily on first `showScreen('home')` and guards against double-init with `mapInitialized`. CartoDB Light tiles, pastel CSS filter (`saturate(0.55) brightness(1.08) hue-rotate(5deg) sepia(0.12)`). Merchant markers use `L.divIcon` with inline HTML. `heatLayer` is toggled with `toggleHeatmap()`.
 
