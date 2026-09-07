@@ -30,7 +30,7 @@ Everything is in one file (`index.html`):
 
 **QR screen:** `generateQR()` builds a 9×9 fake QR grid. `startQRTimer()` counts down from 58 s and calls `generateQR()` on each cycle. Tapping the QR frame calls `showScreen('success')`.
 
-**Service worker (`sw.js`):** Network-first strategy. Cache name is `pnchy-demo-v2` — bump this string to force all clients to re-fetch after a deploy.
+**Service worker (`sw.js`):** Network-first strategy. Cache name is `pnchy-demo-v6` — bump this string on every deploy to force all clients to re-fetch.
 
 ## Design conventions
 
