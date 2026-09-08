@@ -278,13 +278,30 @@
       align-items: flex-start;
     }
 
-    /* Elevated center tab (Stamp/Scan) — taken out of the flex flow entirely
-       and centered directly on .tab-bar, so its position never depends on
-       how many tabs surround it or which flex slot it used to occupy. */
+    /* A fixed buffer on the edge facing the center button, so items never
+       crowd it regardless of how many tabs share that half (owner's Team,
+       the first item after center, otherwise sits nearly flush against
+       Scan when there are 3 items packed into that half's width). The
+       center button is centered independently at the bar's true midpoint
+       (34px wide, so ±17px from center) — this buffer has to clear that
+       footprint plus real breathing room, not just the half's own edge. */
+    .tab-bar-half:first-of-type {
+      padding-right: 27px;
+    }
+    .tab-bar-half:last-of-type {
+      padding-left: 27px;
+    }
+
+    /* Center tab (Stamp/Scan) — taken out of the flex flow and centered
+       directly on .tab-bar (left:50% of the whole bar, not of its own flex
+       slot), so its position never depends on how many tabs surround it.
+       Sits in line with its siblings (top:0 = same start point normal-flow
+       tab-items use) rather than floating above the bar — distinguished
+       from the others by color/fill, not by size or elevation. */
     .tab-item-center {
       position: absolute;
       left: 50%;
-      top: -30px; /* nets ~20px above the bar's visible top edge, after the bar's own 10px padding-top is subtracted for an absolutely-positioned child — this is the "floats 20px above the tab bar" the CLAUDE.md doc describes */
+      top: 0;
       transform: translateX(-50%);
       z-index: 5;
     }
@@ -2732,18 +2749,19 @@
        ROLE / EMPLOYEE / OWNER DEMOS
        ============================ */
 
-    /* Shared elevated center tab button (Customer Stamp / Employee+Owner
-       Scan) — a static circle now; the .tab-item-center wrapper it sits
-       inside handles all the positioning/centering on the bar itself. */
+    /* Shared center tab button (Customer Stamp / Employee+Owner Scan) — a
+       small filled accent-colored circle sitting in line with its sibling
+       icons, not an elevated FAB. It stands out through color/fill against
+       the plain outlined icons around it, not through size or position. */
     .tab-center-btn {
-      width: 50px;
-      height: 50px;
-      background: var(--text-dark);
-      border-radius: 18px;
+      width: 34px;
+      height: 34px;
+      background: var(--accent-green);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 16px rgba(44, 40, 37, 0.3);
+      box-shadow: 0 2px 6px rgba(123, 175, 115, 0.35);
     }
 
     /* Role picker */
@@ -4658,7 +4676,7 @@
       <div class="tab-item tab-item-center" data-screen="qr" onclick="switchTab(this, 'qr')">
         <div class="tab-icon">
           <div class="tab-center-btn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2"
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 7V5a2 2 0 0 1 2-2h2" />
               <path d="M17 3h2a2 2 0 0 1 2 2v2" />
@@ -4714,7 +4732,7 @@
       <div class="tab-item tab-item-center" data-screen="emp-scan" onclick="showScreen('emp-scan')">
         <div class="tab-icon">
           <div class="tab-center-btn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
               <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
               <rect x="7" y="7" width="10" height="10" rx="1" />
@@ -4767,7 +4785,7 @@
       <div class="tab-item tab-item-center" data-screen="own-scan" onclick="showScreen('own-scan')">
         <div class="tab-icon">
           <div class="tab-center-btn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
               <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
               <rect x="7" y="7" width="10" height="10" rx="1" />
