@@ -3267,6 +3267,15 @@
       display: none;
     }
     .toast-golive.show { display: block; animation: fadeUp 0.3s ease forwards; }
+
+    /* ===== DENSITY DROP (Phase 4) ===== */
+    /* Dashboard summary tile's one-line before/after payoff (Task 2). */
+    .a-drop-lift { font-size: 13px; font-weight: 700; }
+
+    /* screen-own-drop-analytics (Task 3) */
+    .a-lift-card { background: var(--sage); border-color: var(--sage); }
+    .a-lift-pct { font-family: 'Fraunces', serif; font-size: 34px; line-height: 1; }
+    .a-lift-line { font-size: 13px; color: var(--text-mid); margin-top: 6px; }
   </style>
 </head>
 
@@ -4242,6 +4251,7 @@
                 <span style="font-size:12px;color:var(--text-mid);" id="own-dash-drop-history">0 drops · 0 redemptions <span style="color:var(--text-light);">since launch</span></span>
                 <span class="a-rank-chip">#2 on the block</span>
               </div>
+              <div class="a-drop-lift" id="own-dash-drop-lift" style="display:none;"></div>
             </div>
 
             <div class="a-pills">
@@ -4303,8 +4313,7 @@
             </div>
 
             <div class="a-navrow" onclick="showScreen('own-drop-config')"><span class="a-navrow-label">Drop settings</span><span class="a-navrow-chev">›</span></div>
-            <!-- TODO Phase 4: own-drop-analytics screen -->
-            <div class="a-navrow" onclick="showScreen('own-drop-config')"><span class="a-navrow-label">Drop analytics</span><span class="a-navrow-chev">›</span></div>
+            <div class="a-navrow" onclick="showScreen('own-drop-analytics')"><span class="a-navrow-label">Drop analytics</span><span class="a-navrow-chev">›</span></div>
 
             <div>
               <div class="a-greet" style="font-size:26px;">Density Drop</div>
@@ -4425,6 +4434,72 @@
             <div class="a-forecast-actions">
               <button class="a-btn a-btn-outline" onclick="closeForecastOverlay()">Cancel</button>
               <button class="a-btn a-btn-green" onclick="confirmForecast()">Confirm &amp; Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — DROP ANALYTICS ============================ -->
+      <div class="screen" id="screen-own-drop-analytics">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-drops')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Drop Analytics</div>
+            <div class="a-cfg-subtitle">How your Density Drops are performing since launch.</div>
+          </div>
+
+          <div class="a-pad">
+            <div class="a-card">
+              <div class="a-card-title">Totals Since Launch</div>
+              <div class="a-metrics" style="margin-top:10px;">
+                <div class="a-metric center"><div class="a-metric-val" id="own-analytics-drops">0</div><div class="a-metric-label">Drops</div></div>
+                <div class="a-metric center"><div class="a-metric-val" id="own-analytics-ambient">0</div><div class="a-metric-label">Ambient</div></div>
+              </div>
+              <div class="a-metrics" style="margin-top:10px;">
+                <div class="a-metric center"><div class="a-metric-val" id="own-analytics-scheduled">0</div><div class="a-metric-label">Scheduled</div></div>
+                <div class="a-metric center"><div class="a-metric-val" id="own-analytics-fizzled">0</div><div class="a-metric-label">Fizzled</div></div>
+              </div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title">Funnel</div>
+              <div class="a-hist" id="own-analytics-funnel" style="margin-top:12px;"></div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title">Reward Spend</div>
+              <div class="a-metric-val" id="own-analytics-spend" style="font-size:32px;margin-top:8px;">$0.00</div>
+              <div class="a-metric-label">since launch</div>
+              <div id="own-analytics-cap-wrap" style="margin-top:14px;display:none;">
+                <div class="a-drop-meter-track">
+                  <div class="a-drop-meter-fill" id="own-analytics-cap-fill" style="width:0%;"></div>
+                </div>
+                <div class="a-strip-sub" id="own-analytics-cap-caption" style="margin-top:6px;"></div>
+                <div id="own-analytics-cap-exceeded" style="display:none;font-size:12px;font-weight:700;color:var(--accent-rose);margin-top:6px;">Cap exceeded — new passes paused until midnight</div>
+              </div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title">Customers, Since Launch</div>
+              <div class="a-metrics" style="margin-top:10px;">
+                <div class="a-metric center"><div class="a-metric-val" id="own-analytics-net-new">0</div><div class="a-metric-label">Net-new</div></div>
+                <div class="a-metric center"><div class="a-metric-val" id="own-analytics-repeat">0</div><div class="a-metric-label">Repeat</div></div>
+              </div>
+            </div>
+
+            <div class="a-card a-lift-card" id="own-analytics-lift-card">
+              <div class="a-card-title">Drop Days vs. Normal Days</div>
+              <div id="own-analytics-lift-body" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="a-card">
+              <div class="a-card-title">Owner of the Block</div>
+              <div class="a-strip-sub" style="margin-top:8px;">Not scored yet — run a few drops to get ranked.</div>
             </div>
           </div>
         </div>
@@ -4850,7 +4925,7 @@
       home: 'customer', drops: 'customer', qr: 'customer', leaderboard: 'customer', profile: 'customer',
       'drop-detail': 'customer', passes: 'customer',
       'emp-home': 'employee', 'emp-scan': 'employee', 'emp-drop': 'employee', 'emp-ranks': 'employee', 'emp-profile': 'employee',
-      'own-dashboard': 'owner', 'own-drops': 'owner', 'own-drop-config': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
+      'own-dashboard': 'owner', 'own-drops': 'owner', 'own-drop-config': 'owner', 'own-drop-analytics': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
       'own-ranks': 'owner', 'own-profile': 'owner',
     };
     const ROLE_TABBAR = { customer: 'tab-bar', employee: 'tab-bar-emp', owner: 'tab-bar-own' };
@@ -4905,6 +4980,11 @@
       if (name === 'own-drop-config') {
         initDropConfigForm();
       }
+      // Owner drop-analytics screen (Phase 4) — repaint from WORLD.history/
+      // WORLD.drop every time it's entered, same on-entry repaint pattern.
+      if (name === 'own-drop-analytics') {
+        renderOwnerDropAnalytics();
+      }
       // Density Drop customer surfaces (Phase 2) — repaint from WORLD.drop
       // every time their screen is entered, same pattern as the owner side.
       if (name === 'drops') renderCustomerDropsList();
@@ -4944,8 +5024,14 @@
       stopClock();
       SIM.nowMin = 0;
       WORLD.drop = null;
-      WORLD.history = { drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0 };
+      WORLD.history = {
+        drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0,
+        dwelled: 0, notified: 0,
+        netNewCustomers: 0, repeatCustomers: 0, spendCents: 0,
+      };
       WORLD.shiftTally = 0;
+      // WORLD.baselineDiscovery is a constant (8), never mutated anywhere —
+      // nothing to restore here.
       WORLD.ownerConfig = structuredClone(OWNER_CONFIG_INITIAL);
       dropConfigDraft = null;
       // WORLD.drop = null above also wipes its dwell/myPass/consolationGiven
@@ -4982,6 +5068,11 @@
         pass.redeemed = true;
         WORLD.drop.passesRedeemed = (WORLD.drop.passesRedeemed || 0) + 1;
         WORLD.history.redemptions++;
+        WORLD.history.spendCents += WORLD.drop.configSnapshot.estCostCents;
+        // Demo simplification: this is a single-customer demo, so every
+        // redemption is treated as a net-new discovery rather than sampling
+        // a real repeat-vs-new customer distribution. Not real product logic.
+        WORLD.history.netNewCustomers++;
         WORLD.shiftTally++;
         setEmpScanSuccessCopy('🎁 Reward redeemed!', `${pass.reward.description} — hand it to the customer`);
         showScanSuccessOverlay('emp');
@@ -5195,11 +5286,27 @@
         capType: 'dollars',
         capValue: 120,
       },
-      history: { drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0 },
+      history: {
+        drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0,
+        // ---- Phase 4 analytics additions ----
+        // dwelled/notified are funnel-stage counters, each incremented exactly
+        // once per drop instance at the moment that stage is first reached
+        // (see advanceDrop() below).
+        dwelled: 0, notified: 0,
+        // netNewCustomers/repeatCustomers/spendCents feed the owner analytics
+        // screen's "since launch" totals — see demoScan()'s redemption branch.
+        netNewCustomers: 0, repeatCustomers: 0, spendCents: 0,
+      },
       // Employee-facing "redemptions this shift" counter (Phase 3) — incremented
       // only by a real demoScan('emp') redemption, reset by resetDemo().
       shiftTally: 0,
     };
+
+    // Invented-but-plausible "normal day" discovery/visit number for Bloom
+    // Coffee — a demo simplification (NOT modeled from real product data),
+    // used only to compute the drop-day vs. normal-day lift comparison shown
+    // on the owner dashboard and drop-analytics screen.
+    WORLD.baselineDiscovery = 8;
 
     // Deep-copy snapshot of the fresh owner config, taken once at load —
     // resetDemo() restores WORLD.ownerConfig from this, same pattern as
@@ -5288,6 +5395,10 @@
         d.dwell.qualifiedAtSim = SIM.nowMin;
         // dwelledCount already includes "you" from armDrop() — this transition
         // only flips the qualifying visual state, it does not change the count.
+        // Phase 4: this null->non-null transition happens exactly once per
+        // drop instance, so it's a safe place to count the "Dwelled" funnel
+        // stage for the analytics screen.
+        WORLD.history.dwelled++;
       }
 
       if (d.state === 'building') {
@@ -5302,6 +5413,12 @@
           d.state = 'live';
           d.liveAtSim = SIM.nowMin;
           d.liveEndsAtSim = SIM.nowMin + d.configSnapshot.liveWindowMinutes;
+          // Phase 4: guard so "Notified" (passesIssued going from 0 to >=1)
+          // is only ever counted once per drop instance, even though this
+          // branch itself only runs once (building->live is a one-way edge).
+          if (d.passesIssued === 0) {
+            WORLD.history.notified++;
+          }
           d.passesIssued = d.dwelledCount || 1;
           WORLD.history.drops++;
           WORLD.history[d.configSnapshot.configType] = (WORLD.history[d.configSnapshot.configType] || 0) + 1;
@@ -5312,6 +5429,10 @@
         } else if (d.arrivalIdx >= BUILD_ARRIVALS.length) {
           // Fizzle — arrivals exhausted without reaching threshold.
           d.state = 'expired';
+          // Phase 4: snapshot this drop's "discovery number" before the next
+          // drop overwrites WORLD.drop — peak density IS the discovery count
+          // for this demo's before/after comparison, fizzled or not.
+          d.discoveryCount = d.peakDensity;
           WORLD.history.fizzled++;
           stopClock();
           // Fizzle consolation — the drop never went live, but the tester
@@ -5331,6 +5452,8 @@
 
         if (SIM.nowMin >= d.liveEndsAtSim) {
           d.state = 'expired';
+          // Phase 4: same discovery-number snapshot as the fizzle branch above.
+          d.discoveryCount = d.peakDensity;
           stopClock();
         }
       }
@@ -5464,9 +5587,11 @@
     // Locked drop circle on screen-own-drops: if nothing is configured yet,
     // tapping it sends the owner to configure one. Once a drop exists, its
     // visual state (renderOwnerDropStrip) already communicates status, so a
-    // tap does nothing further this phase.
+    // tap does nothing further this phase — except once the drop has
+    // finished (Phase 4, Task 5), where tapping it also opens the config
+    // form so the owner can arm another one.
     function handleDropCircleClick() {
-      if (WORLD.drop === null) {
+      if (WORLD.drop === null || WORLD.drop.state === 'expired') {
         showScreen('own-drop-config');
       }
     }
@@ -5543,6 +5668,22 @@
         history.innerHTML = `${WORLD.history.drops} drops · ${WORLD.history.redemptions} redemptions <span style="color:var(--text-light);">since launch</span>`;
       }
 
+      // Task 2 — dashboard-only "did this increase discovery" line. Only
+      // shown once a drop has gone live AND finished (not while
+      // building/live, and not for a fizzle where liveAtSim stays null).
+      const liftEl = document.getElementById('own-dash-drop-lift');
+      if (liftEl) {
+        if (d && d.state === 'expired' && d.liveAtSim !== null) {
+          const pct = Math.round(((d.discoveryCount - WORLD.baselineDiscovery) / WORLD.baselineDiscovery) * 100);
+          liftEl.style.display = 'block';
+          liftEl.style.color = pct >= 0 ? 'var(--accent-green)' : 'var(--accent-rose)';
+          liftEl.textContent = `${pct >= 0 ? '+' : ''}${pct}% vs. a normal day`;
+        } else {
+          liftEl.style.display = 'none';
+          liftEl.textContent = '';
+        }
+      }
+
       // The locked-circle button on screen-own-drops.
       const circleBtn = document.getElementById('own-drop-circle-btn');
       const circleEmoji = document.getElementById('own-drop-circle-emoji');
@@ -5574,8 +5715,102 @@
       }
     }
 
+    // ---- Owner drop-analytics screen (Phase 4, Task 3) ----
+    // Reads WORLD.history + WORLD.drop only — never mutates state. Safe to
+    // call on every tick (via renderDropSurfaces()) and on screen entry.
+    function renderOwnerDropAnalytics() {
+      const h = WORLD.history;
+      const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
+      // Card 1 — Totals Since Launch.
+      setText('own-analytics-drops', h.drops);
+      setText('own-analytics-ambient', h.ambient);
+      setText('own-analytics-scheduled', h.scheduled);
+      setText('own-analytics-fizzled', h.fizzled);
+
+      // Card 2 — Funnel: Dwelled -> Notified -> Redeemed. Dwelled is the
+      // funnel's base (always 100%); later stages are relative to it so a
+      // real drop-off renders. A "-x% drop-off" caption appears between two
+      // stages only when the count actually drops.
+      const funnelEl = document.getElementById('own-analytics-funnel');
+      if (funnelEl) {
+        const stages = [
+          { label: 'Dwelled', count: h.dwelled },
+          { label: 'Notified', count: h.notified },
+          { label: 'Redeemed', count: h.redemptions },
+        ];
+        const base = h.dwelled || 0;
+        let rows = '';
+        stages.forEach((stage, i) => {
+          const pct = base > 0 ? Math.min(100, Math.round((stage.count / base) * 100)) : 0;
+          rows += `<div class="a-hist-row"><span class="a-hist-label">${stage.label}</span><div class="a-hist-track"><div class="a-hist-fill" style="width:${pct}%;background:var(--accent-green);"></div></div><span class="a-hist-pct">${stage.count}</span></div>`;
+          if (i < stages.length - 1) {
+            const next = stages[i + 1];
+            if (stage.count > next.count && stage.count > 0) {
+              const dropPct = Math.round(((stage.count - next.count) / stage.count) * 100);
+              rows += `<div style="font-size:11px;font-weight:600;color:var(--accent-rose);text-align:right;margin-top:-4px;">−${dropPct}% drop-off</div>`;
+            }
+          }
+        });
+        funnelEl.innerHTML = rows;
+      }
+
+      // Card 3 — Reward Spend + exposure-cap gauge. "Today's spend" is just
+      // the running since-launch total — this is a single-session demo with
+      // no real day boundary, per spec.
+      const spendDollars = h.spendCents / 100;
+      setText('own-analytics-spend', `$${spendDollars.toFixed(2)}`);
+      const capWrap = document.getElementById('own-analytics-cap-wrap');
+      const capFill = document.getElementById('own-analytics-cap-fill');
+      const capCaption = document.getElementById('own-analytics-cap-caption');
+      const capExceeded = document.getElementById('own-analytics-cap-exceeded');
+      if (capWrap) {
+        const capValue = WORLD.ownerConfig.capValue;
+        if (capValue) {
+          capWrap.style.display = 'block';
+          const exceeded = spendDollars > capValue;
+          const pct = Math.min(100, (spendDollars / capValue) * 100);
+          if (capFill) {
+            capFill.style.width = pct + '%';
+            capFill.style.background = exceeded ? 'var(--accent-rose)' : 'var(--accent-green)';
+          }
+          if (capCaption) capCaption.textContent = `Today: $${spendDollars.toFixed(2)} of $${capValue.toFixed(2)} cap used`;
+          // Purely textual/decorative per spec — no real pause-on-cap wiring
+          // this phase, just the copy the real MVP shows in this state.
+          if (capExceeded) capExceeded.style.display = exceeded ? 'block' : 'none';
+        } else {
+          capWrap.style.display = 'none';
+        }
+      }
+
+      // Card 4 — Customers, Since Launch.
+      setText('own-analytics-net-new', h.netNewCustomers);
+      setText('own-analytics-repeat', h.repeatCustomers);
+
+      // Card 5 — Drop Days vs. Normal Days: the headline before/after payoff.
+      // Only shown once a drop has gone live and expired (not a fizzle).
+      const liftBody = document.getElementById('own-analytics-lift-body');
+      if (liftBody) {
+        const d = WORLD.drop;
+        if (d && d.state === 'expired' && d.liveAtSim !== null) {
+          const pct = Math.round(((d.discoveryCount - WORLD.baselineDiscovery) / WORLD.baselineDiscovery) * 100);
+          const color = pct >= 0 ? 'var(--accent-green)' : 'var(--accent-rose)';
+          liftBody.innerHTML = `
+            <div class="a-lift-pct" style="color:${color};">${pct >= 0 ? '+' : ''}${pct}%</div>
+            <div class="a-lift-line">avg discovery on drop days: <b style="color:var(--text-dark);">${d.discoveryCount}</b></div>
+            <div class="a-lift-line">avg discovery on normal days: <b style="color:var(--text-dark);">${WORLD.baselineDiscovery}</b></div>
+          `;
+        } else {
+          liftBody.innerHTML = `<div class="a-strip-sub" style="margin-top:0;">Not enough data yet — run a drop to see your lift.</div>`;
+        }
+      }
+      // Card 6 "Owner of the Block" is a static fallback-copy placeholder —
+      // out of scope this phase, nothing to render.
+    }
+
     function renderDropSurfaces() {
       renderOwnerDropStrip();
+      renderOwnerDropAnalytics();
       renderMapPins();
       renderCustomerDropsList();
       renderDropDetail();
