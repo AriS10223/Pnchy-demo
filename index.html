@@ -3070,6 +3070,78 @@
     .a-hero-ranks-accent { font-family: 'Fraunces', serif; font-style: italic; font-size: 40px; color: var(--accent-rose); line-height: 1.1; }
     .a-hero-ranks-sub { font-size: 13px; color: var(--text-mid); margin-top: 8px; line-height: 1.4; }
     .a-you-badge { display: inline-block; background: var(--muted-gold); color: #6B5A2E; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 700; }
+
+    /* ===== DENSITY DROP (Phase 1) ===== */
+    /* Config screen header (light-mode back chevron, mirrors .qr-back/.qr-header) */
+    .a-cfg-header { padding: 16px 20px 0; }
+    .a-cfg-back {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; margin-bottom: 14px;
+    }
+    .a-cfg-title { font-family: 'Fraunces', serif; font-size: 24px; color: var(--text-dark); font-weight: 400; }
+    .a-cfg-subtitle { font-size: 13px; color: var(--text-mid); margin-top: 4px; }
+
+    /* Config form fields */
+    .a-field { display: flex; flex-direction: column; gap: 8px; }
+    .a-field-label { font-size: 12px; font-weight: 600; color: var(--text-dark); }
+    .a-field-hint { font-size: 11px; color: var(--text-light); margin-top: -4px; }
+    .a-input {
+      width: 100%; background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 12px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-dark);
+      outline: none;
+    }
+    .a-input:focus { border-color: var(--building); }
+    .a-range { width: 100%; accent-color: var(--building); }
+    .a-range-row { display: flex; justify-content: space-between; align-items: center; }
+    .a-range-val { font-size: 13px; font-weight: 700; color: var(--building); }
+
+    .a-reward-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .a-reward-chip {
+      padding: 9px 14px; border-radius: 999px; background: var(--surface); border: 1.5px solid var(--border);
+      font-size: 12px; font-weight: 600; color: var(--text-mid); cursor: pointer; white-space: nowrap;
+    }
+    .a-reward-chip.active { background: var(--building); border-color: var(--building); color: var(--text-dark); }
+
+    /* Activation forecast overlay (dark scrim + centered cream card, mirrors .bottom-sheet-overlay) */
+    .a-forecast-overlay {
+      position: absolute; inset: 0; background: rgba(44, 40, 37, 0.45);
+      display: none; align-items: center; justify-content: center; z-index: 60; padding: 24px;
+    }
+    .a-forecast-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+    .a-forecast-card {
+      width: 100%; max-width: 340px; background: var(--cream); border-radius: 24px; padding: 24px;
+      display: flex; flex-direction: column; gap: 14px; animation: countUp 0.3s ease;
+    }
+    .a-forecast-title { font-family: 'Fraunces', serif; font-size: 20px; color: var(--text-dark); }
+    .a-forecast-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; }
+    .a-forecast-stat-num { font-family: 'Fraunces', serif; font-size: 26px; color: var(--text-dark); }
+    .a-forecast-stat-label { font-size: 12px; color: var(--text-mid); margin-top: 2px; display: block; }
+    .a-forecast-caveat {
+      font-size: 11px; font-weight: 600; color: #8A6A3D; background: var(--building-faint);
+      border: 1px solid var(--building-subtle); border-radius: 12px; padding: 8px 12px;
+    }
+    .a-forecast-actions { display: flex; gap: 10px; }
+
+    /* Owner drop-strip meter (dashboard + drops screen) */
+    .a-drop-meter-track { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+    .a-drop-meter-fill { height: 100%; border-radius: 999px; background: var(--building); transition: width 0.25s linear; }
+    .a-drop-pace-chip {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+      color: var(--text-mid); background: var(--building-faint); border: 1px solid var(--building-subtle);
+      border-radius: 999px; padding: 3px 9px;
+    }
+    .a-drop-countdown-row { display: none; align-items: center; gap: 8px; margin-top: 8px; }
+
+    /* Drop circle button state modifiers */
+    .a-drop-btn.building { background: radial-gradient(circle at 50% 40%, var(--building), #C9A05A 75%); box-shadow: 0 10px 26px var(--building-glow); }
+    .a-drop-btn.live-drop { background: radial-gradient(circle at 50% 40%, var(--accent-green), #4F8A48 75%); box-shadow: 0 10px 26px rgba(123,175,115,0.4); }
+    .a-drop-btn.expired-drop { background: radial-gradient(circle at 50% 40%, #B7B0A5, #948C80); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+
+    /* Map pin halo while a drop is building/live at that merchant */
+    .pnchy-pin.pin-drop-active { box-shadow: 0 4px 20px var(--building-glow); border-color: var(--building); }
+    .pnchy-pin.pin-drop-active.is-live { box-shadow: 0 4px 20px rgba(123,175,115,0.4); border-color: var(--accent-green); }
   </style>
 </head>
 
@@ -3951,11 +4023,18 @@
               <div class="a-map-foot"><span class="a-live">● LIVE</span><span class="a-coord">40.7243° N · 73.9985° W</span></div>
             </div>
 
-            <div class="a-card">
-              <div class="a-strip-head"><span class="a-label">Density Drop</span></div>
-              <div class="a-strip-sub" style="margin-top:0;">Building · armed at 50 people nearby</div>
+            <div class="a-card" id="own-dash-drop-card">
+              <div class="a-strip-head"><span class="a-label">Density Drop</span><span class="a-chip" id="own-dash-drop-chip">Quiet</span></div>
+              <div class="a-strip-sub" id="own-dash-drop-sub" style="margin-top:0;">No active drop config yet</div>
+              <div class="a-drop-meter-track" id="own-dash-drop-meter-track" style="display:none;">
+                <div class="a-drop-meter-fill" id="own-dash-drop-meter-fill" style="width:0%;"></div>
+              </div>
+              <div class="a-drop-countdown-row" id="own-dash-drop-countdown-row">
+                <span id="own-dash-drop-countdown" style="font-size:13px;font-weight:700;color:var(--accent-green);"></span>
+                <span class="a-drop-pace-chip">⚡ compressed time</span>
+              </div>
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:10px;">
-                <span style="font-size:12px;color:var(--text-mid);">3 drops · 47 redemptions <span style="color:var(--text-light);">since launch</span></span>
+                <span style="font-size:12px;color:var(--text-mid);" id="own-dash-drop-history">0 drops · 0 redemptions <span style="color:var(--text-light);">since launch</span></span>
                 <span class="a-rank-chip">#2 on the block</span>
               </div>
             </div>
@@ -4006,13 +4085,21 @@
       <div class="screen" id="screen-own-drops">
         <div class="scroll-content">
           <div class="a-pad">
-            <div class="a-card">
-              <div class="a-strip-head"><span class="a-label">Density Drop</span><span class="a-chip">Armed</span></div>
-              <div class="a-strip-sub" style="margin-top:0;">Fires when 50 people gather nearby</div>
+            <div class="a-card" id="own-drops-drop-card">
+              <div class="a-strip-head"><span class="a-label">Density Drop</span><span class="a-chip" id="own-drops-drop-chip">Quiet</span></div>
+              <div class="a-strip-sub" id="own-drops-drop-sub" style="margin-top:0;">No active drop config yet</div>
+              <div class="a-drop-meter-track" id="own-drops-drop-meter-track" style="display:none;">
+                <div class="a-drop-meter-fill" id="own-drops-drop-meter-fill" style="width:0%;"></div>
+              </div>
+              <div class="a-drop-countdown-row" id="own-drops-drop-countdown-row">
+                <span id="own-drops-drop-countdown" style="font-size:13px;font-weight:700;color:var(--accent-green);"></span>
+                <span class="a-drop-pace-chip">⚡ compressed time</span>
+              </div>
             </div>
 
-            <div class="a-navrow"><span class="a-navrow-label">Drop settings</span><span class="a-navrow-chev">›</span></div>
-            <div class="a-navrow"><span class="a-navrow-label">Drop analytics</span><span class="a-navrow-chev">›</span></div>
+            <div class="a-navrow" onclick="showScreen('own-drop-config')"><span class="a-navrow-label">Drop settings</span><span class="a-navrow-chev">›</span></div>
+            <!-- TODO Phase 4: own-drop-analytics screen -->
+            <div class="a-navrow" onclick="showScreen('own-drop-config')"><span class="a-navrow-label">Drop analytics</span><span class="a-navrow-chev">›</span></div>
 
             <div>
               <div class="a-greet" style="font-size:26px;">Density Drop</div>
@@ -4020,16 +4107,16 @@
             </div>
 
             <div class="a-drop-wrap">
-              <button class="a-drop-btn locked">
-                <span class="a-drop-emoji">🔒</span>
-                <span class="a-drop-btn-label">Locked</span>
+              <button class="a-drop-btn locked" id="own-drop-circle-btn" onclick="handleDropCircleClick()">
+                <span class="a-drop-emoji" id="own-drop-circle-emoji">🔒</span>
+                <span class="a-drop-btn-label" id="own-drop-circle-label">Locked</span>
               </button>
-              <div class="a-drop-count">Next drop in 9 days</div>
+              <div class="a-drop-count" id="own-drop-circle-sub">Set up a drop to get started</div>
             </div>
 
             <div class="a-card">
               <span class="a-label">Your Drop Reward</span>
-              <div class="a-reward-text" style="margin-top:8px;color:var(--text-dark);font-weight:500;">Free pastry + coffee for everyone who shows 🥐</div>
+              <div class="a-reward-text" id="own-drops-reward-text" style="margin-top:8px;color:var(--text-dark);font-weight:500;">Free pastry + coffee for everyone who shows 🥐</div>
             </div>
 
             <div class="a-card">
@@ -4054,6 +4141,86 @@
             <div class="a-pay-title">Payment Successful</div>
             <div class="a-pay-amount">$20 charged</div>
             <div class="a-pay-unlock">Extra drop unlocked 💥</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — DROP CONFIG ============================ -->
+      <div class="screen" id="screen-own-drop-config">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-drops')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Density Drop Settings</div>
+            <div class="a-cfg-subtitle">Configure how a drop builds and what it pays out.</div>
+          </div>
+
+          <div class="a-pad">
+            <div class="a-field">
+              <span class="a-field-label">Threshold — people needed to go live</span>
+              <input type="number" class="a-input" id="own-cfg-threshold" min="2" value="12">
+              <span class="a-field-hint">Minimum 2 people.</span>
+            </div>
+
+            <div class="a-field">
+              <div class="a-range-row">
+                <span class="a-field-label">Live window</span>
+                <span class="a-range-val" id="own-cfg-window-val">60 min</span>
+              </div>
+              <input type="range" class="a-range" id="own-cfg-window" min="15" max="240" value="60"
+                oninput="document.getElementById('own-cfg-window-val').textContent = this.value + ' min'">
+              <span class="a-field-hint">15–240 minutes.</span>
+            </div>
+
+            <div class="a-field">
+              <span class="a-field-label">Reward type</span>
+              <div class="a-reward-chips" id="own-cfg-reward-chips">
+                <div class="a-reward-chip" data-type="percent_off" onclick="selectRewardChip(this)">Percent off</div>
+                <div class="a-reward-chip" data-type="bogo" onclick="selectRewardChip(this)">BOGO</div>
+                <div class="a-reward-chip active" data-type="free_item" onclick="selectRewardChip(this)">Free item</div>
+                <div class="a-reward-chip" data-type="dollars_off" onclick="selectRewardChip(this)">Dollars off</div>
+              </div>
+            </div>
+
+            <div class="a-field">
+              <span class="a-field-label">Reward description</span>
+              <input type="text" class="a-input" id="own-cfg-reward-desc" value="Free pastry + coffee for everyone who shows 🥐">
+            </div>
+
+            <div class="a-field">
+              <span class="a-field-label">Est. cost per redemption (cents)</span>
+              <input type="number" class="a-input" id="own-cfg-cost" min="0" value="450">
+            </div>
+
+            <div class="a-field">
+              <span class="a-field-label">Daily exposure cap ($)</span>
+              <input type="number" class="a-input" id="own-cfg-cap" min="0" value="120">
+            </div>
+
+            <button class="a-btn a-btn-green" onclick="openActivationForecast()">Get Activation Forecast</button>
+          </div>
+        </div>
+
+        <div class="a-forecast-overlay" id="own-forecast-overlay">
+          <div class="a-forecast-card">
+            <div class="a-forecast-title">Activation Forecast</div>
+            <div class="a-forecast-stat">
+              <span class="a-forecast-stat-num" id="own-forecast-freq">~3</span>
+              <span class="a-forecast-stat-label">times/week it would've gone Live</span>
+            </div>
+            <div class="a-forecast-stat">
+              <span class="a-forecast-stat-num" id="own-forecast-redemptions">14</span>
+              <span class="a-forecast-stat-label">predicted redemptions per drop</span>
+            </div>
+            <div class="a-forecast-caveat">⚠️ Estimate — not observed activity</div>
+            <div class="a-forecast-actions">
+              <button class="a-btn a-btn-outline" onclick="closeForecastOverlay()">Cancel</button>
+              <button class="a-btn a-btn-green" onclick="confirmForecast()">Confirm &amp; Save</button>
+            </div>
           </div>
         </div>
       </div>
@@ -4460,7 +4627,7 @@
     const SCREEN_ROLE = {
       home: 'customer', drops: 'customer', qr: 'customer', leaderboard: 'customer', profile: 'customer',
       'emp-home': 'employee', 'emp-scan': 'employee', 'emp-ranks': 'employee', 'emp-profile': 'employee',
-      'own-dashboard': 'owner', 'own-drops': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
+      'own-dashboard': 'owner', 'own-drops': 'owner', 'own-drop-config': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
       'own-ranks': 'owner', 'own-profile': 'owner',
     };
     const ROLE_TABBAR = { customer: 'tab-bar', employee: 'tab-bar-emp', owner: 'tab-bar-own' };
@@ -4503,6 +4670,11 @@
       if (name === 'home') {
         setTimeout(initMap, 80);
       }
+      // Owner special-case: populate the drop-config form from the saved
+      // config (or defaults) every time the screen is entered.
+      if (name === 'own-drop-config') {
+        initDropConfigForm();
+      }
     }
 
     // Role picker → first screen of the chosen role's app
@@ -4526,6 +4698,15 @@
       clearInterval(qrInterval);
       qrInterval = null;
 
+      // Density Drop: stop the sim clock, wipe the in-progress drop and
+      // history, and restore the owner's config to its shipped defaults.
+      stopClock();
+      SIM.nowMin = 0;
+      WORLD.drop = null;
+      WORLD.history = { drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0 };
+      WORLD.ownerConfig = structuredClone(OWNER_CONFIG_INITIAL);
+      dropConfigDraft = null;
+
       // Close any open overlay/sheet/modal — bottom sheet, review composer,
       // scan-success flashes, the owner payment-success overlay.
       document.querySelectorAll('.open, .show').forEach((el) => {
@@ -4540,6 +4721,7 @@
       reviewState.composeEmoji = '';
 
       renderPunchSurfaces('coffee');
+      renderDropSurfaces();
       showScreen('role-picker');
     }
 
@@ -4688,6 +4870,339 @@
     // Deep-frozen snapshot of the fresh state, taken once at load — resetDemo()
     // restores MERCHANTS from this so every tester starts from the same world.
     const MERCHANTS_INITIAL = structuredClone(MERCHANTS);
+
+    // ===========================
+    // DENSITY DROP ENGINE
+    // ===========================
+    // A single simulated clock compresses the real MVP's density-drop numbers
+    // (12-person threshold, 60-minute live window, etc.) into a ~78-second
+    // demo arc: 1 wall-clock second = 1 simulated minute. Every number shown
+    // on screen is the real, unmodified MVP number — only the clock is fast.
+    //
+    // At most two intervals ever exist in this file: `qrInterval` (QR
+    // countdown, defined above) and `simInterval` (this engine's clock).
+    // Every displayed countdown is *derived* from SIM.nowMin at render time —
+    // nothing else gets its own timer.
+    const SIM = { nowMin: 0, running: false };
+    const TICK_MS = 250, TICK_MIN = 0.25;
+    let simInterval = null;
+
+    // Scripted arrival curve for Bloom Coffee's drop — sums to 12 across
+    // sim-minutes 1-18 (index = whole sim-minutes elapsed since the drop
+    // started building).
+    const BUILD_ARRIVALS = [0, 1, 0, 1, 1, 0, 2, 1, 1, 2, 1, 0, 1, 2, 1, 1, 0, 1];
+
+    let WORLD = {
+      drop: null, // null until first armed via armDrop()
+      ownerConfig: {
+        configType: 'ambient',
+        threshold: 12,
+        liveWindowMinutes: 60,
+        rewardType: 'free_item',
+        rewardValue: null,
+        rewardDescription: 'Free pastry + coffee for everyone who shows 🥐',
+        estCostCents: 450,
+        capType: 'dollars',
+        capValue: 120,
+      },
+      history: { drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0 },
+    };
+
+    // Deep-copy snapshot of the fresh owner config, taken once at load —
+    // resetDemo() restores WORLD.ownerConfig from this, same pattern as
+    // MERCHANTS_INITIAL above.
+    const OWNER_CONFIG_INITIAL = structuredClone(WORLD.ownerConfig);
+
+    // ---- Pure helpers (no DOM access) — reused by later phases too ----
+    function fillFraction(instance) {
+      if (!instance) return 0;
+      const numerator = instance.state === 'building'
+        ? instance.currentDensity
+        : Math.max(instance.peakDensity, instance.currentDensity);
+      return Math.min(1, numerator / instance.configSnapshot.threshold);
+    }
+
+    function deriveDropLabel(instance) {
+      if (!instance) return 'Quiet right now';
+      if (instance.state === 'building') return 'Building';
+      if (instance.state === 'live') return 'Live now';
+      return 'Ended';
+    }
+
+    // ---- Clock ----
+    function startClock() {
+      if (simInterval) return;
+      simInterval = setInterval(clockTick, TICK_MS);
+      SIM.running = true;
+    }
+
+    function stopClock() {
+      clearInterval(simInterval);
+      simInterval = null;
+      SIM.running = false;
+    }
+
+    function clockTick() {
+      SIM.nowMin += TICK_MIN;
+      advanceDrop();
+      renderDropSurfaces();
+    }
+
+    // ---- State machine ----
+    function advanceDrop() {
+      const d = WORLD.drop;
+      if (!d) return;
+
+      if (d.state === 'building') {
+        const elapsedWholeMin = Math.floor(SIM.nowMin - d.startedAtSim);
+        while (d.arrivalIdx < elapsedWholeMin && d.arrivalIdx < BUILD_ARRIVALS.length) {
+          d.currentDensity += BUILD_ARRIVALS[d.arrivalIdx] || 0;
+          d.arrivalIdx++;
+        }
+        d.peakDensity = Math.max(d.peakDensity, d.currentDensity);
+
+        if (d.currentDensity >= d.configSnapshot.threshold) {
+          d.state = 'live';
+          d.liveAtSim = SIM.nowMin;
+          d.liveEndsAtSim = SIM.nowMin + d.configSnapshot.liveWindowMinutes;
+          d.passesIssued = d.dwelledCount || 1;
+          WORLD.history.drops++;
+          WORLD.history[d.configSnapshot.configType] = (WORLD.history[d.configSnapshot.configType] || 0) + 1;
+        } else if (d.arrivalIdx >= BUILD_ARRIVALS.length) {
+          // Fizzle — arrivals exhausted without reaching threshold.
+          d.state = 'expired';
+          WORLD.history.fizzled++;
+          stopClock();
+        }
+      } else if (d.state === 'live') {
+        // Purely for display richness this phase — a slow scripted trickle of
+        // redemptions up to passesIssued. Phase 3 gives employees a real
+        // redeem action that will replace this.
+        const liveElapsed = SIM.nowMin - d.liveAtSim;
+        const scriptedRedemptions = Math.min(d.passesIssued, Math.floor(liveElapsed / 10));
+        if (scriptedRedemptions > d.passesRedeemed) {
+          const delta = scriptedRedemptions - d.passesRedeemed;
+          d.passesRedeemed = scriptedRedemptions;
+          WORLD.history.redemptions += delta;
+        }
+
+        if (SIM.nowMin >= d.liveEndsAtSim) {
+          d.state = 'expired';
+          stopClock();
+        }
+      }
+      // 'expired' is terminal — nothing to do.
+    }
+
+    function armDrop() {
+      const cfg = WORLD.ownerConfig;
+      WORLD.drop = {
+        id: 'drop-' + Date.now(),
+        merchantKey: 'coffee',
+        configSnapshot: {
+          threshold: cfg.threshold,
+          liveWindowMinutes: cfg.liveWindowMinutes,
+          reward: { type: cfg.rewardType, value: cfg.rewardValue, description: cfg.rewardDescription },
+          estCostCents: cfg.estCostCents,
+          configType: cfg.configType,
+        },
+        state: 'building',
+        startedAtSim: SIM.nowMin,
+        liveAtSim: null,
+        liveEndsAtSim: null,
+        currentDensity: 0,
+        peakDensity: 0,
+        arrivalIdx: 0,
+        dwelledCount: 1, // "you" count as dwell-qualified from the start
+        passesIssued: 0,
+        passesRedeemed: 0,
+      };
+      SIM.nowMin = 0;
+      startClock();
+      renderDropSurfaces();
+    }
+
+    // ---- Owner drop-config form → activation forecast → arm ----
+    let dropConfigDraft = null;
+
+    function initDropConfigForm() {
+      const cfg = WORLD.ownerConfig;
+      document.getElementById('own-cfg-threshold').value = cfg.threshold;
+      document.getElementById('own-cfg-window').value = cfg.liveWindowMinutes;
+      document.getElementById('own-cfg-window-val').textContent = cfg.liveWindowMinutes + ' min';
+      document.getElementById('own-cfg-reward-desc').value = cfg.rewardDescription;
+      document.getElementById('own-cfg-cost').value = cfg.estCostCents;
+      document.getElementById('own-cfg-cap').value = cfg.capValue;
+      document.querySelectorAll('#own-cfg-reward-chips .a-reward-chip').forEach((chip) => {
+        chip.classList.toggle('active', chip.dataset.type === cfg.rewardType);
+      });
+    }
+
+    function selectRewardChip(el) {
+      el.parentElement.querySelectorAll('.a-reward-chip').forEach((c) => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // "Get Activation Forecast" — does NOT save. Reads the form into a draft,
+    // computes plausible-but-invented forecast numbers from it, and opens the
+    // forecast overlay. Only "Confirm & Save" in that overlay commits the draft.
+    function openActivationForecast() {
+      const threshold = Math.max(2, parseInt(document.getElementById('own-cfg-threshold').value, 10) || 12);
+      const liveWindowMinutes = Math.min(240, Math.max(15, parseInt(document.getElementById('own-cfg-window').value, 10) || 60));
+      const activeChip = document.querySelector('#own-cfg-reward-chips .a-reward-chip.active');
+      const rewardType = activeChip ? activeChip.dataset.type : 'free_item';
+      const rewardDescription = document.getElementById('own-cfg-reward-desc').value.trim()
+        || 'Free pastry + coffee for everyone who shows 🥐';
+      const estCostCents = Math.max(0, parseInt(document.getElementById('own-cfg-cost').value, 10) || 450);
+      const capValue = Math.max(0, parseInt(document.getElementById('own-cfg-cap').value, 10) || 120);
+
+      dropConfigDraft = {
+        configType: 'ambient', threshold, liveWindowMinutes, rewardType, rewardValue: null,
+        rewardDescription, estCostCents, capType: 'dollars', capValue,
+      };
+
+      // Simple inverse relationship for the forecast — lower threshold reads
+      // as "easier to hit", so it predicts more weekly activations. Invented
+      // but plausible; explicitly flagged as an estimate in the UI.
+      const weeklyActivations = Math.max(1, Math.round(60 / threshold));
+      const predictedRedemptions = Math.max(threshold, Math.round(threshold * 1.15));
+
+      document.getElementById('own-forecast-freq').textContent = '~' + weeklyActivations;
+      document.getElementById('own-forecast-redemptions').textContent = predictedRedemptions;
+
+      document.getElementById('own-forecast-overlay').classList.add('show');
+    }
+
+    function closeForecastOverlay() {
+      const overlay = document.getElementById('own-forecast-overlay');
+      if (overlay) overlay.classList.remove('show');
+    }
+
+    function confirmForecast() {
+      if (!dropConfigDraft) return;
+      WORLD.ownerConfig = { ...dropConfigDraft };
+      closeForecastOverlay();
+      armDrop();
+      showScreen('own-drops');
+    }
+
+    // Locked drop circle on screen-own-drops: if nothing is configured yet,
+    // tapping it sends the owner to configure one. Once a drop exists, its
+    // visual state (renderOwnerDropStrip) already communicates status, so a
+    // tap does nothing further this phase.
+    function handleDropCircleClick() {
+      if (WORLD.drop === null) {
+        showScreen('own-drop-config');
+      }
+    }
+
+    // ---- Render ----
+    // Updates both the dashboard's Density Drop card and the drops screen's
+    // status card from the same WORLD.drop data.
+    function renderOwnerDropStrip() {
+      const d = WORLD.drop;
+      const ids = ['own-dash', 'own-drops'];
+
+      ids.forEach((prefix) => {
+        const chip = document.getElementById(prefix + '-drop-chip');
+        const sub = document.getElementById(prefix + '-drop-sub');
+        const meterTrack = document.getElementById(prefix + '-drop-meter-track');
+        const meterFill = document.getElementById(prefix + '-drop-meter-fill');
+        const countdownRow = document.getElementById(prefix + '-drop-countdown-row');
+        const countdown = document.getElementById(prefix + '-drop-countdown');
+        if (!chip || !sub) return;
+
+        if (!d) {
+          chip.textContent = deriveDropLabel(d);
+          chip.style.color = '';
+          chip.style.background = '';
+          sub.textContent = 'No active drop config yet';
+          if (meterTrack) meterTrack.style.display = 'none';
+          if (countdownRow) countdownRow.style.display = 'none';
+        } else if (d.state === 'building') {
+          chip.textContent = deriveDropLabel(d);
+          chip.style.color = '';
+          chip.style.background = '';
+          sub.textContent = `${d.currentDensity} here · unlocks at ${d.configSnapshot.threshold} people`;
+          if (meterTrack) {
+            meterTrack.style.display = 'block';
+            meterFill.style.width = (fillFraction(d) * 100) + '%';
+            meterFill.style.background = 'var(--building)';
+          }
+          if (countdownRow) countdownRow.style.display = 'none';
+        } else if (d.state === 'live') {
+          chip.textContent = deriveDropLabel(d);
+          chip.style.color = 'var(--accent-green)';
+          chip.style.background = 'transparent';
+          sub.textContent = `${d.passesIssued} issued · ${d.passesRedeemed} redeemed`;
+          if (meterTrack) {
+            meterTrack.style.display = 'block';
+            meterFill.style.width = (fillFraction(d) * 100) + '%';
+            meterFill.style.background = 'var(--accent-green)';
+          }
+          if (countdownRow && countdown) {
+            countdownRow.style.display = 'flex';
+            const totalSimSecondsRemaining = Math.max(0, (d.liveEndsAtSim - SIM.nowMin) * 60);
+            const mm = Math.floor(totalSimSecondsRemaining / 60);
+            const ss = Math.floor(totalSimSecondsRemaining % 60);
+            countdown.textContent = `${mm}:${String(ss).padStart(2, '0')} left`;
+          }
+        } else { // expired
+          chip.textContent = deriveDropLabel(d);
+          chip.style.color = '';
+          chip.style.background = '';
+          sub.textContent = d.liveAtSim === null
+            ? `Didn't reach ${d.configSnapshot.threshold} people this time`
+            : `Peak ${d.peakDensity} · ${d.passesRedeemed} redeemed`;
+          if (meterTrack) {
+            meterTrack.style.display = 'block';
+            meterFill.style.width = (fillFraction(d) * 100) + '%';
+            meterFill.style.background = 'var(--border)';
+          }
+          if (countdownRow) countdownRow.style.display = 'none';
+        }
+      });
+
+      const history = document.getElementById('own-dash-drop-history');
+      if (history) {
+        history.innerHTML = `${WORLD.history.drops} drops · ${WORLD.history.redemptions} redemptions <span style="color:var(--text-light);">since launch</span>`;
+      }
+
+      // The locked-circle button on screen-own-drops.
+      const circleBtn = document.getElementById('own-drop-circle-btn');
+      const circleEmoji = document.getElementById('own-drop-circle-emoji');
+      const circleLabel = document.getElementById('own-drop-circle-label');
+      const circleSub = document.getElementById('own-drop-circle-sub');
+      if (circleBtn) {
+        circleBtn.classList.remove('locked', 'building', 'live-drop', 'expired-drop');
+        if (!d) {
+          circleBtn.classList.add('locked');
+          circleEmoji.textContent = '🔒';
+          circleLabel.textContent = 'Locked';
+          circleSub.textContent = 'Set up a drop to get started';
+        } else if (d.state === 'building') {
+          circleBtn.classList.add('building');
+          circleEmoji.textContent = '📈';
+          circleLabel.textContent = 'Building';
+          circleSub.textContent = `${d.currentDensity} of ${d.configSnapshot.threshold} people`;
+        } else if (d.state === 'live') {
+          circleBtn.classList.add('live-drop');
+          circleEmoji.textContent = '🔥';
+          circleLabel.textContent = 'Live';
+          circleSub.textContent = `${d.passesIssued} passes issued`;
+        } else {
+          circleBtn.classList.add('expired-drop');
+          circleEmoji.textContent = '✅';
+          circleLabel.textContent = 'Ended';
+          circleSub.textContent = d.liveAtSim === null ? 'Fizzled — try again' : 'Results are in';
+        }
+      }
+    }
+
+    function renderDropSurfaces() {
+      renderOwnerDropStrip();
+      renderMapPins();
+    }
 
     // ===========================
     // PUNCH STATE — single write path
@@ -5250,8 +5765,15 @@
         dots += `<div class="pnchy-pin-dot${i < m.punches ? ' on' : ''}"></div>`;
       }
       const dropBadge = m.drop ? '<div class="pnchy-drop-badge">🔥</div>' : '';
+      // Density Drop halo: light touch this phase — full customer detail/warmth
+      // tiers land in Phase 2. Just flag the pin while a drop is building/live
+      // at this merchant.
+      let dropStateClass = '';
+      if (WORLD.drop && WORLD.drop.merchantKey === m.id && WORLD.drop.state !== 'expired') {
+        dropStateClass = ' pin-drop-active' + (WORLD.drop.state === 'live' ? ' is-live' : '');
+      }
       return `
-      <div class="pnchy-pin${m.drop ? ' drop-active' : ''}" onclick="openSheet('${m.id}')">
+      <div class="pnchy-pin${m.drop ? ' drop-active' : ''}${dropStateClass}" onclick="openSheet('${m.id}')">
         ${dropBadge}
         <span class="pnchy-pin-emoji">${m.icon}</span>
         <div>
@@ -5386,6 +5908,7 @@
     // Populate the profile/QR/success screens with real data before any
     // interaction happens, so they're never empty on first load.
     renderPunchSurfaces('coffee');
+    renderDropSurfaces();
   </script>
 
   <!-- PWA service worker (network-first, required for Android installability) -->
