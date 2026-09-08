@@ -1806,16 +1806,11 @@
       gap: 14px;
       padding: 12px 0;
       border-bottom: 1px solid var(--border);
-      cursor: pointer;
       transition: all 0.15s;
     }
 
     .lb-row:last-child {
       border-bottom: none;
-    }
-
-    .lb-row:active {
-      opacity: 0.7;
     }
 
     .lb-rank {
@@ -1921,7 +1916,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       backdrop-filter: blur(8px);
     }
 
@@ -2069,7 +2063,6 @@
       gap: 14px;
       padding: 14px 0;
       border-bottom: 1px solid var(--border);
-      cursor: pointer;
     }
 
     .profile-list-item:last-child {
@@ -2917,7 +2910,7 @@
 
     /* Toggles / quick tiles / info rows */
     .a-tiles { display: flex; flex-wrap: wrap; gap: 10px; }
-    .a-tile { width: calc(50% - 5px); border-radius: 18px; padding: 16px; min-height: 84px; display: flex; flex-direction: column; justify-content: space-between; color: #fff; cursor: pointer; }
+    .a-tile { width: calc(50% - 5px); border-radius: 18px; padding: 16px; min-height: 84px; display: flex; flex-direction: column; justify-content: space-between; color: #fff; }
     .a-tile-emoji { font-size: 22px; }
     .a-tile-label { font-size: 13px; font-weight: 600; }
     .a-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
@@ -3375,12 +3368,12 @@
               <div class="search-results" id="search-results" style="display: none;"></div>
             </div>
             <div class="map-filters">
-              <div class="filter-chip active">🗺 All</div>
-              <div class="filter-chip">☕ Cafés</div>
-              <div class="filter-chip">✂️ Barbers</div>
-              <div class="filter-chip">🌮 Food</div>
-              <div class="filter-chip">👗 Boutiques</div>
-              <div class="filter-chip">💪 Fitness</div>
+              <div class="filter-chip active" onclick="filterMapByCategory(this, 'all')">🗺 All</div>
+              <div class="filter-chip" onclick="filterMapByCategory(this, 'coffee')">☕ Cafés</div>
+              <div class="filter-chip" onclick="filterMapByCategory(this, 'barber')">✂️ Barbers</div>
+              <div class="filter-chip" onclick="filterMapByCategory(this, 'food')">🌮 Food</div>
+              <div class="filter-chip" onclick="filterMapByCategory(this, 'boutique')">👗 Boutiques</div>
+              <div class="filter-chip" onclick="filterMapByCategory(this, 'fitness')">💪 Fitness</div>
             </div>
           </div>
 
@@ -3463,7 +3456,7 @@
               </div>
               <div class="sheet-cta">
                 <button class="btn-primary" onclick="showScreen('qr')">Get Stamped 🎯</button>
-                <div class="btn-secondary">
+                <div class="btn-secondary" onclick="openDirections()">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A544E" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -3729,7 +3722,7 @@
           <!-- populated by renderQrMerchantRow() from MERCHANTS -->
         </div>
 
-        <button class="qr-regen-btn">
+        <button class="qr-regen-btn" onclick="generateQR(); startQRTimer()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
@@ -3776,96 +3769,27 @@
           </div>
 
           <div class="lb-pod-selector">
-            <button class="lb-pod-btn active"
-              onclick="this.parentElement.querySelectorAll('.lb-pod-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">☕
+            <button class="lb-pod-btn active" onclick="switchLbPod(this, 'coffee')">☕
               Coffee</button>
-            <button class="lb-pod-btn"
-              onclick="this.parentElement.querySelectorAll('.lb-pod-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">✂️
+            <button class="lb-pod-btn" onclick="switchLbPod(this, 'barber')">✂️
               Barbers</button>
-            <button class="lb-pod-btn"
-              onclick="this.parentElement.querySelectorAll('.lb-pod-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">🌮
+            <button class="lb-pod-btn" onclick="switchLbPod(this, 'food')">🌮
               Food</button>
           </div>
 
           <div class="lb-category-scroll">
-            <button class="lb-cat-btn active" onclick="switchLbCat(this)">All Time</button>
-            <button class="lb-cat-btn" onclick="switchLbCat(this)">This Week</button>
-            <button class="lb-cat-btn" onclick="switchLbCat(this)">This Month</button>
-            <button class="lb-cat-btn" onclick="switchLbCat(this)">24 Hours</button>
+            <button class="lb-cat-btn active" onclick="switchPeriod(this, 'lb-period', 'all')">All Time</button>
+            <button class="lb-cat-btn" onclick="switchPeriod(this, 'lb-period', 'week')">This Week</button>
+            <button class="lb-cat-btn" onclick="switchPeriod(this, 'lb-period', 'month')">This Month</button>
+            <button class="lb-cat-btn" onclick="switchPeriod(this, 'lb-period', '24h')">24 Hours</button>
           </div>
 
-          <!-- Podium -->
-          <div class="lb-top3">
-            <div class="lb-podium-item">
-              <div class="lb-podium-icon" style="background: var(--sky);">🧋</div>
-              <div class="lb-podium-name">Boba & Co.</div>
-              <div class="lb-podium-score">1,204 pts</div>
-              <div class="lb-podium-base">3</div>
-            </div>
-            <div class="lb-podium-item">
-              <div class="lb-podium-icon" style="background: var(--sage);">☕</div>
-              <div class="lb-podium-crown">👑</div>
-              <div class="lb-podium-name">Bloom Coffee</div>
-              <div class="lb-podium-score">2,847 pts</div>
-              <div class="lb-podium-base">1</div>
-            </div>
-            <div class="lb-podium-item">
-              <div class="lb-podium-icon" style="background: var(--peach);">🍵</div>
-              <div class="lb-podium-name">Matcha House</div>
-              <div class="lb-podium-score">1,681 pts</div>
-              <div class="lb-podium-base">2</div>
-            </div>
+          <!-- Podium — populated by renderLbList() from LB_BASE -->
+          <div class="lb-top3" id="lb-podium">
           </div>
 
-          <div class="lb-list">
-            <div class="lb-row">
-              <div class="lb-rank">4</div>
-              <div class="lb-row-icon">☕</div>
-              <div class="lb-row-info">
-                <div class="lb-row-name">Grounds & Co.</div>
-                <div class="lb-row-sub">234 visits this week</div>
-              </div>
-              <div>
-                <div class="lb-row-score">980</div>
-                <div class="lb-row-change">▲ +2</div>
-              </div>
-            </div>
-            <div class="lb-row">
-              <div class="lb-rank">5</div>
-              <div class="lb-row-icon">🫖</div>
-              <div class="lb-row-info">
-                <div class="lb-row-name">The Earl</div>
-                <div class="lb-row-sub">187 visits this week</div>
-              </div>
-              <div>
-                <div class="lb-row-score">842</div>
-                <div class="lb-row-change">▲ +1</div>
-              </div>
-            </div>
-            <div class="lb-row">
-              <div class="lb-rank">6</div>
-              <div class="lb-row-icon">☕</div>
-              <div class="lb-row-info">
-                <div class="lb-row-name">Daily Drip</div>
-                <div class="lb-row-sub">156 visits this week</div>
-              </div>
-              <div>
-                <div class="lb-row-score">710</div>
-                <div class="lb-row-change down">▼ -1</div>
-              </div>
-            </div>
-            <div class="lb-row">
-              <div class="lb-rank">7</div>
-              <div class="lb-row-icon">🫘</div>
-              <div class="lb-row-info">
-                <div class="lb-row-name">Bean Scene</div>
-                <div class="lb-row-sub">134 visits this week</div>
-              </div>
-              <div>
-                <div class="lb-row-score">604</div>
-                <div class="lb-row-change">–</div>
-              </div>
-            </div>
+          <div class="lb-list" id="lb-list">
+            <!-- populated by renderLbList() from LB_BASE -->
           </div>
         </div>
       </div>
@@ -3933,10 +3857,6 @@
                 <div class="profile-list-label">Edit Profile</div>
                 <div class="profile-list-sub">Name, photo, neighborhood</div>
               </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
             </div>
             <div class="profile-list-item">
               <div class="profile-list-icon">
@@ -3951,10 +3871,6 @@
                 <div class="profile-list-label">My Community</div>
                 <div class="profile-list-sub">Williamsburg Pod • 1.2K members</div>
               </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
             </div>
             <div class="profile-list-item">
               <div class="profile-list-icon">
@@ -3971,10 +3887,6 @@
                 <div class="profile-list-label">Rewards History</div>
                 <div class="profile-list-sub">3 redeemed this month</div>
               </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
             </div>
             <div class="profile-list-item">
               <div class="profile-list-icon">
@@ -3989,10 +3901,6 @@
                 <div class="profile-list-label">Notifications</div>
                 <div class="profile-list-sub">Drops, stamps, leaderboard</div>
               </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
             </div>
           </div>
           <div style="padding: 0 20px 28px;">
@@ -4032,7 +3940,7 @@
               <div id="emp-home-drop-body"><!-- populated by renderEmpDropCard() --></div>
             </div>
 
-            <div class="a-tally">🎁 3 Drop passes redeemed this shift</div>
+            <div class="a-tally" id="emp-home-tally">🎁 3 Drop passes redeemed this shift</div>
 
             <div class="a-metrics">
               <div class="a-metric"><div class="a-metric-period">This Week</div><div class="a-metric-val">142</div></div>
@@ -4124,36 +4032,18 @@
             </div>
 
             <div class="a-pills">
-              <div class="a-pill active" onclick="switchAPill(this)">This Week</div>
-              <div class="a-pill" onclick="switchAPill(this)">All Time</div>
+              <div class="a-pill active" onclick="switchPeriod(this, 'emp-ranks', 'week')">This Week</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'emp-ranks', 'all')">All Time</div>
             </div>
 
-            <div class="a-podium">
-              <div class="a-podium-item">
-                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:20px;background:var(--accent-rose);">A</div>
-                <div class="a-podium-name">Alex</div>
-                <div class="a-podium-scans">126 SCANS</div>
-              </div>
-              <div class="a-podium-item">
-                <div class="a-podium-crown">👑</div>
-                <div class="a-podium-avatar me" style="width:72px;height:72px;font-size:26px;background:var(--accent-green);">J</div>
-                <div class="a-podium-name">Jordan</div>
-                <div class="a-podium-scans">189 SCANS</div>
-              </div>
-              <div class="a-podium-item">
-                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:20px;background:var(--muted-gold);">S</div>
-                <div class="a-podium-name">Sam</div>
-                <div class="a-podium-scans">142 SCANS</div>
-              </div>
+            <div class="a-podium" id="emp-ranks-podium">
+              <!-- populated by renderEmpRankList() from EMP_RANKS_BASE -->
             </div>
 
             <div>
               <div class="a-label" style="margin-bottom:8px;">Staff Performance Ranking</div>
-              <div class="a-list">
-                <div class="a-team-row"><div class="a-team-rank">#4</div><div class="a-team-avatar" style="background:var(--accent-blue);">J</div><div class="a-team-info"><div class="a-team-name">Jordan Reed</div><div class="a-roster-sub">Community Lead</div></div><div class="a-team-scans">112</div></div>
-                <div class="a-team-row"><div class="a-team-rank">#5</div><div class="a-team-avatar" style="background:var(--accent-rose);">L</div><div class="a-team-info"><div class="a-team-name">Lila Chen</div><div class="a-roster-sub">Growth Specialist</div></div><div class="a-team-scans">98</div></div>
-                <div class="a-team-row"><div class="a-team-rank">#6</div><div class="a-team-avatar" style="background:var(--accent-purple);">O</div><div class="a-team-info"><div class="a-team-name">Oscar Wilde</div><div class="a-roster-sub">Brand Ambassador</div></div><div class="a-team-scans">85</div></div>
-                <div class="a-team-row"><div class="a-team-rank">#7</div><div class="a-team-avatar" style="background:var(--text-light);">M</div><div class="a-team-info"><div class="a-team-name">Maya Angelou</div><div class="a-roster-sub">Curator</div></div><div class="a-team-scans">74</div></div>
+              <div class="a-list" id="emp-ranks-list">
+                <!-- populated by renderEmpRankList() from EMP_RANKS_BASE -->
               </div>
             </div>
           </div>
@@ -4182,7 +4072,6 @@
               <div class="a-row"><span class="a-row-k">Total Scans</span><span class="a-row-v">2,840</span></div>
               <div class="a-row"><span class="a-row-k">Rating</span><span class="a-row-v">4.9/5</span></div>
               <div class="a-row"><span class="a-row-k">Shift Hours</span><span class="a-row-v">156h</span></div>
-              <button class="a-btn a-btn-green" style="margin-top:14px;">View My Analytics</button>
             </div>
 
             <div class="a-card">
@@ -4194,14 +4083,14 @@
               <div class="a-row"><span class="a-row-k">Department</span><span class="a-row-v" style="font-size:14px;">Logistics Operations</span></div>
               <div class="a-row"><span class="a-row-k">Full Name</span><span class="a-row-v" style="font-size:14px;">Jordan Lee</span></div>
               <div class="a-row"><span class="a-row-k">Email</span><span class="a-row-v" style="font-size:14px;">jordan@bloomcoffee.com</span></div>
-              <button class="a-btn a-btn-dark" style="margin-top:14px;">Edit Profile</button>
+              <button class="a-btn a-btn-dark" style="margin-top:14px;cursor:default;">Edit Profile</button>
             </div>
 
             <div class="a-card">
               <div class="a-card-title" style="margin-bottom:6px;">App Settings</div>
-              <div class="a-toggle-row"><div><div class="a-toggle-label">Shift Notifications</div><div class="a-toggle-sub">Notify for upcoming assignments</div></div><div class="a-toggle on" onclick="toggleSwitch(this)"></div></div>
-              <div class="a-toggle-row"><div><div class="a-toggle-label">Dark Mode</div><div class="a-toggle-sub">Reduced glare for night shifts</div></div><div class="a-toggle" onclick="toggleSwitch(this)"></div></div>
-              <div class="a-toggle-row"><div><div class="a-toggle-label">Haptic Feedback</div><div class="a-toggle-sub">Tactile response on interactions</div></div><div class="a-toggle on" onclick="toggleSwitch(this)"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Shift Notifications</div><div class="a-toggle-sub">Notify for upcoming assignments</div></div><div class="a-toggle on" data-setting="shiftNotifications" onclick="toggleSwitch(this)"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Dark Mode</div><div class="a-toggle-sub">Reduced glare for night shifts</div></div><div class="a-toggle" data-setting="darkMode" onclick="toggleSwitch(this)"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Haptic Feedback</div><div class="a-toggle-sub">Tactile response on interactions</div></div><div class="a-toggle on" data-setting="hapticFeedback" onclick="toggleSwitch(this)"></div></div>
             </div>
 
             <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
@@ -4255,15 +4144,13 @@
             </div>
 
             <div class="a-pills">
-              <div class="a-pill active" onclick="switchAPill(this)">This week</div>
-              <div class="a-pill" onclick="switchAPill(this)">This month</div>
-              <div class="a-pill" onclick="switchAPill(this)">This year</div>
+              <div class="a-pill active" onclick="switchPeriod(this, 'own-dash-metrics', 'week')">This week</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'own-dash-metrics', 'month')">This month</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'own-dash-metrics', 'year')">This year</div>
             </div>
 
-            <div class="a-metrics">
-              <div class="a-metric center"><div class="a-metric-emoji">👥</div><div class="a-metric-val">142</div><div class="a-metric-label">Visitors</div></div>
-              <div class="a-metric center"><div class="a-metric-emoji">📲</div><div class="a-metric-val">118</div><div class="a-metric-label">Scans</div></div>
-              <div class="a-metric center"><div class="a-metric-emoji">💵</div><div class="a-metric-val">$9.5</div><div class="a-metric-label">Avg spend</div></div>
+            <div class="a-metrics" id="own-dash-metrics-body">
+              <!-- populated by renderOwnDashMetrics() from PERIOD_DATA -->
             </div>
 
             <div class="a-card">
@@ -4276,22 +4163,18 @@
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
                 <div class="a-card-title">👤 Visitor Age</div>
                 <div class="a-pills">
-                  <div class="a-pill active" onclick="switchAPill(this)">Week</div>
-                  <div class="a-pill" onclick="switchAPill(this)">Month</div>
-                  <div class="a-pill" onclick="switchAPill(this)">3 Months</div>
+                  <div class="a-pill active" onclick="switchPeriod(this, 'own-dash-age', 'week')">Week</div>
+                  <div class="a-pill" onclick="switchPeriod(this, 'own-dash-age', 'month')">Month</div>
+                  <div class="a-pill" onclick="switchPeriod(this, 'own-dash-age', '3months')">3 Months</div>
                 </div>
               </div>
-              <div class="a-insight-val" style="margin-top:10px;">Avg age: <b style="color:var(--text-dark);font-size:26px;">33</b></div>
-              <div class="a-hist">
-                <div class="a-hist-row"><span class="a-hist-label">18–24</span><div class="a-hist-track"><div class="a-hist-fill" style="width:18%;"></div></div><span class="a-hist-pct">18%</span></div>
-                <div class="a-hist-row"><span class="a-hist-label">25–34</span><div class="a-hist-track"><div class="a-hist-fill" style="width:41%;"></div></div><span class="a-hist-pct">41%</span></div>
-                <div class="a-hist-row"><span class="a-hist-label">35–44</span><div class="a-hist-track"><div class="a-hist-fill" style="width:24%;"></div></div><span class="a-hist-pct">24%</span></div>
-                <div class="a-hist-row"><span class="a-hist-label">45–54</span><div class="a-hist-track"><div class="a-hist-fill" style="width:11%;"></div></div><span class="a-hist-pct">11%</span></div>
-                <div class="a-hist-row"><span class="a-hist-label">55+</span><div class="a-hist-track"><div class="a-hist-fill" style="width:6%;"></div></div><span class="a-hist-pct">6%</span></div>
+              <div class="a-insight-val" style="margin-top:10px;">Avg age: <b style="color:var(--text-dark);font-size:26px;" id="own-dash-age-avg">33</b></div>
+              <div class="a-hist" id="own-dash-age-hist">
+                <!-- populated by renderOwnDashAge() from PERIOD_DATA -->
               </div>
             </div>
 
-            <button class="a-switch-btn">💬 Tell us what to build next</button>
+            <button class="a-switch-btn" onclick="feedbackFlash(this)">💬 Tell us what to build next</button>
           </div>
         </div>
       </div>
@@ -4537,9 +4420,9 @@
             <div>
               <div class="a-card-title" style="margin-bottom:8px;">Density Drop team</div>
               <div class="a-list">
-                <div class="a-roster-row"><div class="a-roster-avatar">🌿</div><div class="a-roster-info"><div class="a-roster-name">Maya</div><div class="a-roster-sub">@maya · barista</div></div><div class="a-remove-btn">Remove</div></div>
-                <div class="a-roster-row"><div class="a-roster-avatar">📷</div><div class="a-roster-info"><div class="a-roster-name">Sam</div><div class="a-roster-sub">@sam · cashier</div></div><div class="a-remove-btn">Remove</div></div>
-                <div class="a-roster-row"><div class="a-roster-avatar">🎧</div><div class="a-roster-info"><div class="a-roster-name">Lex</div><div class="a-roster-sub">@lex · floor</div></div><div class="a-remove-btn">Remove</div></div>
+                <div class="a-roster-row"><div class="a-roster-avatar">🌿</div><div class="a-roster-info"><div class="a-roster-name">Maya</div><div class="a-roster-sub">@maya · barista</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
+                <div class="a-roster-row"><div class="a-roster-avatar">📷</div><div class="a-roster-info"><div class="a-roster-name">Sam</div><div class="a-roster-sub">@sam · cashier</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
+                <div class="a-roster-row"><div class="a-roster-avatar">🎧</div><div class="a-roster-info"><div class="a-roster-name">Lex</div><div class="a-roster-sub">@lex · floor</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
               </div>
               <div class="a-code-card">
                 <div class="a-card-title" style="font-size:14px;">Add staff</div>
@@ -4549,20 +4432,14 @@
             </div>
 
             <div class="a-pills">
-              <div class="a-pill" onclick="switchAPill(this)">Today</div>
-              <div class="a-pill active" onclick="switchAPill(this)">This week</div>
-              <div class="a-pill" onclick="switchAPill(this)">This month</div>
-              <div class="a-pill" onclick="switchAPill(this)">This year</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'today')">Today</div>
+              <div class="a-pill active" onclick="switchPeriod(this, 'own-team-scans', 'week')">This week</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'month')">This month</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'year')">This year</div>
             </div>
 
-            <div class="a-list">
-              <div class="a-team-row"><div class="a-team-rank">🥇</div><div class="a-team-avatar" style="background:var(--accent-green);">J</div><div class="a-team-info"><div class="a-team-name">Jordan Lee</div><div class="a-team-trend up">▲ +3 vs prev week</div></div><div class="a-team-scans">189</div></div>
-              <div class="a-team-row"><div class="a-team-rank">🥈</div><div class="a-team-avatar" style="background:var(--muted-gold);color:#6B5A2E;">S</div><div class="a-team-info"><div class="a-team-name">Sam Rivera</div><div class="a-team-trend down">▼ -1 vs prev week</div></div><div class="a-team-scans">142</div></div>
-              <div class="a-team-row"><div class="a-team-rank">🥉</div><div class="a-team-avatar" style="background:var(--accent-rose);">A</div><div class="a-team-info"><div class="a-team-name">Alex Kim</div><div class="a-team-trend up">▲ +5 vs prev week</div></div><div class="a-team-scans">126</div></div>
-              <div class="a-team-row"><div class="a-team-rank">#4</div><div class="a-team-avatar" style="background:var(--accent-blue);">J</div><div class="a-team-info"><div class="a-team-name">Jordan Reed</div></div><div class="a-team-scans">112</div></div>
-              <div class="a-team-row"><div class="a-team-rank">#5</div><div class="a-team-avatar" style="background:var(--accent-rose);">L</div><div class="a-team-info"><div class="a-team-name">Lila Chen</div><div class="a-team-trend up">▲ +2 vs prev week</div></div><div class="a-team-scans">98</div></div>
-              <div class="a-team-row"><div class="a-team-rank">#6</div><div class="a-team-avatar" style="background:var(--accent-purple);">O</div><div class="a-team-info"><div class="a-team-name">Oscar Wilde</div><div class="a-team-trend down">▼ -2 vs prev week</div></div><div class="a-team-scans">85</div></div>
-              <div class="a-team-row"><div class="a-team-rank">#7</div><div class="a-team-avatar" style="background:var(--text-light);">M</div><div class="a-team-info"><div class="a-team-name">Maya Angelou</div></div><div class="a-team-scans">74</div></div>
+            <div class="a-list" id="own-team-list">
+              <!-- populated by renderOwnTeamList() from PERIOD_DATA_TEAM_SCANS -->
             </div>
 
             <div class="a-card" style="padding:14px 16px;"><span style="font-size:12px;color:var(--text-light);">📊 Trend arrows compare to the previous week</span></div>
@@ -4581,35 +4458,17 @@
             </div>
 
             <div class="a-pills">
-              <div class="a-pill active" onclick="switchAPill(this)">All time</div>
-              <div class="a-pill" onclick="switchAPill(this)">Week</div>
-              <div class="a-pill" onclick="switchAPill(this)">Month</div>
+              <div class="a-pill active" onclick="switchPeriod(this, 'own-ranks', 'all')">All time</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'own-ranks', 'week')">Week</div>
+              <div class="a-pill" onclick="switchPeriod(this, 'own-ranks', 'month')">Month</div>
             </div>
 
-            <div class="a-podium">
-              <div class="a-podium-item">
-                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:24px;background:var(--sage);">🌮</div>
-                <div class="a-podium-name">La Taqueria</div>
-                <div class="a-podium-scans">11,200 pts</div>
-              </div>
-              <div class="a-podium-item">
-                <div class="a-podium-crown">👑</div>
-                <div class="a-podium-avatar me" style="width:72px;height:72px;font-size:30px;background:var(--blush);">☕</div>
-                <div class="a-podium-name">Bloom Coffee</div>
-                <div class="a-podium-scans">12,840 pts</div>
-              </div>
-              <div class="a-podium-item">
-                <div class="a-podium-avatar" style="width:56px;height:56px;font-size:24px;background:var(--sage);">💈</div>
-                <div class="a-podium-name">Fade &amp; Co.</div>
-                <div class="a-podium-scans">9,840 pts</div>
-              </div>
+            <div class="a-podium" id="own-ranks-podium">
+              <!-- populated by renderOwnRankList() from OWN_RANKS_BASE -->
             </div>
 
-            <div class="a-list">
-              <div class="a-team-row"><div class="a-team-rank">4</div><div class="a-punch-icon" style="background:var(--muted-gold);">🍺</div><div class="a-team-info"><div class="a-team-name">The Rusty Nail</div><div class="a-roster-sub">2,240 total visits</div></div><div class="a-team-scans">8,960</div></div>
-              <div class="a-team-row"><div class="a-team-rank">5</div><div class="a-punch-icon" style="background:var(--sage);">🍵</div><div class="a-team-info"><div class="a-team-name">Matcha House</div><div class="a-roster-sub">2,160 total visits</div></div><div class="a-team-scans">8,640</div></div>
-              <div class="a-team-row"><div class="a-team-rank">6</div><div class="a-punch-icon" style="background:var(--peach);">🥪</div><div class="a-team-info"><div class="a-team-name">Katz Deli</div><div class="a-roster-sub">1,980 total visits</div></div><div class="a-team-scans">7,920</div></div>
-              <div class="a-team-row"><div class="a-team-rank">7</div><div class="a-punch-icon" style="background:var(--blush);">✂️</div><div class="a-team-info"><div class="a-team-name">Manny's Cuts</div><div class="a-roster-sub">1,920 total visits</div></div><div class="a-team-scans">7,680</div></div>
+            <div class="a-list" id="own-ranks-list">
+              <!-- populated by renderOwnRankList() from OWN_RANKS_BASE -->
             </div>
           </div>
         </div>
@@ -4625,7 +4484,7 @@
               <div class="a-id-meta">📍 Williamsburg, Brooklyn</div>
               <div class="a-id-meta" style="font-weight:500;color:var(--text-mid);">@jordanr</div>
               <div class="a-id-meta">hello@bloomcoffee.com</div>
-              <button class="a-switch-btn" style="width:auto;padding:8px 20px;font-size:13px;margin-top:4px;">Edit Profile</button>
+              <button class="a-switch-btn" style="width:auto;padding:8px 20px;font-size:13px;margin-top:4px;cursor:default;">Edit Profile</button>
             </div>
 
             <div class="a-card">
@@ -4634,7 +4493,7 @@
                 <div class="tier-badge pro">👑 Pro</div>
               </div>
               <div class="a-plan-price" style="margin-top:12px;">$79 <span>per month</span></div>
-              <button class="a-btn a-btn-outline" style="margin-top:12px;">Manage plan →</button>
+              <button class="a-btn a-btn-outline" style="margin-top:12px;cursor:default;">Manage plan →</button>
             </div>
 
             <div class="a-card">
@@ -4996,6 +4855,19 @@
       // The tester has now seen (or is about to see) the live/pass surfaces —
       // dismiss the go-live toast so it doesn't linger over them.
       if (name === 'drop-detail' || name === 'pass-qr') hideGoLiveToast();
+
+      // ---- Phase 5 (Task 7): sync the emp-profile toggles with WORLD.empSettings
+      // every time the screen is entered, so a flip made earlier this session
+      // still shows correctly on return instead of resetting to shipped markup.
+      if (name === 'emp-profile') applyEmpSettingsToggles();
+      // ---- Phase 5 (Task 11): repaint each screen's period-driven zone from
+      // PERIOD_DATA whenever it's entered, same on-entry repaint pattern used
+      // by the drop surfaces above.
+      if (name === 'own-dashboard') { renderOwnDashMetrics(); renderOwnDashAge(); }
+      if (name === 'own-team') renderOwnTeamList();
+      if (name === 'own-ranks') renderOwnRankList();
+      if (name === 'emp-ranks') renderEmpRankList();
+      if (name === 'leaderboard') renderLbList();
     }
 
     // Role picker → first screen of the chosen role's app
@@ -5050,6 +4922,16 @@
       reviewState.myReviews = {};
       reviewState.activeMerchantKey = null;
       reviewState.composeEmoji = '';
+
+      // ---- Phase 5 additions ----
+      // Employee "App Settings" toggles (Task 7) back to their shipped values.
+      WORLD.empSettings = { shiftNotifications: true, darkMode: false, hapticFeedback: true };
+      applyEmpSettingsToggles();
+      // Owner-team roster rows hidden/relabeled by removeTeamMember() (Task 9).
+      resetTeamRoster();
+      // Period/pod pills (Task 11) and the map category filter (Task 2) back
+      // to their default selection, with every data-driven zone repainted.
+      resetPeriodFiltersUI();
 
       renderPunchSurfaces('coffee');
       renderDropSurfaces();
@@ -5123,9 +5005,26 @@
       el.classList.add('active');
     }
 
-    // Settings toggle switches (visual only)
+    // Settings toggle switches. Visual by default, but when the toggle carries
+    // a data-setting key (the three emp-profile "App Settings" rows — Task 7)
+    // the flip is persisted into WORLD.empSettings so it survives navigating
+    // away and back, instead of resetting to the DOM's shipped class.
     function toggleSwitch(el) {
       el.classList.toggle('on');
+      const key = el.dataset.setting;
+      if (key && WORLD.empSettings) {
+        WORLD.empSettings[key] = el.classList.contains('on');
+      }
+    }
+
+    // Re-applies WORLD.empSettings onto the three emp-profile toggles — called
+    // whenever screen-emp-profile is entered, so a flip made earlier in the
+    // session (then navigated away from) still shows correctly on return.
+    function applyEmpSettingsToggles() {
+      document.querySelectorAll('.a-toggle[data-setting]').forEach((el) => {
+        const on = !!(WORLD.empSettings && WORLD.empSettings[el.dataset.setting]);
+        el.classList.toggle('on', on);
+      });
     }
 
     // Copy the owner's access code without a blocking dialog
@@ -5300,6 +5199,10 @@
       // Employee-facing "redemptions this shift" counter (Phase 3) — incremented
       // only by a real demoScan('emp') redemption, reset by resetDemo().
       shiftTally: 0,
+      // Employee "App Settings" toggle state (Task 7, Phase 5) — matches the
+      // .a-toggle classes shipped in screen-emp-profile's markup (Shift
+      // Notifications & Haptic Feedback start on, Dark Mode starts off).
+      empSettings: { shiftNotifications: true, darkMode: false, hapticFeedback: true },
     };
 
     // Invented-but-plausible "normal day" discovery/visit number for Bloom
@@ -5909,6 +5812,16 @@
       const d = WORLD.drop;
       if (banner) banner.innerHTML = buildPausedBannerMarkup(d);
       body.innerHTML = buildDropStatusMarkup(d);
+
+      // Phase 5 (Task 4) — the emp-home "Drop passes redeemed this shift"
+      // tally used to be a static "3", disagreeing with the real counter the
+      // moment a tester actually redeemed one. Read it from the same
+      // WORLD.shiftTally counter screen-emp-drop's tally already uses.
+      const tallyEl = document.getElementById('emp-home-tally');
+      if (tallyEl) {
+        const n = WORLD.shiftTally || 0;
+        tallyEl.textContent = `🎁 ${n} Drop pass${n === 1 ? '' : 'es'} redeemed this shift`;
+      }
     }
 
     // Task 2 — screen-emp-drop's full status + pause controls + shift tally.
@@ -6305,7 +6218,7 @@
           dots += `<div class="lc-dot${i < m.punches ? ' filled' : ''}"></div>`;
         }
         return `
-            <div class="loyalty-card">
+            <div class="loyalty-card" onclick="showScreen('home'); openSheet('${m.id}')">
               <div class="loyalty-card-icon" style="background: ${m.bg};">${m.icon}</div>
               <div class="loyalty-card-name">${m.name}</div>
               <div class="loyalty-card-punches">${dots}</div>
@@ -6963,12 +6876,475 @@
       pnchyMap.zoomOut();
     }
 
+    // ===========================
+    // PHASE 5: WIRING SWEEP
+    // ===========================
+    // Everything below wires or de-affordances the remaining dead/cosmetic
+    // elements flagged by the Phase 5 audit: map category filter, sheet
+    // directions button, employee-home tally, owner-team member removal,
+    // owner-dashboard feedback button, and the period/pod pill groups that
+    // used to only toggle their own .active class with no data behind them.
+
+    // ---- Task 2: map category filter chips ----
+    let activeMapCategory = 'all';
+    function filterMapByCategory(el, category) {
+      document.querySelectorAll('.filter-chip').forEach((c) => c.classList.remove('active'));
+      el.classList.add('active');
+      activeMapCategory = category;
+      showOrHideMapMarkersForCategory();
+    }
+    // Split out so resetDemo() can force every marker back on screen without
+    // needing a chip element to click.
+    function showOrHideMapMarkersForCategory() {
+      if (!pnchyMap) return;
+      Object.values(MERCHANTS).forEach((m) => {
+        const marker = pnchyMarkers[m.id];
+        if (!marker) return;
+        const show = activeMapCategory === 'all' || m.id === activeMapCategory;
+        const onMap = pnchyMap.hasLayer(marker);
+        if (show && !onMap) marker.addTo(pnchyMap);
+        else if (!show && onMap) pnchyMap.removeLayer(marker);
+      });
+    }
+
+    // ---- Task 3: sheet "directions" secondary button ----
+    // Mirrors the working .sheet-action-top handler in openSheet() above, just
+    // read from wherever the tester currently has the sheet open from.
+    function openDirections() {
+      const m = MERCHANTS[reviewState.activeMerchantKey];
+      if (!m) return;
+      window.open('https://maps.google.com/?q=' + encodeURIComponent(m.name + ' Williamsburg Brooklyn'), '_blank');
+    }
+
+    // ---- Task 9: owner-team "Remove" — inline flash, no native confirm() ----
+    function removeTeamMember(btn) {
+      const row = btn.closest('.a-roster-row');
+      if (!row || row.dataset.removed) return;
+      row.dataset.removed = '1';
+      btn.textContent = 'Removed ✓';
+      btn.style.color = 'var(--accent-green)';
+      btn.style.pointerEvents = 'none';
+      row.style.transition = 'opacity 0.4s ease';
+      setTimeout(() => { row.style.opacity = '0'; }, 1000);
+      setTimeout(() => { row.style.display = 'none'; }, 1400);
+    }
+    // resetDemo() companion — restores every roster row hidden/relabeled above.
+    function resetTeamRoster() {
+      document.querySelectorAll('.a-roster-row').forEach((row) => {
+        delete row.dataset.removed;
+        row.style.opacity = '';
+        row.style.display = '';
+        row.style.transition = '';
+        const btn = row.querySelector('.a-remove-btn');
+        if (btn) {
+          btn.textContent = 'Remove';
+          btn.style.color = '';
+          btn.style.pointerEvents = '';
+        }
+      });
+    }
+
+    // ---- Task 10: owner-dashboard feedback button — same temporary-flash
+    // convention as copyAccessCode() above ----
+    function feedbackFlash(btn) {
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Thanks — noted 🙏';
+      setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1500);
+    }
+
+    // ---- Task 11: period/pod pill groups, wired to real (if invented)
+    // per-period numbers instead of only toggling their own .active class ----
+
+    // Which period is currently selected within each independent pill group.
+    // Keys/defaults match whichever pill ships with the .active class.
+    let activePeriod = {
+      'own-dash-metrics': 'week',
+      'own-dash-age': 'week',
+      'own-team-scans': 'week',
+      'own-ranks': 'all',
+      'emp-ranks': 'week',
+      'lb-period': 'all',
+    };
+    let activeLbPod = 'coffee';
+
+    // Generic pill-group switcher — shared by every .a-pill/.lb-cat-btn group.
+    // Replaces the old switchAPill()/switchLbCat() (still defined above, now
+    // unused) which only ever toggled the clicked pill's own .active class.
+    function switchPeriod(el, groupKey, periodKey) {
+      el.parentElement.querySelectorAll('.a-pill, .lb-cat-btn').forEach((p) => p.classList.remove('active'));
+      el.classList.add('active');
+      activePeriod[groupKey] = periodKey;
+      const renderFn = PERIOD_GROUP_RENDER[groupKey];
+      if (renderFn) renderFn();
+    }
+
+    // The leaderboard's pod selector (Coffee/Barbers/Food) is a second,
+    // independent axis on the same screen — its own switcher, its own render.
+    function switchLbPod(el, pod) {
+      el.parentElement.querySelectorAll('.lb-pod-btn').forEach((p) => p.classList.remove('active'));
+      el.classList.add('active');
+      activeLbPod = pod;
+      renderLbList();
+    }
+
+    // ---- own-dashboard: main metrics pills (This week/month/year) ----
+    const PERIOD_DATA = {
+      'own-dash-metrics': {
+        week: { visitors: 142, scans: 118, avgSpend: '$9.50' },
+        month: { visitors: 611, scans: 497, avgSpend: '$9.80' },
+        year: { visitors: 7284, scans: 5960, avgSpend: '$10.20' },
+      },
+      // ---- own-dashboard: "Visitor Age" pills (Week/Month/3 Months) ----
+      'own-dash-age': {
+        week: { avgAge: 33, dist: [18, 41, 24, 11, 6] },
+        month: { avgAge: 34, dist: [15, 39, 27, 13, 6] },
+        '3months': { avgAge: 35, dist: [13, 37, 28, 15, 7] },
+      },
+    };
+
+    function renderOwnDashMetrics() {
+      const el = document.getElementById('own-dash-metrics-body');
+      if (!el) return;
+      const d = PERIOD_DATA['own-dash-metrics'][activePeriod['own-dash-metrics']];
+      el.innerHTML = `
+        <div class="a-metric center"><div class="a-metric-emoji">👥</div><div class="a-metric-val">${d.visitors.toLocaleString()}</div><div class="a-metric-label">Visitors</div></div>
+        <div class="a-metric center"><div class="a-metric-emoji">📲</div><div class="a-metric-val">${d.scans.toLocaleString()}</div><div class="a-metric-label">Scans</div></div>
+        <div class="a-metric center"><div class="a-metric-emoji">💵</div><div class="a-metric-val">${d.avgSpend}</div><div class="a-metric-label">Avg spend</div></div>
+      `;
+    }
+
+    function renderOwnDashAge() {
+      const avgEl = document.getElementById('own-dash-age-avg');
+      const histEl = document.getElementById('own-dash-age-hist');
+      const d = PERIOD_DATA['own-dash-age'][activePeriod['own-dash-age']];
+      if (!d) return;
+      if (avgEl) avgEl.textContent = d.avgAge;
+      if (histEl) {
+        const labels = ['18–24', '25–34', '35–44', '45–54', '55+'];
+        histEl.innerHTML = labels.map((label, i) =>
+          `<div class="a-hist-row"><span class="a-hist-label">${label}</span><div class="a-hist-track"><div class="a-hist-fill" style="width:${d.dist[i]}%;"></div></div><span class="a-hist-pct">${d.dist[i]}%</span></div>`
+        ).join('');
+      }
+    }
+
+    // ---- own-team: scan-ranking pills (Today/This week/month/year) ----
+    // "year" is hand-adjusted (not a uniform scale of "week") so the #1 spot
+    // visibly changes between periods — Sam Rivera overtakes Jordan Lee.
+    const PERIOD_DATA_TEAM_SCANS = {
+      today: [
+        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 29 },
+        { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 24 },
+        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 19 },
+        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 15 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 12 },
+        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 10 },
+        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 7 },
+      ],
+      week: [
+        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 189, trend: '▲ +3 vs prev week' },
+        { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 142, trend: '▼ -1 vs prev week' },
+        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 126, trend: '▲ +5 vs prev week' },
+        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 112 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 98, trend: '▲ +2 vs prev week' },
+        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 85, trend: '▼ -2 vs prev week' },
+        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 74 },
+      ],
+      month: [
+        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 813 },
+        { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 611 },
+        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 542 },
+        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 482 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 421 },
+        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 366 },
+        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 318 },
+      ],
+      year: [
+        { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 8200 },
+        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 7800 },
+        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 6552 },
+        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 5824 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 5096 },
+        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 4420 },
+        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 3848 },
+      ],
+    };
+
+    function renderOwnTeamList() {
+      const el = document.getElementById('own-team-list');
+      if (!el) return;
+      const rows = PERIOD_DATA_TEAM_SCANS[activePeriod['own-team-scans']];
+      const medals = ['🥇', '🥈', '🥉'];
+      el.innerHTML = rows.map((r, i) => {
+        const rankHTML = i < 3 ? medals[i] : ('#' + (i + 1));
+        const styleAttr = r.textColor ? `background:${r.bg};color:${r.textColor};` : `background:${r.bg};`;
+        const trendCls = r.trend ? (r.trend.startsWith('▼') ? 'down' : 'up') : '';
+        const trendHTML = r.trend ? `<div class="a-team-trend ${trendCls}">${r.trend}</div>` : '';
+        return `<div class="a-team-row"><div class="a-team-rank">${rankHTML}</div><div class="a-team-avatar" style="${styleAttr}">${r.letter}</div><div class="a-team-info"><div class="a-team-name">${r.name}</div>${trendHTML}</div><div class="a-team-scans">${r.scans.toLocaleString()}</div></div>`;
+      }).join('');
+    }
+
+    // ---- Shared podium builder for emp-ranks + own-ranks (both use the
+    // .a-podium/.a-podium-item family of classes) — sorts descending by
+    // .value and lays out [2nd, 1st (crown, tallest), 3rd] left to right. ----
+    function buildAvatarPodiumHTML(rows) {
+      const sorted = [...rows].sort((a, b) => b.value - a.value);
+      const [first, second, third] = sorted;
+      const order = [second, first, third];
+      return order.map((r, i) => {
+        const isCrown = i === 1;
+        const size = isCrown ? 72 : 56;
+        const fontSize = isCrown ? 26 : 20;
+        const meClass = r.me ? ' me' : '';
+        return `<div class="a-podium-item">
+          ${isCrown ? '<div class="a-podium-crown">👑</div>' : ''}
+          <div class="a-podium-avatar${meClass}" style="width:${size}px;height:${size}px;font-size:${fontSize}px;background:${r.bg};">${r.label}</div>
+          <div class="a-podium-name">${r.name}</div>
+          <div class="a-podium-scans">${r.valueText}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ---- emp-ranks: This Week / All Time ----
+    const EMP_RANKS_BASE = {
+      podium: [
+        { label: 'A', name: 'Alex', bg: 'var(--accent-rose)', scans: 126 },
+        { label: 'J', name: 'Jordan', bg: 'var(--accent-green)', scans: 189, me: true },
+        { label: 'S', name: 'Sam', bg: 'var(--muted-gold)', scans: 142 },
+      ],
+      list: [
+        { label: 'J', name: 'Jordan Reed', bg: 'var(--accent-blue)', title: 'Community Lead', scans: 112 },
+        { label: 'L', name: 'Lila Chen', bg: 'var(--accent-rose)', title: 'Growth Specialist', scans: 98 },
+        { label: 'O', name: 'Oscar Wilde', bg: 'var(--accent-purple)', title: 'Brand Ambassador', scans: 85 },
+        { label: 'M', name: 'Maya Angelou', bg: 'var(--text-light)', title: 'Curator', scans: 74 },
+      ],
+    };
+    const EMP_RANKS_FACTOR = { week: 1, all: 50 };
+
+    function renderEmpRankList() {
+      const factor = EMP_RANKS_FACTOR[activePeriod['emp-ranks']];
+      const scale = (n) => Math.round(n * factor);
+
+      const podiumEl = document.getElementById('emp-ranks-podium');
+      if (podiumEl) {
+        const rows = EMP_RANKS_BASE.podium.map((r) => {
+          const value = scale(r.scans);
+          return { label: r.label, name: r.name, bg: r.bg, me: r.me, value, valueText: `${value.toLocaleString()} SCANS` };
+        });
+        podiumEl.innerHTML = buildAvatarPodiumHTML(rows);
+      }
+
+      const listEl = document.getElementById('emp-ranks-list');
+      if (listEl) {
+        listEl.innerHTML = EMP_RANKS_BASE.list.map((r, i) => {
+          const scans = scale(r.scans);
+          return `<div class="a-team-row"><div class="a-team-rank">#${i + 4}</div><div class="a-team-avatar" style="background:${r.bg};">${r.label}</div><div class="a-team-info"><div class="a-team-name">${r.name}</div><div class="a-roster-sub">${r.title}</div></div><div class="a-team-scans">${scans.toLocaleString()}</div></div>`;
+        }).join('');
+      }
+    }
+
+    // ---- own-ranks: All time / Week / Month ----
+    const OWN_RANKS_BASE = {
+      podium: [
+        { icon: '🌮', name: 'La Taqueria', bg: 'var(--sage)', pts: 11200 },
+        { icon: '☕', name: 'Bloom Coffee', bg: 'var(--blush)', pts: 12840, me: true },
+        { icon: '💈', name: 'Fade & Co.', bg: 'var(--sage)', pts: 9840 },
+      ],
+      list: [
+        { icon: '🍺', name: 'The Rusty Nail', bg: 'var(--muted-gold)', pts: 8960, visits: 2240 },
+        { icon: '🍵', name: 'Matcha House', bg: 'var(--sage)', pts: 8640, visits: 2160 },
+        { icon: '🥪', name: 'Katz Deli', bg: 'var(--peach)', pts: 7920, visits: 1980 },
+        { icon: '✂️', name: "Manny's Cuts", bg: 'var(--blush)', pts: 7680, visits: 1920 },
+      ],
+    };
+    // "All time" keeps the shipped numbers as-is; week/month are invented
+    // smaller slices of the same total (week ≈ all/50, month ≈ week × 4.3).
+    const OWN_RANKS_FACTOR = { all: 1, week: 0.02, month: 0.086 };
+
+    function renderOwnRankList() {
+      const factor = OWN_RANKS_FACTOR[activePeriod['own-ranks']];
+      const scale = (n) => (factor === 1 ? n : Math.max(1, Math.round(n * factor)));
+
+      const podiumEl = document.getElementById('own-ranks-podium');
+      if (podiumEl) {
+        const rows = OWN_RANKS_BASE.podium.map((r) => {
+          const value = scale(r.pts);
+          return { label: r.icon, name: r.name, bg: r.bg, me: r.me, value, valueText: `${value.toLocaleString()} pts` };
+        });
+        podiumEl.innerHTML = buildAvatarPodiumHTML(rows);
+      }
+
+      const listEl = document.getElementById('own-ranks-list');
+      if (listEl) {
+        listEl.innerHTML = OWN_RANKS_BASE.list.map((r, i) => {
+          const pts = scale(r.pts);
+          const visits = scale(r.visits);
+          return `<div class="a-team-row"><div class="a-team-rank">${i + 4}</div><div class="a-punch-icon" style="background:${r.bg};">${r.icon}</div><div class="a-team-info"><div class="a-team-name">${r.name}</div><div class="a-roster-sub">${visits.toLocaleString()} total visits</div></div><div class="a-team-scans">${pts.toLocaleString()}</div></div>`;
+        }).join('');
+      }
+    }
+
+    // ---- leaderboard: pod selector (Coffee/Barbers/Food) × period pills
+    // (All Time/This Week/This Month/24 Hours) ----
+    const LB_BASE = {
+      coffee: {
+        rows: [
+          { icon: '☕', name: 'Bloom Coffee', bg: 'var(--sage)', score: 2847 },
+          { icon: '🍵', name: 'Matcha House', bg: 'var(--peach)', score: 1681 },
+          { icon: '🧋', name: 'Boba & Co.', bg: 'var(--sky)', score: 1204 },
+          { icon: '☕', name: 'Grounds & Co.', score: 980, trend: '▲ +2' },
+          { icon: '🫖', name: 'The Earl', score: 842, trend: '▲ +1' },
+          { icon: '☕', name: 'Daily Drip', score: 710, trend: '▼ -1' },
+          { icon: '🫘', name: 'Bean Scene', score: 604, trend: '–' },
+        ],
+      },
+      barber: {
+        rows: [
+          { icon: '✂️', name: 'Fade Studio', bg: 'var(--lavender)', score: 3120 },
+          { icon: '💈', name: 'Sharp & Fresh', bg: 'var(--sky)', score: 2680 },
+          { icon: '🪒', name: 'The Clipper', bg: 'var(--sage)', score: 2210 },
+          { icon: '✂️', name: "Manny's Cuts", score: 1840, trend: '▲ +3' },
+          { icon: '💈', name: 'Blade & Co.', score: 1590, trend: '▲ +1' },
+          { icon: '🪒', name: "Gentleman's Cut", score: 1320, trend: '▼ -2' },
+          { icon: '✂️', name: 'Line-Up Lounge', score: 1080, trend: '–' },
+        ],
+      },
+      food: {
+        rows: [
+          { icon: '🌮', name: 'Sol Tacos', bg: 'var(--blush)', score: 3560 },
+          { icon: '🥪', name: 'Katz Deli', bg: 'var(--peach)', score: 2990 },
+          { icon: '🍜', name: 'Ramen House', bg: 'var(--muted-gold)', score: 2410 },
+          { icon: '🌮', name: 'La Taqueria', score: 1975, trend: '▲ +3' },
+          { icon: '🍕', name: 'Pizza Bar', score: 1680, trend: '▲ +1' },
+          { icon: '🥯', name: 'Bagel Nook', score: 1390, trend: '▼ -2' },
+          { icon: '🍜', name: 'Noodle Bar', score: 1150, trend: '–' },
+        ],
+      },
+    };
+    // "all" keeps each pod's shipped/base numbers as-is; the rest are
+    // invented slices of the same total, same heuristic as OWN_RANKS_FACTOR.
+    const LB_PERIOD_FACTOR = { all: 1, week: 0.083, month: 0.36, '24h': 0.0125 };
+
+    function computeLbRows() {
+      const base = LB_BASE[activeLbPod].rows;
+      const factor = LB_PERIOD_FACTOR[activePeriod['lb-period']];
+      if (factor === 1) return base;
+      return base.map((r) => ({ ...r, score: Math.max(1, Math.round(r.score * factor)) }));
+    }
+
+    // Leaderboard's podium uses its own class family (.lb-podium-*) with
+    // fixed per-position colors/heights via nth-child CSS — position order is
+    // [3rd place, 1st place (crown, tallest), 2nd place], matching the
+    // markup this screen shipped with.
+    function buildLbPodiumHTML(top3) {
+      const [first, second, third] = top3;
+      const order = [third, first, second];
+      const baseLabels = ['3', '1', '2'];
+      return order.map((r, i) => `
+        <div class="lb-podium-item">
+          <div class="lb-podium-icon" style="background:${r.bg || 'var(--surface)'};">${r.icon}</div>
+          ${i === 1 ? '<div class="lb-podium-crown">👑</div>' : ''}
+          <div class="lb-podium-name">${r.name}</div>
+          <div class="lb-podium-score">${r.score.toLocaleString()} pts</div>
+          <div class="lb-podium-base">${baseLabels[i]}</div>
+        </div>`).join('');
+    }
+
+    function renderLbList() {
+      const rows = computeLbRows();
+      const top3 = rows.slice(0, 3);
+      const rest = rows.slice(3);
+
+      const podiumEl = document.getElementById('lb-podium');
+      if (podiumEl) podiumEl.innerHTML = buildLbPodiumHTML(top3);
+
+      const listEl = document.getElementById('lb-list');
+      if (listEl) {
+        listEl.innerHTML = rest.map((r, i) => {
+          const down = (r.trend || '').startsWith('▼');
+          const visits = Math.max(1, Math.round(r.score * 0.24));
+          return `<div class="lb-row">
+            <div class="lb-rank">${i + 4}</div>
+            <div class="lb-row-icon">${r.icon}</div>
+            <div class="lb-row-info">
+              <div class="lb-row-name">${r.name}</div>
+              <div class="lb-row-sub">${visits.toLocaleString()} visits</div>
+            </div>
+            <div>
+              <div class="lb-row-score">${r.score.toLocaleString()}</div>
+              <div class="lb-row-change${down ? ' down' : ''}">${r.trend || '–'}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    // Lookup used by switchPeriod() above — declared last since function
+    // declarations are hoisted, but kept here for readability next to the
+    // render functions it points to.
+    const PERIOD_GROUP_RENDER = {
+      'own-dash-metrics': renderOwnDashMetrics,
+      'own-dash-age': renderOwnDashAge,
+      'own-team-scans': renderOwnTeamList,
+      'own-ranks': renderOwnRankList,
+      'emp-ranks': renderEmpRankList,
+      'lb-period': renderLbList,
+    };
+
+    // resetDemo() companion — puts every pill group/pod/map-filter back to
+    // its shipped default selection and repaints every zone from that state.
+    function resetPeriodFiltersUI() {
+      activePeriod = {
+        'own-dash-metrics': 'week',
+        'own-dash-age': 'week',
+        'own-team-scans': 'week',
+        'own-ranks': 'all',
+        'emp-ranks': 'week',
+        'lb-period': 'all',
+      };
+      activeLbPod = 'coffee';
+      activeMapCategory = 'all';
+
+      document.querySelectorAll('.a-pill, .lb-cat-btn, .lb-pod-btn, .filter-chip').forEach((el) => {
+        el.classList.remove('active');
+      });
+      const reactivate = (onclickSubstring) => {
+        const el = document.querySelector(`[onclick*="${onclickSubstring}"]`);
+        if (el) el.classList.add('active');
+      };
+      reactivate("'own-dash-metrics', 'week'");
+      reactivate("'own-dash-age', 'week'");
+      reactivate("'own-team-scans', 'week'");
+      reactivate("'own-ranks', 'all'");
+      reactivate("'emp-ranks', 'week'");
+      reactivate("'lb-period', 'all'");
+      reactivate("switchLbPod(this, 'coffee')");
+      reactivate("filterMapByCategory(this, 'all')");
+
+      renderOwnDashMetrics();
+      renderOwnDashAge();
+      renderOwnTeamList();
+      renderOwnRankList();
+      renderEmpRankList();
+      renderLbList();
+      showOrHideMapMarkersForCategory();
+    }
+
     // Init
     generateQR();
     // Populate the profile/QR/success screens with real data before any
     // interaction happens, so they're never empty on first load.
     renderPunchSurfaces('coffee');
     renderDropSurfaces();
+    // Phase 5 — populate every period-driven zone up front too, so screens
+    // are never showing stale static markup before their first visit.
+    applyEmpSettingsToggles();
+    renderOwnDashMetrics();
+    renderOwnDashAge();
+    renderOwnTeamList();
+    renderOwnRankList();
+    renderEmpRankList();
+    renderLbList();
   </script>
 
   <!-- PWA service worker (network-first, required for Android installability) -->
