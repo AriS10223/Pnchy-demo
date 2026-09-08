@@ -3414,14 +3414,14 @@
           </div>
 
           <!-- Drop alert -->
-          <div class="drop-alert" onclick="showScreen('drops')">
-            <div class="drop-alert-icon">🔥</div>
+          <div class="drop-alert" id="home-drop-alert" onclick="showScreen('drops')" style="display:none;">
+            <div class="drop-alert-icon" id="home-drop-alert-icon">🔥</div>
             <div class="drop-alert-text" style="flex:1;">
-              <div class="drop-alert-label">Drop Incoming</div>
-              <div class="drop-alert-title">Bloom Coffee Drop</div>
-              <div class="drop-alert-sub">11 of 15 needed • 2 min walk</div>
+              <div class="drop-alert-label" id="home-drop-alert-label">Drop Incoming</div>
+              <div class="drop-alert-title" id="home-drop-alert-title">Bloom Coffee Drop</div>
+              <div class="drop-alert-sub" id="home-drop-alert-sub">11 of 15 needed • 2 min walk</div>
               <div class="drop-alert-progress">
-                <div class="drop-alert-progress-fill"></div>
+                <div class="drop-alert-progress-fill" id="home-drop-alert-fill"></div>
               </div>
             </div>
             <div class="drop-alert-chevron">
@@ -5583,6 +5583,43 @@
       renderPassQR();
       renderEmpDropCard();
       renderEmpDropControls();
+      renderHomeDropAlert();
+    }
+
+    // Patches the home-screen map's "Drop Incoming" card from WORLD.drop
+    // instead of the static "11 of 15 needed" placeholder it shipped with -
+    // that text used to silently disagree with the real drop state once the
+    // engine existed (e.g. still reading "needed" while the drop was Live).
+    function renderHomeDropAlert() {
+      const el = document.getElementById('home-drop-alert');
+      if (!el) return;
+      const d = WORLD.drop;
+      if (!d || d.state === 'expired') { el.style.display = 'none'; return; }
+      el.style.display = 'flex';
+
+      const m = MERCHANTS[d.merchantKey];
+      const label = document.getElementById('home-drop-alert-label');
+      const title = document.getElementById('home-drop-alert-title');
+      const sub = document.getElementById('home-drop-alert-sub');
+      const fill = document.getElementById('home-drop-alert-fill');
+      const icon = document.getElementById('home-drop-alert-icon');
+
+      if (title) title.textContent = `${m.name} Drop`;
+
+      if (d.state === 'live') {
+        const remainMin = Math.max(0, d.liveEndsAtSim - SIM.nowMin);
+        const mm = Math.floor(remainMin), ss = Math.floor((remainMin - mm) * 60);
+        if (label) label.textContent = '🔴 Live Now';
+        if (sub) sub.textContent = `${mm}:${String(ss).padStart(2, '0')} left · unlocks ${d.configSnapshot.reward.description}`;
+        if (fill) { fill.style.width = '100%'; fill.style.background = 'var(--accent-green)'; }
+        if (icon) icon.style.background = 'var(--accent-green)';
+      } else {
+        const frac = fillFraction(d);
+        if (label) label.textContent = 'Drop Incoming';
+        if (sub) sub.textContent = `${d.currentDensity} of ${d.configSnapshot.threshold} needed`;
+        if (fill) { fill.style.width = `${Math.round(frac * 100)}%`; fill.style.background = 'var(--building)'; }
+        if (icon) icon.style.background = 'var(--accent-rose)';
+      }
     }
 
     // ---- Employee drop status (Phase 3, Tasks 1-2) ----
@@ -5952,7 +5989,7 @@
       if (pass.redeemed) {
         body.innerHTML = `
           <div class="pass-qr-state">
-            <div class="pass-qr-icon">✓</div>
+            <div class="pass-qr-icon" style="color: var(--accent-green);">✓</div>
             <div class="pass-qr-heading">Already redeemed</div>
             <div class="pass-qr-sub">The team already scanned this pass. Enjoy!</div>
           </div>
@@ -5963,7 +6000,7 @@
       if (SIM.nowMin > pass.expiresAtSim) {
         body.innerHTML = `
           <div class="pass-qr-state">
-            <div class="pass-qr-icon">⏱️</div>
+            <div class="pass-qr-icon" style="color: var(--accent-rose);">⏱️</div>
             <div class="pass-qr-heading">This pass expired</div>
             <div class="pass-qr-sub">Your 2-hour redemption window closed. Watch for the next drop.</div>
           </div>
