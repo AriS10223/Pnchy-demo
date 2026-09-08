@@ -2,7 +2,7 @@
 // Network-first (not cache-first) so redeploying the demo always shows the
 // latest version on any device that has previously loaded it.
 
-const CACHE_NAME = 'pnchy-demo-v6';
+const CACHE_NAME = 'pnchy-demo-v7';
 const PRECACHE_URLS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', event => {

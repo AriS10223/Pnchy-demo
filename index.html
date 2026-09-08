@@ -3269,6 +3269,57 @@
     .a-lift-card { background: var(--sage); border-color: var(--sage); }
     .a-lift-pct { font-family: 'Fraunces', serif; font-size: 34px; line-height: 1; }
     .a-lift-line { font-size: 13px; color: var(--text-mid); margin-top: 6px; }
+
+    /* ===== PHASE 5B: COACH MARKS + POLISH ===== */
+    /* One-time, per-role landing-screen nudge — a small anchored callout,
+       never a full-screen backdrop, so it never blocks anything underneath.
+       Same dark-card-on-light-screen language as .drop-alert/.toast-golive.
+       Default is normal document flow (a flex child right after its target
+       card, so it reflows correctly at any viewport width instead of relying
+       on tuned pixel offsets); the whole bubble is clickable to dismiss, same
+       convention as .drop-alert/.toast-golive, with a small × for clarity. */
+    .coach-mark {
+      z-index: 90;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--text-dark);
+      color: var(--cream);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 8px 24px rgba(44, 40, 37, 0.3);
+      cursor: pointer;
+    }
+    .coach-mark.show { display: flex; animation: fadeUp 0.3s ease forwards; }
+    .coach-mark-text { flex: 1; font-size: 12.5px; font-weight: 500; line-height: 1.4; }
+    .coach-mark-close {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15); color: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; line-height: 1; cursor: pointer;
+    }
+    /* Customer's mark floats over the map (nothing critical sits beneath it
+       there), so it's the one exception that needs real anchoring. */
+    #coach-customer { position: absolute; top: 202px; left: 20px; right: 20px; }
+
+    /* Subtle CTA pulses — opacity/box-shadow only, never scale/transform, so
+       nothing shifts layout. Slow (2.5-3s) and low-amplitude by design. */
+    @keyframes ctaPulseNeutral {
+      0%, 100% { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); }
+      50% { box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32); }
+    }
+    @keyframes ctaPulseGreen {
+      0%, 100% { opacity: 1; box-shadow: 0 4px 14px rgba(123, 175, 115, 0.25); }
+      50% { opacity: 0.9; box-shadow: 0 4px 20px rgba(123, 175, 115, 0.55); }
+    }
+    /* Owner's un-armed drop circle — .locked is only ever applied while
+       WORLD.drop === null (see renderDropSurfaces()), so this pulse falls
+       away automatically the moment a drop is armed with no JS involved. */
+    .a-drop-btn.locked { animation: ctaPulseNeutral 2.8s ease-in-out infinite; }
+    /* Customer's "View my pass" button — .dd-pass-btn is only ever rendered
+       into the DOM while a live/expired pass exists (see renderDropDetail()),
+       so this pulse is likewise conditional with no extra JS. */
+    .dd-pass-btn { animation: ctaPulseGreen 2.6s ease-in-out infinite; }
   </style>
 </head>
 
@@ -3499,6 +3550,12 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Coach mark (Phase 5B) — first-visit nudge, tap to dismiss -->
+          <div class="coach-mark" id="coach-customer" onclick="dismissCoachMark('customer')">
+            <div class="coach-mark-text">Tap a pin to see their punch card</div>
+            <div class="coach-mark-close">×</div>
           </div>
 
         </div>
@@ -3940,6 +3997,14 @@
               <div id="emp-home-drop-body"><!-- populated by renderEmpDropCard() --></div>
             </div>
 
+            <!-- Coach mark (Phase 5B) — first-visit nudge, tap to dismiss. In
+                 normal flex flow (a-pad is a flex column), right after its
+                 target card, so it reflows correctly at any viewport width. -->
+            <div class="coach-mark" id="coach-employee" onclick="dismissCoachMark('employee')">
+              <div class="coach-mark-text">Tap here to check today's Density Drop</div>
+              <div class="coach-mark-close">×</div>
+            </div>
+
             <div class="a-tally" id="emp-home-tally">🎁 3 Drop passes redeemed this shift</div>
 
             <div class="a-metrics">
@@ -4141,6 +4206,14 @@
                 <span class="a-rank-chip">#2 on the block</span>
               </div>
               <div class="a-drop-lift" id="own-dash-drop-lift" style="display:none;"></div>
+            </div>
+
+            <!-- Coach mark (Phase 5B) — first-visit nudge, tap to dismiss. In
+                 normal flex flow (a-pad is a flex column), right after its
+                 target card, so it reflows correctly at any viewport width. -->
+            <div class="coach-mark" id="coach-owner" onclick="dismissCoachMark('owner')">
+              <div class="coach-mark-text">Set up a Density Drop to bring your neighborhood in</div>
+              <div class="coach-mark-close">×</div>
             </div>
 
             <div class="a-pills">
@@ -4798,6 +4871,13 @@
     function showScreen(name) {
       currentScreenName = name;
 
+      // Phase 5B: any coach mark left open on the screen we're leaving closes
+      // on navigation — it's a one-time nudge, not a modal the tester has to
+      // explicitly dismiss to move on. maybeShowCoachMark() below (which only
+      // fires once per role per session) is what decides whether the target
+      // screen gets one of its own.
+      hideAllCoachMarks();
+
       // Stop the QR countdown/repaint loop whenever we leave the qr screen —
       // startQRTimer() (called below when entering 'qr') restarts it cleanly,
       // this just prevents it from ticking forever in the background otherwise.
@@ -4868,6 +4948,12 @@
       if (name === 'own-ranks') renderOwnRankList();
       if (name === 'emp-ranks') renderEmpRankList();
       if (name === 'leaderboard') renderLbList();
+
+      // Phase 5B: show the role's one-time landing-screen coach mark, if this
+      // is that role's landing screen and it hasn't been shown yet this
+      // session. Must run after the screen swap above so its element is
+      // actually visible.
+      maybeShowCoachMark(name);
     }
 
     // Role picker → first screen of the chosen role's app
@@ -4932,6 +5018,13 @@
       // Period/pod pills (Task 11) and the map category filter (Task 2) back
       // to their default selection, with every data-driven zone repainted.
       resetPeriodFiltersUI();
+
+      // ---- Phase 5B addition ----
+      // Coach marks back to "not yet shown" so a fresh tester sees each
+      // role's one-time nudge again. The generic '.open, .show' sweep above
+      // already hid any coach mark that happened to be open — this just
+      // re-arms them.
+      WORLD.coach = { customerShown: false, employeeShown: false, ownerShown: false };
 
       renderPunchSurfaces('coffee');
       renderDropSurfaces();
@@ -5203,6 +5296,10 @@
       // .a-toggle classes shipped in screen-emp-profile's markup (Shift
       // Notifications & Haptic Feedback start on, Dark Mode starts off).
       empSettings: { shiftNotifications: true, darkMode: false, hapticFeedback: true },
+      // One-time landing-screen coach mark per role (Phase 5B) — flips true
+      // the first time that role's coach mark is shown this session and
+      // never shows again after that. In-memory only, reset by resetDemo().
+      coach: { customerShown: false, employeeShown: false, ownerShown: false },
     };
 
     // Invented-but-plausible "normal day" discovery/visit number for Bloom
@@ -7328,6 +7425,43 @@
       renderEmpRankList();
       renderLbList();
       showOrHideMapMarkersForCategory();
+    }
+
+    // ===== PHASE 5B: COACH MARKS + POLISH =====
+    // One-time, dismissible landing-screen nudge per role. Purely a UI hint —
+    // WORLD.coach (declared on the WORLD literal above) is the only state,
+    // no timers involved (tap-to-dismiss only, per spec). showScreen() calls
+    // hideAllCoachMarks() on every navigation and maybeShowCoachMark(name) on
+    // every arrival; resetDemo() re-arms WORLD.coach.
+
+    // Landing screen name -> { WORLD.coach flag key, coach-mark element id }
+    const COACH_LANDING = {
+      home: { flag: 'customerShown', el: 'coach-customer' },
+      'emp-home': { flag: 'employeeShown', el: 'coach-employee' },
+      'own-dashboard': { flag: 'ownerShown', el: 'coach-owner' },
+    };
+    // role name (as passed to dismissCoachMark) -> the same entry
+    const COACH_BY_ROLE = { customer: COACH_LANDING.home, employee: COACH_LANDING['emp-home'], owner: COACH_LANDING['own-dashboard'] };
+
+    function maybeShowCoachMark(screenName) {
+      const entry = COACH_LANDING[screenName];
+      if (!entry || WORLD.coach[entry.flag]) return;
+      const el = document.getElementById(entry.el);
+      if (!el) return;
+      el.classList.add('show');
+      WORLD.coach[entry.flag] = true;
+    }
+
+    function dismissCoachMark(role) {
+      const entry = COACH_BY_ROLE[role];
+      if (!entry) return;
+      const el = document.getElementById(entry.el);
+      if (el) el.classList.remove('show');
+      WORLD.coach[entry.flag] = true;
+    }
+
+    function hideAllCoachMarks() {
+      document.querySelectorAll('.coach-mark.show').forEach((el) => el.classList.remove('show'));
     }
 
     // Init
