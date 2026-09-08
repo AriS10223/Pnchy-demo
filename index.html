@@ -4203,7 +4203,7 @@
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:10px;">
                 <span style="font-size:12px;color:var(--text-mid);" id="own-dash-drop-history">0 drops · 0 redemptions <span style="color:var(--text-light);">since launch</span></span>
-                <span class="a-rank-chip">#2 on the block</span>
+                <span class="a-rank-chip" id="own-dash-rank-chip">Not ranked yet</span>
               </div>
               <div class="a-drop-lift" id="own-dash-drop-lift" style="display:none;"></div>
             </div>
@@ -4615,7 +4615,7 @@
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
             <path d="M12 6v6l4 2" />
           </svg>
-          <div class="tab-badge">2</div>
+          <div class="tab-badge" id="drops-tab-badge" style="display:none;">0</div>
         </div>
         <span class="tab-label">Drops</span>
       </div>
@@ -5668,6 +5668,14 @@
         history.innerHTML = `${WORLD.history.drops} drops · ${WORLD.history.redemptions} redemptions <span style="color:var(--text-light);">since launch</span>`;
       }
 
+      // Rank chip mirrors the "Owner of the Block" placeholder on the
+      // analytics screen — no real scoring is implemented, so stay honest
+      // about that instead of showing an invented rank with zero drops run.
+      const rankChip = document.getElementById('own-dash-rank-chip');
+      if (rankChip) {
+        rankChip.textContent = WORLD.history.drops > 0 ? '#2 on the block' : 'Not ranked yet';
+      }
+
       // Task 2 — dashboard-only "did this increase discovery" line. Only
       // shown once a drop has gone live AND finished (not while
       // building/live, and not for a fizzle where liveAtSim stays null).
@@ -5819,6 +5827,23 @@
       renderEmpDropCard();
       renderEmpDropControls();
       renderHomeDropAlert();
+      renderDropsTabBadge();
+    }
+
+    // The tab badge reflects real valid (unredeemed, unexpired) passes —
+    // there's at most one in this demo — instead of a hardcoded count that
+    // could disagree with what the pass wallet actually holds.
+    function renderDropsTabBadge() {
+      const badge = document.getElementById('drops-tab-badge');
+      if (!badge) return;
+      const pass = WORLD.drop && WORLD.drop.myPass;
+      const valid = pass && !pass.redeemed && SIM.nowMin <= pass.expiresAtSim;
+      if (valid) {
+        badge.textContent = '1';
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
     }
 
     // Patches the home-screen map's "Drop Incoming" card from WORLD.drop
