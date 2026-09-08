@@ -3139,9 +3139,96 @@
     .a-drop-btn.live-drop { background: radial-gradient(circle at 50% 40%, var(--accent-green), #4F8A48 75%); box-shadow: 0 10px 26px rgba(123,175,115,0.4); }
     .a-drop-btn.expired-drop { background: radial-gradient(circle at 50% 40%, #B7B0A5, #948C80); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
 
-    /* Map pin halo while a drop is building/live at that merchant */
-    .pnchy-pin.pin-drop-active { box-shadow: 0 4px 20px var(--building-glow); border-color: var(--building); }
-    .pnchy-pin.pin-drop-active.is-live { box-shadow: 0 4px 20px rgba(123,175,115,0.4); border-color: var(--accent-green); }
+    /* ===== DENSITY DROP (Phase 2) ===== */
+    /* Map pin warmth tiers while a drop is building at that merchant, plus a
+       distinct solid + bouncing treatment while live. Replaces Phase 1's
+       single light-touch halo class. */
+    .pnchy-pin.pin-warm-faint { box-shadow: 0 4px 16px var(--building-faint); border-color: var(--building); }
+    .pnchy-pin.pin-warm-subtle { box-shadow: 0 4px 20px var(--building-subtle); border-color: var(--building); }
+    .pnchy-pin.pin-warm-glow { box-shadow: 0 4px 26px var(--building-glow); border-color: var(--building); }
+    .pnchy-pin.pin-live {
+      box-shadow: 0 4px 22px rgba(123, 175, 115, 0.4);
+      border-color: var(--accent-green);
+      animation: pinBounce 1.4s ease-out infinite;
+    }
+    @keyframes pinBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* Customer Drops tab — wallet button + active/building drop card + dwell status */
+    .drops-wallet-btn {
+      width: 40px; height: 40px; border-radius: 12px; background: var(--white); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 17px; cursor: pointer;
+      flex-shrink: 0; font-family: 'DM Sans', sans-serif;
+    }
+    .drops-building-card {
+      margin: 16px 24px 0; background: var(--building-faint); border: 1px solid var(--building-subtle);
+      border-radius: 20px; padding: 16px 18px; cursor: pointer;
+    }
+    .drops-building-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .drops-building-emoji { font-size: 22px; line-height: 1; }
+    .drops-building-label {
+      font-size: 11px; font-weight: 700; color: #8A6A3D; text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .drops-building-title { font-size: 15px; font-weight: 600; color: var(--text-dark); margin-top: 2px; }
+    .drops-active-sub { font-size: 12px; color: var(--text-mid); margin-top: 8px; }
+    .drops-dwell-status { margin: 10px 24px 0; font-size: 12px; color: var(--text-mid); }
+    .drops-dwell-qualified { margin: 10px 24px 0; font-size: 12px; font-weight: 600; color: var(--accent-green); }
+    .drops-empty-state { margin: 16px 24px 0; font-size: 13px; color: var(--text-light); }
+
+    /* Drop detail screen (screen-drop-detail) */
+    .dd-emoji { font-size: 32px; margin-bottom: 8px; }
+    .dd-heading { font-family: 'Fraunces', serif; font-size: 20px; color: var(--text-dark); font-weight: 400; }
+    .dd-sub { font-size: 13px; color: var(--text-mid); margin-top: 6px; line-height: 1.5; }
+    .dd-hint { font-size: 12px; color: var(--text-light); margin-top: 12px; line-height: 1.5; }
+    .dd-percent { font-family: 'Fraunces', serif; font-size: 24px; color: var(--text-dark); font-weight: 500; }
+    .dd-ring-row { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
+    .dd-ring-caption { font-size: 12px; color: var(--text-mid); line-height: 1.5; }
+    .dd-qualified { margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--accent-green); line-height: 1.5; }
+    .dd-card-live { background: var(--sage); border-color: var(--sage); }
+    .dd-live-pill {
+      display: inline-block; background: var(--accent-green); color: var(--white); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.6px; text-transform: uppercase; padding: 5px 12px; border-radius: 999px;
+    }
+    .dd-reward { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text-dark); margin-top: 12px; font-weight: 500; }
+    .dd-countdown { font-size: 13px; color: var(--text-mid); margin-top: 6px; }
+    .dd-pass-btn { margin-top: 16px; background: var(--accent-green); color: var(--white); }
+    .dd-consolation {
+      margin-top: 14px; font-size: 12px; font-weight: 600; color: var(--text-dark); background: var(--sage);
+      border-radius: 12px; padding: 10px 12px; line-height: 1.5;
+    }
+
+    /* Pass wallet screen (screen-passes) */
+    .pw-card { cursor: pointer; }
+    .pw-card-top { display: flex; align-items: center; gap: 12px; }
+    .pw-emoji { font-size: 26px; line-height: 1; }
+    .pw-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+    .pw-reward { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
+    .pw-status { margin-top: 12px; font-size: 12px; font-weight: 600; }
+    .pw-status.valid { color: var(--building); }
+    .pw-status.redeemed { color: var(--accent-green); }
+    .pw-status.expired { color: var(--accent-rose); }
+    .pw-empty { text-align: center; padding: 40px 20px; }
+    .pw-empty-title { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text-dark); }
+    .pw-empty-sub { font-size: 13px; color: var(--text-light); margin-top: 8px; line-height: 1.5; }
+
+    /* Pass QR screen (screen-pass-qr) — dark full-bleed, mirrors #screen-qr */
+    #screen-pass-qr { background: var(--text-dark); align-items: center; justify-content: flex-start; padding-top: 0; }
+    .pass-qr-state { margin: 60px 32px 0; text-align: center; }
+    .pass-qr-icon { font-size: 40px; line-height: 1; }
+    .pass-qr-heading { font-family: 'Fraunces', serif; font-size: 22px; color: var(--cream); margin-top: 14px; }
+    .pass-qr-sub { font-size: 13px; color: rgba(247, 244, 239, 0.6); margin-top: 10px; line-height: 1.5; }
+    .pass-qr-caption { text-align: center; font-size: 12px; color: rgba(247, 244, 239, 0.5); margin-top: 20px; }
+
+    /* Go-live toast — shell-level, floats above whatever screen is active */
+    .toast-golive {
+      position: absolute; left: 16px; right: 16px; bottom: 190px; z-index: 200;
+      background: var(--text-dark); color: var(--cream); border-radius: 16px; padding: 14px 16px;
+      font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(44, 40, 37, 0.3); cursor: pointer;
+      display: none;
+    }
+    .toast-golive.show { display: block; animation: fadeUp 0.3s ease forwards; }
   </style>
 </head>
 
@@ -3382,24 +3469,19 @@
          ============================ -->
       <div class="screen" id="screen-drops">
         <div class="drops-header">
-          <div class="drops-subtitle">Near you in Williamsburg</div>
-          <div class="drops-title">Density <span>Drops</span></div>
-        </div>
-
-        <!-- Live drop banner -->
-        <div class="drops-live-banner" onclick="showDropDetail()">
-          <div class="live-pulse"></div>
-          <div class="live-text">
-            <div class="live-label">🔴 Live Now</div>
-            <div class="live-title">Bloom Coffee — Free Drink Drop!</div>
-          </div>
-          <div class="live-count">
-            <div class="live-count-num">13</div>
-            <div class="live-count-label">/ 15 needed</div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+            <div>
+              <div class="drops-subtitle">Near you in Williamsburg</div>
+              <div class="drops-title">Density <span>Drops</span></div>
+            </div>
+            <button class="drops-wallet-btn" onclick="showScreen('passes')" aria-label="My passes">🎟️</button>
           </div>
         </div>
 
-        <div class="drops-section-title">Upcoming Today</div>
+        <!-- Active/building drop + dwell status — rebuilt from WORLD.drop by renderCustomerDropsList() -->
+        <div id="drops-active-section"></div>
+
+        <div class="drops-section-title">Friends are going</div>
 
         <div class="drops-scroll">
           <!-- Drop card 1 -->
@@ -3499,6 +3581,72 @@
                 Almost there!</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- ============================
+         DROP DETAIL (customer)
+         ============================ -->
+      <div class="screen" id="screen-drop-detail">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('drops')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Bloom Coffee</div>
+            <div class="a-cfg-subtitle">Density drop status</div>
+          </div>
+
+          <div class="a-pad">
+            <div class="a-card" id="dd-card">
+              <!-- populated by renderDropDetail() -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================
+         PASS WALLET (customer)
+         ============================ -->
+      <div class="screen" id="screen-passes">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('drops')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">My Passes</div>
+            <div class="a-cfg-subtitle">Drop passes you've unlocked</div>
+          </div>
+
+          <div class="a-pad" id="pw-content">
+            <!-- populated by renderPassWallet() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================
+         PASS QR (customer, no chrome)
+         ============================ -->
+      <div class="screen" id="screen-pass-qr">
+        <div class="qr-header">
+          <div class="qr-back" onclick="showScreen('passes')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,0.7)"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </div>
+          <div class="qr-title" id="pass-qr-merchant">Bloom Coffee</div>
+          <div class="qr-subtitle" id="pass-qr-reward">—</div>
+        </div>
+
+        <div id="pass-qr-body">
+          <!-- populated by renderPassQR() -->
         </div>
       </div>
 
@@ -4377,6 +4525,11 @@
 
     </div><!-- /screens -->
 
+    <!-- Go-live toast — shell-level so it floats above whatever screen is active -->
+    <div class="toast-golive" id="golive-toast" onclick="showScreen('pass-qr')">
+      🎉 Bloom Coffee is LIVE — your pass is ready
+    </div>
+
     <!-- Tab Bar (hidden on splash) -->
     <div class="tab-bar" id="tab-bar" style="display:none;">
       <div class="tab-item active" data-screen="home" onclick="switchTab(this, 'home')">
@@ -4547,8 +4700,11 @@
     // ===========================
     // QR CODE GENERATION
     // ===========================
-    function generateQR() {
-      const qr = document.getElementById('fake-qr');
+    // Shared fake-QR cell generator — draws the 9x9 grid into whichever
+    // container id is passed in, so the punch-QR screen and the (Phase 2)
+    // pass-QR screen never have to fight over the same #fake-qr id.
+    function generateQRCells(containerId) {
+      const qr = document.getElementById(containerId);
       if (!qr) return;
       qr.innerHTML = '';
       // Position markers pattern
@@ -4576,6 +4732,15 @@
           qr.appendChild(cell);
         }
       }
+    }
+
+    function generateQR() {
+      generateQRCells('fake-qr');
+    }
+
+    // Density Drop pass QR (Task 8) — same fake-grid approach, own container.
+    function generatePassQR(containerId) {
+      generateQRCells(containerId);
     }
 
     // Tap QR to show success
@@ -4626,14 +4791,22 @@
     // tab bar shows. Screens with no role (splash, role picker, success) show none.
     const SCREEN_ROLE = {
       home: 'customer', drops: 'customer', qr: 'customer', leaderboard: 'customer', profile: 'customer',
+      'drop-detail': 'customer', passes: 'customer',
       'emp-home': 'employee', 'emp-scan': 'employee', 'emp-ranks': 'employee', 'emp-profile': 'employee',
       'own-dashboard': 'owner', 'own-drops': 'owner', 'own-drop-config': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
       'own-ranks': 'owner', 'own-profile': 'owner',
     };
     const ROLE_TABBAR = { customer: 'tab-bar', employee: 'tab-bar-emp', owner: 'tab-bar-own' };
-    const NO_CHROME = ['splash', 'role-picker', 'success'];
+    const NO_CHROME = ['splash', 'role-picker', 'success', 'pass-qr'];
+
+    // Tracks the currently-shown screen name so the go-live toast (Phase 2)
+    // can avoid popping up while the tester is already looking at drop-detail
+    // or pass-qr.
+    let currentScreenName = 'splash';
 
     function showScreen(name) {
+      currentScreenName = name;
+
       // Stop the QR countdown/repaint loop whenever we leave the qr screen —
       // startQRTimer() (called below when entering 'qr') restarts it cleanly,
       // this just prevents it from ticking forever in the background otherwise.
@@ -4675,6 +4848,15 @@
       if (name === 'own-drop-config') {
         initDropConfigForm();
       }
+      // Density Drop customer surfaces (Phase 2) — repaint from WORLD.drop
+      // every time their screen is entered, same pattern as the owner side.
+      if (name === 'drops') renderCustomerDropsList();
+      if (name === 'drop-detail') renderDropDetail();
+      if (name === 'passes') renderPassWallet();
+      if (name === 'pass-qr') renderPassQR();
+      // The tester has now seen (or is about to see) the live/pass surfaces —
+      // dismiss the go-live toast so it doesn't linger over them.
+      if (name === 'drop-detail' || name === 'pass-qr') hideGoLiveToast();
     }
 
     // Role picker → first screen of the chosen role's app
@@ -4706,6 +4888,9 @@
       WORLD.history = { drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0 };
       WORLD.ownerConfig = structuredClone(OWNER_CONFIG_INITIAL);
       dropConfigDraft = null;
+      // WORLD.drop = null above also wipes its dwell/myPass/consolationGiven
+      // fields (Phase 2) since they only ever lived on that object.
+      hideGoLiveToast();
 
       // Close any open overlay/sheet/modal — bottom sheet, review composer,
       // scan-success flashes, the owner payment-success overlay.
@@ -4892,6 +5077,11 @@
     // started building).
     const BUILD_ARRIVALS = [0, 1, 0, 1, 1, 0, 2, 1, 1, 2, 1, 0, 1, 2, 1, 1, 0, 1];
 
+    // Real MVP dwell formula: D = clamp(1.5 * sqrt(V), 3, 15) minutes. For
+    // Bloom Coffee (cafe, V=18) that's ~6.4 minutes — hardcoded here since
+    // only coffee has a drop this phase.
+    const DWELL_REQUIRED_MIN = 6.4;
+
     let WORLD = {
       drop: null, // null until first armed via armDrop()
       ownerConfig: {
@@ -4929,6 +5119,17 @@
       return 'Ended';
     }
 
+    // Personal dwell gate (Phase 2) — separate from the public density meter
+    // above. Once qualified, stays qualified for the rest of the drop's life
+    // even if the tester "leaves" (there's no real geofencing in this demo,
+    // so leaving just means navigating to another screen).
+    function dwellProgress(dwell, nowMin) {
+      if (dwell.qualifiedAtSim !== null) return { fraction: 1, qualified: true, remainingMin: 0 };
+      const elapsed = Math.max(0, nowMin - dwell.startedAtSim);
+      const fraction = Math.min(1, elapsed / dwell.requiredMin);
+      return { fraction, qualified: false, remainingMin: Math.max(0, dwell.requiredMin - elapsed) };
+    }
+
     // ---- Clock ----
     function startClock() {
       if (simInterval) return;
@@ -4953,6 +5154,15 @@
       const d = WORLD.drop;
       if (!d) return;
 
+      // Dwell qualification — independent of building/live state. Tracks how
+      // long "you" have continuously been at the merchant since the drop
+      // started. Once set, qualifiedAtSim never resets for this drop instance.
+      if (d.dwell.qualifiedAtSim === null && (SIM.nowMin - d.dwell.startedAtSim) >= d.dwell.requiredMin) {
+        d.dwell.qualifiedAtSim = SIM.nowMin;
+        // dwelledCount already includes "you" from armDrop() — this transition
+        // only flips the qualifying visual state, it does not change the count.
+      }
+
       if (d.state === 'building') {
         const elapsedWholeMin = Math.floor(SIM.nowMin - d.startedAtSim);
         while (d.arrivalIdx < elapsedWholeMin && d.arrivalIdx < BUILD_ARRIVALS.length) {
@@ -4968,11 +5178,32 @@
           d.passesIssued = d.dwelledCount || 1;
           WORLD.history.drops++;
           WORLD.history[d.configSnapshot.configType] = (WORLD.history[d.configSnapshot.configType] || 0) + 1;
+          if (d.dwell.qualifiedAtSim !== null) {
+            d.myPass = {
+              id: 'pass-' + d.id,
+              merchantKey: d.merchantKey,
+              reward: { ...d.configSnapshot.reward },
+              issuedAtSim: SIM.nowMin,
+              expiresAtSim: SIM.nowMin + 120, // 2 real MVP hours = 120 sim-minutes
+              redeemed: false,
+            };
+          }
+          // TODO: late qualification during LIVE window
+          if (currentScreenName !== 'drop-detail' && currentScreenName !== 'pass-qr') {
+            showGoLiveToast();
+          }
         } else if (d.arrivalIdx >= BUILD_ARRIVALS.length) {
           // Fizzle — arrivals exhausted without reaching threshold.
           d.state = 'expired';
           WORLD.history.fizzled++;
           stopClock();
+          // Fizzle consolation — the drop never went live, but the tester
+          // dwelled long enough to have qualified anyway. Guarded by
+          // consolationGiven so this can only ever fire once per drop.
+          if (d.liveAtSim === null && d.dwell.qualifiedAtSim !== null && !d.consolationGiven) {
+            addPunch(d.merchantKey, 1);
+            d.consolationGiven = true;
+          }
         }
       } else if (d.state === 'live') {
         // Purely for display richness this phase — a slow scripted trickle of
@@ -4996,6 +5227,7 @@
 
     function armDrop() {
       const cfg = WORLD.ownerConfig;
+      const startedAtSim = SIM.nowMin;
       WORLD.drop = {
         id: 'drop-' + Date.now(),
         merchantKey: 'coffee',
@@ -5007,7 +5239,7 @@
           configType: cfg.configType,
         },
         state: 'building',
-        startedAtSim: SIM.nowMin,
+        startedAtSim,
         liveAtSim: null,
         liveEndsAtSim: null,
         currentDensity: 0,
@@ -5016,6 +5248,11 @@
         dwelledCount: 1, // "you" count as dwell-qualified from the start
         passesIssued: 0,
         passesRedeemed: 0,
+        // Personal dwell gate (Phase 2) — starts the instant the drop starts
+        // building, since the tester is assumed "already there".
+        dwell: { startedAtSim, requiredMin: DWELL_REQUIRED_MIN, qualifiedAtSim: null },
+        myPass: null,
+        consolationGiven: false,
       };
       SIM.nowMin = 0;
       startClock();
@@ -5202,6 +5439,318 @@
     function renderDropSurfaces() {
       renderOwnerDropStrip();
       renderMapPins();
+      renderCustomerDropsList();
+      renderDropDetail();
+      renderPassWallet();
+      renderPassQR();
+    }
+
+    // ---- Dwell ring component (Task 6) ----
+    // Inline SVG progress ring. var(--...) inside an SVG stroke attribute
+    // renders fine in every modern browser when the SVG is inserted as
+    // inline HTML (as it is here, via innerHTML) rather than loaded as a
+    // standalone .svg file, so no getComputedStyle fallback is needed.
+    function buildDwellRingSVG(fraction, qualified, size = 96) {
+      const stroke = 8, r = (size - stroke) / 2, c = size / 2, circumference = 2 * Math.PI * r;
+      const offset = circumference * (1 - fraction);
+      const color = qualified ? 'var(--accent-green)' : 'var(--building)';
+      return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+        <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/>
+        <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+          stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+          transform="rotate(-90 ${c} ${c})"/>
+      </svg>`;
+    }
+
+    // Composes the ring with a centered mm:ss (or checkmark once qualified)
+    // label via an absolutely-positioned div, matching how the rest of this
+    // file builds icon+label compositions rather than using SVG <text>.
+    function buildDwellRingHTML(dwell, size = 96) {
+      const svg = buildDwellRingSVG(dwell.fraction, dwell.qualified, size);
+      let label;
+      if (dwell.qualified) {
+        label = `<span style="font-size:${Math.round(size * 0.32)}px; color: var(--accent-green);">✓</span>`;
+      } else {
+        const secRemaining = Math.max(0, dwell.remainingMin * 60);
+        const mm = Math.floor(secRemaining / 60);
+        const ss = Math.floor(secRemaining % 60);
+        label = `<span style="font-size:15px; font-weight:700; color: var(--text-dark);">${mm}:${String(ss).padStart(2, '0')}</span>`;
+      }
+      return `<div style="position:relative; width:${size}px; height:${size}px; flex-shrink:0;">
+        ${svg}
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">${label}</div>
+      </div>`;
+    }
+
+    // ---- Go-live toast (Task 10) ----
+    let goLiveToastTimeoutId = null;
+
+    function showGoLiveToast() {
+      const el = document.getElementById('golive-toast');
+      if (!el) return;
+      el.classList.add('show');
+      clearTimeout(goLiveToastTimeoutId);
+      goLiveToastTimeoutId = setTimeout(() => { el.classList.remove('show'); }, 6000);
+    }
+
+    function hideGoLiveToast() {
+      const el = document.getElementById('golive-toast');
+      if (el) el.classList.remove('show');
+      clearTimeout(goLiveToastTimeoutId);
+      goLiveToastTimeoutId = null;
+    }
+
+    // ---- Customer Drops tab: active/building drop card + dwell status (Task 4) ----
+    function openDropDetail(merchantKey) {
+      showScreen('drop-detail');
+    }
+
+    function renderCustomerDropsList() {
+      const el = document.getElementById('drops-active-section');
+      if (!el) return;
+      const d = WORLD.drop;
+
+      if (!d) {
+        el.innerHTML = `<div class="drops-empty-state">No drops right now — check back soon</div>`;
+        return;
+      }
+      if (d.state === 'expired') {
+        el.innerHTML = '';
+        return;
+      }
+
+      const m = MERCHANTS[d.merchantKey];
+      const frac = fillFraction(d);
+      let cardHTML;
+
+      if (d.state === 'building') {
+        cardHTML = `
+          <div class="drops-building-card" onclick="openDropDetail('${d.merchantKey}')">
+            <div class="drops-building-top">
+              <span class="drops-building-emoji">${m.icon}</span>
+              <div>
+                <div class="drops-building-label">Building</div>
+                <div class="drops-building-title">${m.name} — ${d.configSnapshot.reward.description}</div>
+              </div>
+            </div>
+            <div class="a-drop-meter-track"><div class="a-drop-meter-fill" style="width:${frac * 100}%;"></div></div>
+            <div class="drops-active-sub">${d.currentDensity} here · unlocks at ${d.configSnapshot.threshold} people</div>
+          </div>
+        `;
+      } else { // live
+        const totalSecondsRemaining = Math.max(0, (d.liveEndsAtSim - SIM.nowMin) * 60);
+        const mm = Math.floor(totalSecondsRemaining / 60);
+        const ss = Math.floor(totalSecondsRemaining % 60);
+        cardHTML = `
+          <div class="drops-live-banner" onclick="openDropDetail('${d.merchantKey}')">
+            <div class="live-pulse"></div>
+            <div class="live-text">
+              <div class="live-label">🔴 Live Now</div>
+              <div class="live-title">${m.name} — ${d.configSnapshot.reward.description}</div>
+            </div>
+            <div class="live-count">
+              <div class="live-count-num">${mm}:${String(ss).padStart(2, '0')}</div>
+              <div class="live-count-label">left</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const dwell = dwellProgress(d.dwell, SIM.nowMin);
+      let dwellHTML;
+      if (dwell.qualified) {
+        dwellHTML = `<div class="drops-dwell-qualified">You're in — free to leave. We'll notify you if it goes live.</div>`;
+      } else {
+        const elapsed = Math.max(0, d.dwell.requiredMin - dwell.remainingMin);
+        dwellHTML = `<div class="drops-dwell-status">You're at ${elapsed.toFixed(1)} of ${d.dwell.requiredMin} minutes</div>`;
+      }
+
+      el.innerHTML = cardHTML + dwellHTML;
+    }
+
+    // ---- Drop detail screen (Task 5) ----
+    function renderDropDetail() {
+      const card = document.getElementById('dd-card');
+      if (!card) return;
+      const d = WORLD.drop;
+      card.className = 'a-card'; // reset; branches below may add a modifier
+
+      if (!d) {
+        const cfg = WORLD.ownerConfig;
+        card.innerHTML = `
+          <div class="dd-emoji">☕</div>
+          <div class="dd-heading">Quiet right now</div>
+          <div class="dd-sub">Unlocks ${cfg.rewardDescription} at ${cfg.threshold} people</div>
+          <div class="dd-hint">Hang out about ${Math.round(DWELL_REQUIRED_MIN)} minutes while a drop is building to lock in.</div>
+        `;
+        return;
+      }
+
+      const m = MERCHANTS[d.merchantKey];
+
+      if (d.state === 'building') {
+        const pct = Math.round(fillFraction(d) * 100);
+        const dwell = dwellProgress(d.dwell, SIM.nowMin);
+        const dwellBlock = dwell.qualified
+          ? `<div class="dd-qualified">You're in — free to leave. We'll notify you if it goes live.</div>`
+          : `<div class="dd-ring-row">${buildDwellRingHTML(dwell, 96)}<div class="dd-ring-caption">Stick around a little longer to lock in your pass.</div></div>`;
+        card.innerHTML = `
+          <div class="dd-percent">This spot is at ${pct}%</div>
+          <div class="dd-sub">Unlocks ${d.configSnapshot.reward.description} at ${d.configSnapshot.threshold} people</div>
+          ${dwellBlock}
+        `;
+        return;
+      }
+
+      if (d.state === 'live') {
+        card.classList.add('dd-card-live');
+        const totalSecondsRemaining = Math.max(0, (d.liveEndsAtSim - SIM.nowMin) * 60);
+        const mm = Math.floor(totalSecondsRemaining / 60);
+        const ss = Math.floor(totalSecondsRemaining % 60);
+        const passBtn = d.myPass
+          ? `<button class="a-btn dd-pass-btn" onclick="showScreen('pass-qr')">View my pass</button>`
+          : '';
+        card.innerHTML = `
+          <div class="dd-live-pill">LIVE NOW</div>
+          <div class="dd-reward">${d.configSnapshot.reward.description}</div>
+          <div class="dd-countdown">${mm}:${String(ss).padStart(2, '0')} left in this drop</div>
+          ${passBtn}
+        `;
+        return;
+      }
+
+      // expired
+      if (d.liveAtSim !== null) {
+        const passBtn = d.myPass
+          ? `<button class="a-btn dd-pass-btn" onclick="showScreen('pass-qr')">View my pass</button>`
+          : '';
+        card.innerHTML = `
+          <div class="dd-heading">This drop has ended</div>
+          <div class="dd-sub">The live window is over. Keep an eye out for the next one.</div>
+          ${passBtn}
+        `;
+      } else {
+        const consolation = d.consolationGiven
+          ? `<div class="dd-consolation">This drop fizzled — but you stuck around, so we added a Pnch stamp to your Bloom Coffee card.</div>`
+          : '';
+        card.innerHTML = `
+          <div class="dd-heading">This drop has ended</div>
+          <div class="dd-sub">It didn't reach enough people this time. Keep an eye out for the next one.</div>
+          ${consolation}
+        `;
+      }
+    }
+
+    // ---- Pass wallet screen (Task 7) ----
+    function renderPassWallet() {
+      const el = document.getElementById('pw-content');
+      if (!el) return;
+      const d = WORLD.drop;
+      const pass = d && d.myPass;
+
+      if (!pass) {
+        el.innerHTML = `
+          <div class="pw-empty">
+            <div class="pw-empty-title">No passes yet</div>
+            <div class="pw-empty-sub">Hang out while a drop is building nearby — stick around long enough to qualify, and once it goes live your pass shows up here.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const m = MERCHANTS[pass.merchantKey];
+      let statusHTML;
+      if (pass.redeemed) {
+        statusHTML = `<div class="pw-status redeemed">✓ Redeemed</div>`;
+      } else if (SIM.nowMin > pass.expiresAtSim) {
+        statusHTML = `<div class="pw-status expired">Expired</div>`;
+      } else {
+        const secRemaining = Math.max(0, (pass.expiresAtSim - SIM.nowMin) * 60);
+        const mm = Math.floor(secRemaining / 60);
+        const ss = Math.floor(secRemaining % 60);
+        statusHTML = `<div class="pw-status valid">${mm}:${String(ss).padStart(2, '0')} left to redeem</div>`;
+      }
+
+      el.innerHTML = `
+        <div class="a-card pw-card" onclick="showScreen('pass-qr')">
+          <div class="pw-card-top">
+            <span class="pw-emoji">${m.icon}</span>
+            <div>
+              <div class="pw-name">${m.name}</div>
+              <div class="pw-reward">${pass.reward.description}</div>
+            </div>
+          </div>
+          ${statusHTML}
+        </div>
+      `;
+    }
+
+    // ---- Pass QR screen (Task 8) ----
+    function renderPassQR() {
+      const merchantEl = document.getElementById('pass-qr-merchant');
+      const rewardEl = document.getElementById('pass-qr-reward');
+      const body = document.getElementById('pass-qr-body');
+      if (!body) return;
+
+      const d = WORLD.drop;
+      const pass = d && d.myPass;
+
+      if (!pass) {
+        if (merchantEl) merchantEl.textContent = 'No pass';
+        if (rewardEl) rewardEl.textContent = '';
+        body.innerHTML = `
+          <div class="pass-qr-state">
+            <div class="pass-qr-icon">🎟️</div>
+            <div class="pass-qr-heading">No pass yet</div>
+            <div class="pass-qr-sub">Hang out while a drop is building nearby to earn one.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const m = MERCHANTS[pass.merchantKey];
+      if (merchantEl) merchantEl.textContent = m.name;
+      if (rewardEl) rewardEl.textContent = pass.reward.description;
+
+      if (pass.redeemed) {
+        body.innerHTML = `
+          <div class="pass-qr-state">
+            <div class="pass-qr-icon">✓</div>
+            <div class="pass-qr-heading">Already redeemed</div>
+            <div class="pass-qr-sub">The team already scanned this pass. Enjoy!</div>
+          </div>
+        `;
+        return;
+      }
+
+      if (SIM.nowMin > pass.expiresAtSim) {
+        body.innerHTML = `
+          <div class="pass-qr-state">
+            <div class="pass-qr-icon">⏱️</div>
+            <div class="pass-qr-heading">This pass expired</div>
+            <div class="pass-qr-sub">Your 2-hour redemption window closed. Watch for the next drop.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const secRemaining = Math.max(0, (pass.expiresAtSim - SIM.nowMin) * 60);
+      const mm = Math.floor(secRemaining / 60);
+      const ss = Math.floor(secRemaining % 60);
+      body.innerHTML = `
+        <div class="qr-frame">
+          <div class="qr-timer-ring"></div>
+          <div class="qr-frame-border">
+            <div class="fake-qr" id="fake-pass-qr"></div>
+          </div>
+        </div>
+        <div class="qr-countdown">
+          <div class="qr-countdown-num">${mm}:${String(ss).padStart(2, '0')}</div>
+          <div class="qr-countdown-label">Your 2-hour window to redeem</div>
+        </div>
+        <div class="pass-qr-caption">Show this to the team</div>
+      `;
+      generatePassQR('fake-pass-qr');
     }
 
     // ===========================
@@ -5699,11 +6248,6 @@
       }
     }
 
-    function showDropDetail() {
-      // just navigate to drops
-      switchTab(null, 'drops');
-    }
-
     function switchLbCat(el) {
       document.querySelectorAll('.lb-cat-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
@@ -5765,12 +6309,19 @@
         dots += `<div class="pnchy-pin-dot${i < m.punches ? ' on' : ''}"></div>`;
       }
       const dropBadge = m.drop ? '<div class="pnchy-drop-badge">🔥</div>' : '';
-      // Density Drop halo: light touch this phase — full customer detail/warmth
-      // tiers land in Phase 2. Just flag the pin while a drop is building/live
-      // at this merchant.
+      // Density Drop warmth tiers (Phase 2) — the pin gets warmer as the
+      // public density meter fills, solidifies + bounces once live, and
+      // returns to normal once expired.
       let dropStateClass = '';
       if (WORLD.drop && WORLD.drop.merchantKey === m.id && WORLD.drop.state !== 'expired') {
-        dropStateClass = ' pin-drop-active' + (WORLD.drop.state === 'live' ? ' is-live' : '');
+        if (WORLD.drop.state === 'live') {
+          dropStateClass = ' pin-live';
+        } else {
+          const frac = fillFraction(WORLD.drop);
+          if (frac >= 0.75) dropStateClass = ' pin-warm-glow';
+          else if (frac >= 0.4) dropStateClass = ' pin-warm-subtle';
+          else dropStateClass = ' pin-warm-faint';
+        }
       }
       return `
       <div class="pnchy-pin${m.drop ? ' drop-active' : ''}${dropStateClass}" onclick="openSheet('${m.id}')">
