@@ -3221,6 +3221,44 @@
     .pass-qr-sub { font-size: 13px; color: rgba(247, 244, 239, 0.6); margin-top: 10px; line-height: 1.5; }
     .pass-qr-caption { text-align: center; font-size: 12px; color: rgba(247, 244, 239, 0.5); margin-top: 20px; }
 
+    /* ===== DENSITY DROP (Phase 3) ===== */
+    /* Employee home card + drop-controls screen — buildDropStatusMarkup()'s
+       output is shared between the light emp-home .a-card and the dark
+       .emp-drop-card below; only the "live" tag/countdown colors are shared
+       as-is (green reads fine on both), everything else is scoped per
+       container so the same markup adapts to either background. */
+    .a-drop-live-tag { font-size: 13px; font-weight: 700; color: var(--accent-green); }
+    .emp-drop-countdown { font-family: 'Fraunces', serif; font-size: 30px; color: var(--accent-green); margin: 6px 0 2px; }
+    .a-paused-banner {
+      display: inline-block; font-size: 11px; font-weight: 700; color: #8A6A3D;
+      background: var(--building-faint); border: 1px solid var(--building-subtle);
+      border-radius: 10px; padding: 6px 10px; margin-bottom: 10px;
+    }
+
+    /* Drop-controls screen (screen-emp-drop) — dark full-bleed, mirrors #screen-pass-qr */
+    #screen-emp-drop { background: var(--text-dark); }
+    .emp-drop-card {
+      background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px; padding: 18px;
+    }
+    .emp-drop-card .a-strip-sub { color: rgba(247, 244, 239, 0.6); }
+    .emp-drop-card .a-drop-meter-track { background: rgba(255, 255, 255, 0.14); }
+    .emp-pause-btn {
+      width: 100%; border: none; border-radius: 16px; padding: 15px; margin-top: 4px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;
+      background: var(--accent-rose); color: var(--white);
+    }
+    .emp-pause-sub { font-size: 12px; color: rgba(247, 244, 239, 0.5); margin-top: 10px; line-height: 1.5; text-align: center; }
+    .emp-pause-lift { font-size: 14px; font-weight: 700; color: var(--building); text-align: center; }
+    .emp-resume-row { display: flex; gap: 10px; margin-top: 12px; }
+    .emp-resume-btn, .emp-extend-btn {
+      flex: 1; border: none; border-radius: 14px; padding: 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .emp-resume-btn { background: var(--accent-green); color: var(--white); }
+    .emp-extend-btn { background: rgba(255, 255, 255, 0.1); color: var(--cream); border: 1px solid rgba(255, 255, 255, 0.18); }
+    .emp-shift-tally { font-size: 12px; color: rgba(247, 244, 239, 0.5); text-align: center; }
+
     /* Go-live toast — shell-level, floats above whatever screen is active */
     .toast-golive {
       position: absolute; left: 16px; right: 16px; bottom: 190px; z-index: 200;
@@ -3976,13 +4014,13 @@
               <div class="a-hero-icon">📲</div>
             </div>
 
-            <div class="a-card">
+            <div class="a-card" id="emp-home-drop-card" onclick="showScreen('emp-drop')" style="cursor:pointer;">
               <div class="a-strip-head">
                 <span class="a-label">Density Drop</span>
                 <span class="a-navrow-chev">›</span>
               </div>
-              <div class="a-meter-track"><div class="a-meter-fill" style="width:68%;"></div></div>
-              <div class="a-strip-sub">Building · 34 of 50 people nearby</div>
+              <div id="emp-home-drop-paused"></div>
+              <div id="emp-home-drop-body"><!-- populated by renderEmpDropCard() --></div>
             </div>
 
             <div class="a-tally">🎁 3 Drop passes redeemed this shift</div>
@@ -4042,8 +4080,27 @@
         </div>
         <div class="a-scan-success" id="emp-scan-success">
           <div class="a-check-circle">✓</div>
-          <div class="a-success-title">Punch added!</div>
-          <div class="a-success-sub">Nice — that's a stamp for Maya ☕</div>
+          <div class="a-success-title" id="emp-scan-success-title">Punch added!</div>
+          <div class="a-success-sub" id="emp-scan-success-sub">Nice — that's a stamp for Maya ☕</div>
+        </div>
+      </div>
+
+      <!-- ============================ EMPLOYEE — DROP CONTROLS ============================ -->
+      <div class="screen" id="screen-emp-drop">
+        <div class="qr-header">
+          <div class="qr-back" onclick="showScreen('emp-home')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(247,244,239,0.7)"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </div>
+          <div class="qr-title">Drop controls</div>
+          <div class="qr-subtitle">☕ Bloom Coffee</div>
+        </div>
+        <div class="scroll-content">
+          <div class="a-pad" id="emp-drop-content">
+            <!-- populated by renderEmpDropControls() -->
+          </div>
         </div>
       </div>
 
@@ -4792,7 +4849,7 @@
     const SCREEN_ROLE = {
       home: 'customer', drops: 'customer', qr: 'customer', leaderboard: 'customer', profile: 'customer',
       'drop-detail': 'customer', passes: 'customer',
-      'emp-home': 'employee', 'emp-scan': 'employee', 'emp-ranks': 'employee', 'emp-profile': 'employee',
+      'emp-home': 'employee', 'emp-scan': 'employee', 'emp-drop': 'employee', 'emp-ranks': 'employee', 'emp-profile': 'employee',
       'own-dashboard': 'owner', 'own-drops': 'owner', 'own-drop-config': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
       'own-ranks': 'owner', 'own-profile': 'owner',
     };
@@ -4854,6 +4911,8 @@
       if (name === 'drop-detail') renderDropDetail();
       if (name === 'passes') renderPassWallet();
       if (name === 'pass-qr') renderPassQR();
+      // Employee-side drop surfaces (Phase 3) — same on-entry repaint pattern.
+      if (name === 'emp-drop') renderEmpDropControls();
       // The tester has now seen (or is about to see) the live/pass surfaces —
       // dismiss the go-live toast so it doesn't linger over them.
       if (name === 'drop-detail' || name === 'pass-qr') hideGoLiveToast();
@@ -4886,6 +4945,7 @@
       SIM.nowMin = 0;
       WORLD.drop = null;
       WORLD.history = { drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0 };
+      WORLD.shiftTally = 0;
       WORLD.ownerConfig = structuredClone(OWNER_CONFIG_INITIAL);
       dropConfigDraft = null;
       // WORLD.drop = null above also wipes its dwell/myPass/consolationGiven
@@ -4912,6 +4972,46 @@
 
     // Inline scan success flash for employee/owner scan screens (no blocking dialogs)
     function demoScan(role) {
+      // Employee scans branch: a valid, unredeemed, unexpired Drop pass on
+      // WORLD.drop.myPass means this scan is a reward redemption rather than
+      // a stamp. Owner scanning ('own') is untouched — plain stamp only,
+      // out of scope this phase.
+      if (role === 'emp' && WORLD.drop && WORLD.drop.myPass &&
+          !WORLD.drop.myPass.redeemed && SIM.nowMin <= WORLD.drop.myPass.expiresAtSim) {
+        const pass = WORLD.drop.myPass;
+        pass.redeemed = true;
+        WORLD.drop.passesRedeemed = (WORLD.drop.passesRedeemed || 0) + 1;
+        WORLD.history.redemptions++;
+        WORLD.shiftTally++;
+        setEmpScanSuccessCopy('🎁 Reward redeemed!', `${pass.reward.description} — hand it to the customer`);
+        showScanSuccessOverlay('emp');
+        // The one shared world, made visible end-to-end: this repaints the
+        // employee home/drop-controls cards AND the customer's own pass
+        // screens (Phase 2 renderers already read myPass.redeemed) AND the
+        // owner's passesRedeemed/redemptions counters, all from this one flip.
+        renderDropSurfaces();
+        return;
+      }
+
+      // Fall through to the original stamp-scan flash — unchanged. (The
+      // pre-Phase-3 'emp' path never called addPunch(); it only showed the
+      // overlay, so that exact behavior is preserved here too.)
+      if (role === 'emp') {
+        setEmpScanSuccessCopy('Punch added!', "Nice — that's a stamp for Maya ☕");
+      }
+      showScanSuccessOverlay(role);
+    }
+
+    // Resets the employee scan-success overlay's two text lines — shared by
+    // both branches of demoScan('emp') above so neither rebuilds the overlay.
+    function setEmpScanSuccessCopy(title, sub) {
+      const t = document.getElementById('emp-scan-success-title');
+      const s = document.getElementById('emp-scan-success-sub');
+      if (t) t.textContent = title;
+      if (s) s.textContent = sub;
+    }
+
+    function showScanSuccessOverlay(role) {
       const overlay = document.getElementById(role + '-scan-success');
       if (!overlay) return;
       overlay.classList.add('show');
@@ -5096,6 +5196,9 @@
         capValue: 120,
       },
       history: { drops: 0, ambient: 0, scheduled: 0, fizzled: 0, redemptions: 0 },
+      // Employee-facing "redemptions this shift" counter (Phase 3) — incremented
+      // only by a real demoScan('emp') redemption, reset by resetDemo().
+      shiftTally: 0,
     };
 
     // Deep-copy snapshot of the fresh owner config, taken once at load —
@@ -5150,9 +5253,33 @@
     }
 
     // ---- State machine ----
+    // Issues "your" pass the moment it's eligible: live, dwell-qualified, no
+    // pass yet, and not paused. Called both at the exact building->live
+    // transition (below) and on every subsequent live tick (Phase 3) — the
+    // latter is what makes a pause-then-resume actually deliver a deferred
+    // pass instead of just cosmetically blocking it.
+    function issueMyPassIfEligible(d) {
+      if (d.myPass || d.dwell.qualifiedAtSim === null || d.paused) return;
+      d.myPass = {
+        id: 'pass-' + d.id,
+        merchantKey: d.merchantKey,
+        reward: { ...d.configSnapshot.reward },
+        issuedAtSim: SIM.nowMin,
+        expiresAtSim: SIM.nowMin + 120, // 2 real MVP hours = 120 sim-minutes
+        redeemed: false,
+      };
+    }
+
     function advanceDrop() {
       const d = WORLD.drop;
       if (!d) return;
+
+      // Employee pause (Phase 3) auto-lifts after its window elapses — checked
+      // first, before any of the state logic below runs this tick.
+      if (d.paused && SIM.nowMin >= d.pauseLiftsAtSim) {
+        d.paused = false;
+        d.pauseLiftsAtSim = null;
+      }
 
       // Dwell qualification — independent of building/live state. Tracks how
       // long "you" have continuously been at the merchant since the drop
@@ -5178,17 +5305,7 @@
           d.passesIssued = d.dwelledCount || 1;
           WORLD.history.drops++;
           WORLD.history[d.configSnapshot.configType] = (WORLD.history[d.configSnapshot.configType] || 0) + 1;
-          if (d.dwell.qualifiedAtSim !== null) {
-            d.myPass = {
-              id: 'pass-' + d.id,
-              merchantKey: d.merchantKey,
-              reward: { ...d.configSnapshot.reward },
-              issuedAtSim: SIM.nowMin,
-              expiresAtSim: SIM.nowMin + 120, // 2 real MVP hours = 120 sim-minutes
-              redeemed: false,
-            };
-          }
-          // TODO: late qualification during LIVE window
+          issueMyPassIfEligible(d); // no-op (leaves myPass null) if paused right at go-live
           if (currentScreenName !== 'drop-detail' && currentScreenName !== 'pass-qr') {
             showGoLiveToast();
           }
@@ -5206,16 +5323,11 @@
           }
         }
       } else if (d.state === 'live') {
-        // Purely for display richness this phase — a slow scripted trickle of
-        // redemptions up to passesIssued. Phase 3 gives employees a real
-        // redeem action that will replace this.
-        const liveElapsed = SIM.nowMin - d.liveAtSim;
-        const scriptedRedemptions = Math.min(d.passesIssued, Math.floor(liveElapsed / 10));
-        if (scriptedRedemptions > d.passesRedeemed) {
-          const delta = scriptedRedemptions - d.passesRedeemed;
-          d.passesRedeemed = scriptedRedemptions;
-          WORLD.history.redemptions += delta;
-        }
+        // Phase 1's scripted redemption trickle is gone — passesRedeemed now
+        // only moves via a real employee scan (demoScan('emp')'s redeem
+        // branch). This tick still needs to catch up a pass that was
+        // deferred by a pause active at the exact go-live moment above.
+        issueMyPassIfEligible(d);
 
         if (SIM.nowMin >= d.liveEndsAtSim) {
           d.state = 'expired';
@@ -5253,9 +5365,35 @@
         dwell: { startedAtSim, requiredMin: DWELL_REQUIRED_MIN, qualifiedAtSim: null },
         myPass: null,
         consolationGiven: false,
+        // Employee pause controls (Phase 3) — see pauseDrop()/resumeDrop()/
+        // extendPause() below.
+        paused: false,
+        pauseLiftsAtSim: null,
       };
       SIM.nowMin = 0;
       startClock();
+      renderDropSurfaces();
+    }
+
+    // ---- Employee pause controls (Task 3) ----
+    // Pausing stops NEW passes from being issued (see issueMyPassIfEligible's
+    // paused check above) — it never revokes a pass already issued, which is
+    // why demoScan('emp')'s redeem branch doesn't check `paused` at all.
+    function pauseDrop() {
+      if (!WORLD.drop || WORLD.drop.state === 'expired') return;
+      WORLD.drop.paused = true;
+      WORLD.drop.pauseLiftsAtSim = SIM.nowMin + 15; // 15 "minutes" = 15 wall-seconds at this compression
+      renderDropSurfaces();
+    }
+    function resumeDrop() {
+      if (!WORLD.drop) return;
+      WORLD.drop.paused = false;
+      WORLD.drop.pauseLiftsAtSim = null;
+      renderDropSurfaces();
+    }
+    function extendPause() {
+      if (!WORLD.drop || !WORLD.drop.paused) return;
+      WORLD.drop.pauseLiftsAtSim += 15;
       renderDropSurfaces();
     }
 
@@ -5443,6 +5581,105 @@
       renderDropDetail();
       renderPassWallet();
       renderPassQR();
+      renderEmpDropCard();
+      renderEmpDropControls();
+    }
+
+    // ---- Employee drop status (Phase 3, Tasks 1-2) ----
+    // Shared state->markup logic for both the emp-home summary card and the
+    // screen-emp-drop detail screen. Deliberately uses generic class names
+    // (.a-strip-sub, .a-drop-meter-track, .a-drop-live-tag) so the SAME
+    // markup reads correctly on both the light emp-home .a-card and the dark
+    // .emp-drop-card — each container's CSS scopes the color overrides it
+    // needs (see the Phase 3 CSS block).
+    function buildDropStatusMarkup(d) {
+      if (!d) {
+        return `<div class="a-strip-sub">No drop building right now</div>`;
+      }
+      if (d.state === 'building') {
+        const frac = fillFraction(d);
+        return `
+          <div class="a-drop-meter-track"><div class="a-drop-meter-fill" style="width:${frac * 100}%;"></div></div>
+          <div class="a-strip-sub">${d.currentDensity} of ${d.configSnapshot.threshold} people here</div>
+          <div class="a-strip-sub">Reward: ${d.configSnapshot.reward.description}</div>
+        `;
+      }
+      if (d.state === 'live') {
+        const totalSecondsRemaining = Math.max(0, (d.liveEndsAtSim - SIM.nowMin) * 60);
+        const mm = Math.floor(totalSecondsRemaining / 60);
+        const ss = Math.floor(totalSecondsRemaining % 60);
+        return `
+          <div class="a-drop-live-tag">🔴 Live now</div>
+          <div class="emp-drop-countdown">${mm}:${String(ss).padStart(2, '0')}</div>
+          <div class="a-strip-sub">${d.passesIssued} issued · ${d.passesRedeemed} redeemed</div>
+          <div class="a-strip-sub">Reward: ${d.configSnapshot.reward.description}</div>
+        `;
+      }
+      // expired
+      const sub = d.liveAtSim === null
+        ? `Didn't reach ${d.configSnapshot.threshold} people`
+        : `Last drop: peak ${d.peakDensity} people · ${d.passesRedeemed} redeemed`;
+      return `<div class="a-strip-sub">${sub}</div>`;
+    }
+
+    // "Paused by staff" banner — rendered ABOVE buildDropStatusMarkup()'s
+    // output by both callers, per spec, rather than folded into it.
+    function buildPausedBannerMarkup(d) {
+      if (!d || !d.paused) return '';
+      return `<div class="a-paused-banner">Paused by staff</div>`;
+    }
+
+    // Task 1 — emp-home's Density Drop summary card.
+    function renderEmpDropCard() {
+      const body = document.getElementById('emp-home-drop-body');
+      const banner = document.getElementById('emp-home-drop-paused');
+      if (!body) return;
+      const d = WORLD.drop;
+      if (banner) banner.innerHTML = buildPausedBannerMarkup(d);
+      body.innerHTML = buildDropStatusMarkup(d);
+    }
+
+    // Task 2 — screen-emp-drop's full status + pause controls + shift tally.
+    function renderEmpDropControls() {
+      const el = document.getElementById('emp-drop-content');
+      if (!el) return;
+      const d = WORLD.drop;
+
+      let pauseHTML = '';
+      if (d && (d.state === 'building' || d.state === 'live')) {
+        if (!d.paused) {
+          pauseHTML = `
+            <div class="emp-drop-card">
+              <button class="emp-pause-btn" onclick="pauseDrop()">Pause new passes</button>
+              <div class="emp-pause-sub">Stops new passes only — passes already issued stay valid</div>
+            </div>
+          `;
+        } else {
+          const secRemaining = Math.max(0, (d.pauseLiftsAtSim - SIM.nowMin) * 60);
+          const mm = Math.floor(secRemaining / 60);
+          const ss = Math.floor(secRemaining % 60);
+          pauseHTML = `
+            <div class="emp-drop-card">
+              <div class="emp-pause-lift">Auto-resumes in ${mm}:${String(ss).padStart(2, '0')}</div>
+              <div class="emp-resume-row">
+                <button class="emp-resume-btn" onclick="resumeDrop()">Resume</button>
+                <button class="emp-extend-btn" onclick="extendPause()">Extend by 15 min</button>
+              </div>
+            </div>
+          `;
+        }
+      }
+      // d === null or 'expired': no pause controls section at all.
+
+      const n = WORLD.shiftTally || 0;
+      el.innerHTML = `
+        <div class="emp-drop-card">
+          ${buildPausedBannerMarkup(d)}
+          ${buildDropStatusMarkup(d)}
+        </div>
+        ${pauseHTML}
+        <div class="emp-shift-tally">${n} Drop redemption${n === 1 ? '' : 's'} today</div>
+      `;
     }
 
     // ---- Dwell ring component (Task 6) ----
