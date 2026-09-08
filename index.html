@@ -41,6 +41,10 @@
       --accent-purple: #8B7BAF;
       --shadow: rgba(44, 40, 37, 0.08);
       --shadow-lg: rgba(44, 40, 37, 0.14);
+      --building: #E3B77E;
+      --building-faint: rgba(227, 183, 126, 0.08);
+      --building-subtle: rgba(227, 183, 126, 0.12);
+      --building-glow: rgba(227, 183, 126, 0.25);
     }
 
     * {
@@ -3454,16 +3458,8 @@
           <div class="qr-countdown-label">seconds remaining</div>
         </div>
 
-        <div class="qr-merchant-row">
-          <div class="qr-merchant-icon">☕</div>
-          <div class="qr-merchant-text">
-            <div class="qr-merchant-name">Bloom Coffee</div>
-            <div class="qr-merchant-sub">Williamsburg, Brooklyn</div>
-          </div>
-          <div class="qr-merchant-punches">
-            <div class="qr-merchant-count">3/5</div>
-            <div class="qr-merchant-count-label">punches</div>
-          </div>
+        <div class="qr-merchant-row" id="qr-merchant-row">
+          <!-- populated by renderQrMerchantRow() from MERCHANTS -->
         </div>
 
         <button class="qr-regen-btn">
@@ -3494,15 +3490,11 @@
       <div class="screen" id="screen-success">
         <div class="success-circle">✓</div>
         <div class="success-title">Stamped!</div>
-        <div class="success-sub">You're on punch 4 of 5 at Bloom Coffee</div>
-        <div class="success-punches">
-          <div class="success-punch">✓</div>
-          <div class="success-punch">✓</div>
-          <div class="success-punch">✓</div>
-          <div class="success-punch">✓</div>
-          <div class="success-punch empty"></div>
+        <div class="success-sub" id="success-sub">You're on punch 4 of 5 at Bloom Coffee</div>
+        <div class="success-punches" id="success-punches">
+          <!-- populated by renderSuccessScreen() from MERCHANTS -->
         </div>
-        <div class="success-next">One more stamp for a free coffee ☕</div>
+        <div class="success-next" id="success-next">One more stamp for a free coffee ☕</div>
         <button class="success-btn" onclick="showScreen('home')">Back to Map</button>
       </div>
 
@@ -3517,7 +3509,9 @@
           </div>
 
           <div class="lb-pod-selector">
-            <button class="lb-pod-btn active">☕ Coffee</button>
+            <button class="lb-pod-btn active"
+              onclick="this.parentElement.querySelectorAll('.lb-pod-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">☕
+              Coffee</button>
             <button class="lb-pod-btn"
               onclick="this.parentElement.querySelectorAll('.lb-pod-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active')">✂️
               Barbers</button>
@@ -3527,7 +3521,7 @@
           </div>
 
           <div class="lb-category-scroll">
-            <button class="lb-cat-btn active">All Time</button>
+            <button class="lb-cat-btn active" onclick="switchLbCat(this)">All Time</button>
             <button class="lb-cat-btn" onclick="switchLbCat(this)">This Week</button>
             <button class="lb-cat-btn" onclick="switchLbCat(this)">This Month</button>
             <button class="lb-cat-btn" onclick="switchLbCat(this)">24 Hours</button>
@@ -3653,55 +3647,8 @@
 
           <div class="profile-section-title">Active Cards</div>
 
-          <div class="loyalty-scroll">
-            <div class="loyalty-card">
-              <div class="loyalty-card-icon" style="background: var(--sage);">☕</div>
-              <div class="loyalty-card-name">Bloom Coffee</div>
-              <div class="loyalty-card-punches">
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot"></div>
-                <div class="lc-dot"></div>
-              </div>
-              <div class="loyalty-card-progress"><span>3 / 5</span> punches</div>
-            </div>
-            <div class="loyalty-card">
-              <div class="loyalty-card-icon" style="background: var(--lavender);">✂️</div>
-              <div class="loyalty-card-name">Fade Studio</div>
-              <div class="loyalty-card-punches">
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot"></div>
-                <div class="lc-dot"></div>
-                <div class="lc-dot"></div>
-              </div>
-              <div class="loyalty-card-progress"><span>2 / 5</span> punches</div>
-            </div>
-            <div class="loyalty-card">
-              <div class="loyalty-card-icon" style="background: var(--blush);">🌮</div>
-              <div class="loyalty-card-name">Sol Tacos</div>
-              <div class="loyalty-card-punches">
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot"></div>
-                <div class="lc-dot"></div>
-                <div class="lc-dot"></div>
-                <div class="lc-dot"></div>
-              </div>
-              <div class="loyalty-card-progress"><span>1 / 5</span> punches</div>
-            </div>
-            <div class="loyalty-card">
-              <div class="loyalty-card-icon" style="background: var(--sky);">👗</div>
-              <div class="loyalty-card-name">Vela Boutique</div>
-              <div class="loyalty-card-punches">
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot filled"></div>
-                <div class="lc-dot"></div>
-              </div>
-              <div class="loyalty-card-progress"><span>4 / 5</span> punches</div>
-            </div>
+          <div class="loyalty-scroll" id="loyalty-cards">
+            <!-- populated by renderLoyaltyCards() from MERCHANTS -->
           </div>
 
           <div class="profile-section-title">Account</div>
@@ -3783,6 +3730,7 @@
           </div>
           <div style="padding: 0 20px 28px;">
             <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
+            <button class="a-switch-btn" style="margin-top:8px;" onclick="resetDemo()">↺  Reset demo</button>
           </div>
         </div>
       </div>
@@ -3971,6 +3919,7 @@
             </div>
 
             <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
+            <button class="a-switch-btn" style="margin-top:8px;" onclick="resetDemo()">↺  Reset demo</button>
 
             <div class="a-logout">
               <div class="a-logout-title">Logout</div>
@@ -4253,6 +4202,7 @@
             </div>
 
             <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
+            <button class="a-switch-btn" style="margin-top:8px;" onclick="resetDemo()">↺  Reset demo</button>
             <button class="a-btn" style="background:transparent;border:1.5px solid var(--accent-rose);color:var(--accent-rose);" onclick="switchRole()">Sign out</button>
           </div>
         </div>
@@ -4467,6 +4417,11 @@
       if (qrFrame) {
         qrFrame.parentElement.style.cursor = 'pointer';
         qrFrame.parentElement.addEventListener('click', () => {
+          // No real merchant-selection flow for stamping yet (out of scope for
+          // this phase) — stamp whichever merchant's sheet was last opened,
+          // defaulting to Bloom Coffee when the QR tab was reached directly.
+          const key = reviewState.activeMerchantKey || 'coffee';
+          addPunch(key, 1);
           showScreen('success');
         });
       }
@@ -4512,6 +4467,12 @@
     const NO_CHROME = ['splash', 'role-picker', 'success'];
 
     function showScreen(name) {
+      // Stop the QR countdown/repaint loop whenever we leave the qr screen —
+      // startQRTimer() (called below when entering 'qr') restarts it cleanly,
+      // this just prevents it from ticking forever in the background otherwise.
+      clearInterval(qrInterval);
+      qrInterval = null;
+
       document.querySelectorAll('.screen').forEach(s => {
         s.classList.remove('active');
         s.style.display = 'none';
@@ -4535,6 +4496,7 @@
 
       // Customer special-cases (preserved from the original demo)
       if (name === 'qr') {
+        renderQrMerchantRow(reviewState.activeMerchantKey || 'coffee');
         generateQR();
         startQRTimer();
       }
@@ -4552,6 +4514,32 @@
 
     // "Switch demo role" — back to the picker from any Profile tab
     function switchRole() {
+      showScreen('role-picker');
+    }
+
+    // "Reset demo" — wipes all in-memory demo state back to its initial values
+    // and returns to the role picker, so the next tester starts from a clean
+    // world. Nothing here touches localStorage — everything is in-memory only.
+    function resetDemo() {
+      MERCHANTS = structuredClone(MERCHANTS_INITIAL);
+
+      clearInterval(qrInterval);
+      qrInterval = null;
+
+      // Close any open overlay/sheet/modal — bottom sheet, review composer,
+      // scan-success flashes, the owner payment-success overlay.
+      document.querySelectorAll('.open, .show').forEach((el) => {
+        el.classList.remove('open', 'show');
+      });
+
+      reviewState.friends = new Set(
+        Object.values(seedFriendReviews).flat().filter((r) => r.preFriend).map((r) => r.authorId)
+      );
+      reviewState.myReviews = {};
+      reviewState.activeMerchantKey = null;
+      reviewState.composeEmoji = '';
+
+      renderPunchSurfaces('coffee');
       showScreen('role-picker');
     }
 
@@ -4618,9 +4606,16 @@
     // ===========================
     // BOTTOM SHEET
     // ===========================
-    const merchants = {
+    // ===========================
+    // CANONICAL MERCHANT DATA SOURCE
+    // ===========================
+    // Single source of truth for every merchant surface: bottom sheet, search,
+    // profile loyalty cards, QR screen, success screen, and the map pins.
+    // `let` (not `const`) because resetDemo() reassigns it from MERCHANTS_INITIAL.
+    let MERCHANTS = {
       coffee: {
-        icon: '☕', bg: 'var(--sage)', name: 'Bloom Coffee', cat: 'Specialty Coffee · 0.2 mi away',
+        id: 'coffee', icon: '☕', bg: 'var(--sage)', color: '#C8D8C0',
+        name: 'Bloom Coffee', cat: 'Specialty Coffee · 0.2 mi away',
         tags: ['Drop Active 🔥', 'Loyalty Member', 'Open Now'],
         tagColors: ['var(--accent-rose)', 'var(--sage)', 'var(--border)'],
         reward: 'Free drink after 5 stamps', punches: 3, total: 5,
@@ -4629,10 +4624,12 @@
         address: '412 Bedford Ave, Brooklyn, NY',
         website: 'bloomcoffeewilliamsburg.com', phone: '(718) 555-0142',
         hoursDisplay: ['Mon–Fri: 7am–2pm', 'Sat–Sun: 8am–3pm'],
-        menuHighlights: ['Honey oat latte', 'Cold brew', 'Morning bun']
+        menuHighlights: ['Honey oat latte', 'Cold brew', 'Morning bun'],
+        lat: 40.7155, lng: -73.9585, drop: true
       },
       barber: {
-        icon: '✂️', bg: 'var(--lavender)', name: 'Fade Studio', cat: 'Barbershop · 0.6 mi away',
+        id: 'barber', icon: '✂️', bg: 'var(--lavender)', color: '#D6D0E8',
+        name: 'Fade Studio', cat: 'Barbershop · 0.6 mi away',
         tags: ['Top Ranked #1', 'Open Now'],
         tagColors: ['var(--muted-gold)', 'var(--border)'],
         reward: 'Free lineup after 5 cuts', punches: 2, total: 5,
@@ -4641,10 +4638,12 @@
         address: '187 Grand St, Brooklyn, NY',
         website: 'fadestudiobk.com', phone: '(718) 555-0189',
         hoursDisplay: ['Tue–Sat: 10am–8pm', 'Sun–Mon: Closed'],
-        menuHighlights: ['Classic cut', 'Skin fade', 'Beard shape-up']
+        menuHighlights: ['Classic cut', 'Skin fade', 'Beard shape-up'],
+        lat: 40.7168, lng: -73.9548, drop: false
       },
       food: {
-        icon: '🌮', bg: 'var(--blush)', name: 'Sol Tacos', cat: 'Mexican · 0.3 mi away',
+        id: 'food', icon: '🌮', bg: 'var(--blush)', color: '#F2DDD5',
+        name: 'Sol Tacos', cat: 'Mexican · 0.3 mi away',
         tags: ['Drop at 5 PM', 'Open Now'],
         tagColors: ['var(--peach)', 'var(--border)'],
         reward: 'Free taco after 5 visits', punches: 1, total: 5,
@@ -4653,10 +4652,12 @@
         address: '96 Metropolitan Ave, Brooklyn, NY',
         website: 'soltacosbk.com', phone: '(718) 555-0215',
         hoursDisplay: ['Daily: 5pm–11pm'],
-        menuHighlights: ['Al pastor taco', 'Birria quesadilla', 'Horchata']
+        menuHighlights: ['Al pastor taco', 'Birria quesadilla', 'Horchata'],
+        lat: 40.7128, lng: -73.9602, drop: false
       },
       boutique: {
-        icon: '👗', bg: 'var(--sky)', name: 'Vela Boutique', cat: 'Fashion Boutique · 0.4 mi away',
+        id: 'boutique', icon: '👗', bg: 'var(--sky)', color: '#C5DCE8',
+        name: 'Vela Boutique', cat: 'Fashion Boutique · 0.4 mi away',
         tags: ['Almost Loyal ⭐', 'Open Now'],
         tagColors: ['var(--sky)', 'var(--border)'],
         reward: '20% off after 5 visits', punches: 4, total: 5,
@@ -4665,9 +4666,122 @@
         address: '224 Bedford Ave, Brooklyn, NY',
         website: 'velaboutiquebk.com', phone: '(718) 555-0067',
         hoursDisplay: ['Mon–Sat: 11am–7pm', 'Sunday: 12pm–5pm'],
-        menuHighlights: ['New arrivals', 'Local designers', 'Vintage edit']
+        menuHighlights: ['New arrivals', 'Local designers', 'Vintage edit'],
+        lat: 40.7138, lng: -73.9555, drop: false
+      },
+      fitness: {
+        id: 'fitness', icon: '💪', bg: 'var(--muted-gold)', color: '#E8D5A3',
+        name: 'Form Fitness', cat: 'Fitness Studio · 0.8 mi away',
+        tags: ['New Member Perk', 'Open Now'],
+        tagColors: ['var(--muted-gold)', 'var(--border)'],
+        reward: 'Free class pass after 5 check-ins', punches: 0, total: 5,
+        dist: '0.8 mi', hours: { open: '06:00', close: '21:00' },
+        tagline: 'Strength, sweat, and a community that shows up for you.',
+        address: '150 N 4th St, Brooklyn, NY',
+        website: 'formfitnessbk.com', phone: '(718) 555-0233',
+        hoursDisplay: ['Mon–Fri: 6am–9pm', 'Sat–Sun: 8am–6pm'],
+        menuHighlights: ['Sunrise HIIT', 'Strength foundations', 'Sunday Sweat class'],
+        lat: 40.7148, lng: -73.9620, drop: false
       }
     };
+
+    // Deep-frozen snapshot of the fresh state, taken once at load — resetDemo()
+    // restores MERCHANTS from this so every tester starts from the same world.
+    const MERCHANTS_INITIAL = structuredClone(MERCHANTS);
+
+    // ===========================
+    // PUNCH STATE — single write path
+    // ===========================
+    // The only place punch counts are ever incremented. Every visible punch
+    // surface (bottom sheet, profile loyalty cards, QR screen, success screen,
+    // map pins) is repainted from MERCHANTS right after, so they can never
+    // disagree with each other again.
+    function addPunch(key, n = 1) {
+      const m = MERCHANTS[key];
+      if (!m) return;
+      m.punches = Math.min(m.total, m.punches + n);
+      renderPunchSurfaces(key);
+    }
+
+    // Rebuilds every punch-count surface from MERCHANTS. `key` is the merchant
+    // whose punches just changed (or, at startup, the merchant to preview on
+    // the QR/success screens before any interaction has happened).
+    function renderPunchSurfaces(key) {
+      renderLoyaltyCards();
+      const focusKey = key || reviewState.activeMerchantKey || 'coffee';
+      renderQrMerchantRow(focusKey);
+      renderSuccessScreen(focusKey);
+      renderMapPins();
+
+      // Only touch the bottom sheet's punch card if it's open for this exact
+      // merchant — repainting it for an unrelated merchant would be a no-op
+      // target (wrong DOM) or, worse, show the wrong card's numbers.
+      const overlay = document.getElementById('sheet-overlay');
+      if (overlay && overlay.classList.contains('open') && key && reviewState.activeMerchantKey === key) {
+        paintSheetPunchcard(key);
+      }
+    }
+
+    // Profile tab — "Active Cards" — one .loyalty-card per merchant.
+    function renderLoyaltyCards() {
+      const el = document.getElementById('loyalty-cards');
+      if (!el) return;
+      el.innerHTML = Object.values(MERCHANTS).map((m) => {
+        let dots = '';
+        for (let i = 0; i < m.total; i++) {
+          dots += `<div class="lc-dot${i < m.punches ? ' filled' : ''}"></div>`;
+        }
+        return `
+            <div class="loyalty-card">
+              <div class="loyalty-card-icon" style="background: ${m.bg};">${m.icon}</div>
+              <div class="loyalty-card-name">${m.name}</div>
+              <div class="loyalty-card-punches">${dots}</div>
+              <div class="loyalty-card-progress"><span>${m.punches} / ${m.total}</span> punches</div>
+            </div>`;
+      }).join('');
+    }
+
+    // QR screen — the merchant row showing icon/name + live "x/5 punches".
+    function renderQrMerchantRow(key) {
+      const el = document.getElementById('qr-merchant-row');
+      const m = MERCHANTS[key];
+      if (!el || !m) return;
+      el.innerHTML = `
+          <div class="qr-merchant-icon">${m.icon}</div>
+          <div class="qr-merchant-text">
+            <div class="qr-merchant-name">${m.name}</div>
+            <div class="qr-merchant-sub">Williamsburg, Brooklyn</div>
+          </div>
+          <div class="qr-merchant-punches">
+            <div class="qr-merchant-count">${m.punches}/${m.total}</div>
+            <div class="qr-merchant-count-label">punches</div>
+          </div>`;
+    }
+
+    // Success screen — punch dots + copy, all driven by the merchant just stamped.
+    function renderSuccessScreen(key) {
+      const m = MERCHANTS[key];
+      if (!m) return;
+      const sub = document.getElementById('success-sub');
+      if (sub) sub.textContent = `You're on punch ${m.punches} of ${m.total} at ${m.name}`;
+
+      const punchesEl = document.getElementById('success-punches');
+      if (punchesEl) {
+        let html = '';
+        for (let i = 0; i < m.total; i++) {
+          html += `<div class="success-punch${i < m.punches ? '' : ' empty'}">${i < m.punches ? '✓' : ''}</div>`;
+        }
+        punchesEl.innerHTML = html;
+      }
+
+      const next = document.getElementById('success-next');
+      if (next) {
+        const remaining = m.total - m.punches;
+        next.textContent = remaining > 0
+          ? `${remaining} more stamp${remaining === 1 ? '' : 's'} to unlock: ${m.reward}`
+          : `Reward unlocked: ${m.reward}`;
+      }
+    }
 
     // ===========================
     // FRIEND REVIEWS (dummy demo data)
@@ -4768,7 +4882,7 @@
     function renderReviews(key) {
       const el = document.getElementById('sheet-reviews');
       if (!el || !key) return;
-      const m = merchants[key];
+      const m = MERCHANTS[key];
       const seeds = seedFriendReviews[key] || [];
       const mine = reviewState.myReviews[key];
 
@@ -4837,7 +4951,7 @@
     // ── Review composer ──────────────────────────────────────────────────────
     function openReview(key) {
       reviewState.activeMerchantKey = key;
-      const m = merchants[key];
+      const m = MERCHANTS[key];
       const existing = reviewState.myReviews[key];
       reviewState.composeEmoji = existing ? existing.emoji : '';
 
@@ -4921,7 +5035,7 @@
         return;
       }
 
-      const matches = Object.entries(merchants).filter(([, m]) =>
+      const matches = Object.entries(MERCHANTS).filter(([, m]) =>
         `${m.name} ${m.cat} ${m.reward}`.toLowerCase().includes(q)
       );
 
@@ -4967,8 +5081,30 @@
       if (!e.target.closest('.map-search-wrap')) hideSearchResults();
     });
 
+    // Builds the "Your Punch Card" block inside the bottom sheet from MERCHANTS.
+    // Called on open, and again by renderPunchSurfaces() whenever punches change
+    // while this sheet is showing, so the sheet never goes stale.
+    function paintSheetPunchcard(key) {
+      const m = MERCHANTS[key];
+      const el = document.getElementById('sheet-punchcard');
+      if (!el || !m) return;
+      let punches = '';
+      for (let i = 0; i < m.total; i++) {
+        punches += `<div class="punch${i < m.punches ? ' done' : ''}"></div>`;
+      }
+      el.innerHTML = `
+      <div class="punch-card-title">${m.reward}</div>
+      <div class="punch-card-reward">Complete your card for a reward</div>
+      <div class="punches-grid">${punches}</div>
+      <div class="punch-progress">
+        <div class="punch-progress-text"><span>${m.punches}</span> of ${m.total} punches</div>
+        <div class="punch-progress-text">${m.total - m.punches} more to go!</div>
+      </div>
+    `;
+    }
+
     function openSheet(type) {
-      const m = merchants[type];
+      const m = MERCHANTS[type];
       const overlay = document.getElementById('sheet-overlay');
 
       document.getElementById('sheet-header').innerHTML = `
@@ -4995,19 +5131,7 @@
         return `<div class="sheet-tag ${isFirst ? 'highlight' : ''}" style="${isFirst ? `background:${bg}; border-color:${bg};` : ''}">${t}</div>`;
       }).join('');
 
-      let punches = '';
-      for (let i = 0; i < m.total; i++) {
-        punches += `<div class="punch${i < m.punches ? ' done' : ''}"></div>`;
-      }
-      document.getElementById('sheet-punchcard').innerHTML = `
-      <div class="punch-card-title">${m.reward}</div>
-      <div class="punch-card-reward">Complete your card for a reward</div>
-      <div class="punches-grid">${punches}</div>
-      <div class="punch-progress">
-        <div class="punch-progress-text"><span>${m.punches}</span> of ${m.total} punches</div>
-        <div class="punch-progress-text">${m.total - m.punches} more to go!</div>
-      </div>
-    `;
+      paintSheetPunchcard(type);
 
       renderInfo(type);
 
@@ -5020,7 +5144,7 @@
     // ── Hours / website / phone / menu ──────────────────────────────────────
     function renderInfo(key) {
       const el = document.getElementById('sheet-info');
-      const m = merchants[key];
+      const m = MERCHANTS[key];
       if (!el || !m) return;
       const telHref = 'tel:' + m.phone.replace(/[^\d+]/g, '');
 
@@ -5076,59 +5200,13 @@
     let pnchyMap = null;
     let heatLayer = null;
     let mapInitialized = false;
+    // Leaflet marker refs keyed by merchant id, so renderPunchSurfaces() can
+    // repaint pin dots in place instead of re-initializing the whole map.
+    let pnchyMarkers = {};
 
     // Williamsburg, Brooklyn center
     const MAP_CENTER = [40.7141, -73.9570];
     const MAP_ZOOM = 16;
-
-    // Merchant data with real-ish Williamsburg coords
-    const mapMerchants = [
-      {
-        id: 'coffee',
-        name: 'Bloom Coffee',
-        emoji: '☕',
-        lat: 40.7155, lng: -73.9585,
-        punches: 3, total: 5,
-        drop: true,
-        color: '#C8D8C0'
-      },
-      {
-        id: 'barber',
-        name: 'Fade Studio',
-        emoji: '✂️',
-        lat: 40.7168, lng: -73.9548,
-        punches: 2, total: 5,
-        drop: false,
-        color: '#D6D0E8'
-      },
-      {
-        id: 'food',
-        name: 'Sol Tacos',
-        emoji: '🌮',
-        lat: 40.7128, lng: -73.9602,
-        punches: 1, total: 5,
-        drop: false,
-        color: '#F2DDD5'
-      },
-      {
-        id: 'boutique',
-        name: 'Vela Boutique',
-        emoji: '👗',
-        lat: 40.7138, lng: -73.9555,
-        punches: 4, total: 5,
-        drop: false,
-        color: '#C5DCE8'
-      },
-      {
-        id: 'fitness',
-        name: 'Form Fitness',
-        emoji: '💪',
-        lat: 40.7148, lng: -73.9620,
-        punches: 0, total: 5,
-        drop: false,
-        color: '#E8D5A3'
-      }
-    ];
 
     // Heatmap data — simulated foot traffic clusters
     const heatData = [
@@ -5175,13 +5253,29 @@
       return `
       <div class="pnchy-pin${m.drop ? ' drop-active' : ''}" onclick="openSheet('${m.id}')">
         ${dropBadge}
-        <span class="pnchy-pin-emoji">${m.emoji}</span>
+        <span class="pnchy-pin-emoji">${m.icon}</span>
         <div>
           <div class="pnchy-pin-name">${m.name}</div>
           <div class="pnchy-pin-dots">${dots}</div>
         </div>
       </div>
     `;
+    }
+
+    // Repaints every map pin's icon from the current MERCHANTS state (punch
+    // counts, drop flag). No-op if the map hasn't been initialized yet.
+    function renderMapPins() {
+      if (!pnchyMap) return;
+      Object.values(MERCHANTS).forEach(m => {
+        const marker = pnchyMarkers[m.id];
+        if (!marker) return;
+        marker.setIcon(L.divIcon({
+          className: '',
+          html: buildPinHTML(m),
+          iconAnchor: [60, 54],
+          iconSize: [120, 54],
+        }));
+      });
     }
 
     function initMap() {
@@ -5224,14 +5318,15 @@
       }).addTo(pnchyMap);
 
       // Add merchant markers
-      mapMerchants.forEach(m => {
+      pnchyMarkers = {};
+      Object.values(MERCHANTS).forEach(m => {
         const icon = L.divIcon({
           className: '',
           html: buildPinHTML(m),
           iconAnchor: [60, 54],
           iconSize: [120, 54],
         });
-        L.marker([m.lat, m.lng], { icon }).addTo(pnchyMap);
+        pnchyMarkers[m.id] = L.marker([m.lat, m.lng], { icon }).addTo(pnchyMap);
       });
 
       // User location marker
@@ -5288,6 +5383,9 @@
 
     // Init
     generateQR();
+    // Populate the profile/QR/success screens with real data before any
+    // interaction happens, so they're never empty on first load.
+    renderPunchSurfaces('coffee');
   </script>
 
   <!-- PWA service worker (network-first, required for Android installability) -->
