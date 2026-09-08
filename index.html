@@ -282,37 +282,29 @@
        crowd it regardless of how many tabs share that half (owner's Team,
        the first item after center, otherwise sits nearly flush against
        Scan when there are 3 items packed into that half's width). The
-       center button is centered independently at the bar's true midpoint
-       (34px wide, so ±17px from center) — this buffer has to clear that
-       footprint plus real breathing room, not just the half's own edge. */
+       center icon is centered independently at the bar's true midpoint and
+       is the same 22px/24px footprint as its siblings (±12px from center),
+       so this only needs to clear that plus a normal inter-tab gap. */
     .tab-bar-half:first-of-type {
-      padding-right: 27px;
+      padding-right: 15px;
     }
     .tab-bar-half:last-of-type {
-      padding-left: 27px;
+      padding-left: 15px;
     }
 
     /* Center tab (Stamp/Scan) — taken out of the flex flow and centered
        directly on .tab-bar (left:50% of the whole bar, not of its own flex
        slot), so its position never depends on how many tabs surround it.
        Sits in line with its siblings (top:0 = same start point normal-flow
-       tab-items use) rather than floating above the bar — distinguished
-       from the others by color/fill, not by size or elevation. */
+       tab-items use), same size and outline style as the others — the only
+       difference is a permanent accent-green stroke instead of gray, so it
+       reads as "this one's always on" rather than a bigger/heavier button. */
     .tab-item-center {
       position: absolute;
       left: 50%;
       top: 0;
       transform: translateX(-50%);
       z-index: 5;
-    }
-
-    /* .tab-icon is normally a fixed 24x24 box sized for the small nav svgs;
-       as a row flex container it was flex-shrinking the 50px .tab-center-btn
-       down to fit inside it. The center tab doesn't need that box at all. */
-    .tab-item-center .tab-icon {
-      width: auto;
-      height: auto;
-      display: block;
     }
 
     .tab-item {
@@ -2749,21 +2741,6 @@
        ROLE / EMPLOYEE / OWNER DEMOS
        ============================ */
 
-    /* Shared center tab button (Customer Stamp / Employee+Owner Scan) — a
-       small filled accent-colored circle sitting in line with its sibling
-       icons, not an elevated FAB. It stands out through color/fill against
-       the plain outlined icons around it, not through size or position. */
-    .tab-center-btn {
-      width: 34px;
-      height: 34px;
-      background: var(--accent-green);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(123, 175, 115, 0.35);
-    }
-
     /* Role picker */
     #screen-role-picker { background: var(--cream); }
     .rp-wrap {
@@ -4675,16 +4652,14 @@
       </div>
       <div class="tab-item tab-item-center" data-screen="qr" onclick="switchTab(this, 'qr')">
         <div class="tab-icon">
-          <div class="tab-center-btn">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-              <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-              <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
-              <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-              <rect x="7" y="7" width="10" height="10" rx="1" />
-            </svg>
-          </div>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+            <rect x="7" y="7" width="10" height="10" rx="1" />
+          </svg>
         </div>
         <span class="tab-label">Stamp</span>
       </div>
@@ -4731,13 +4706,11 @@
       </div>
       <div class="tab-item tab-item-center" data-screen="emp-scan" onclick="showScreen('emp-scan')">
         <div class="tab-icon">
-          <div class="tab-center-btn">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
-              <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-              <rect x="7" y="7" width="10" height="10" rx="1" />
-            </svg>
-          </div>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+            <rect x="7" y="7" width="10" height="10" rx="1" />
+          </svg>
         </div>
         <span class="tab-label">Scan</span>
       </div>
@@ -4784,13 +4757,11 @@
       </div>
       <div class="tab-item tab-item-center" data-screen="own-scan" onclick="showScreen('own-scan')">
         <div class="tab-icon">
-          <div class="tab-center-btn">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
-              <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-              <rect x="7" y="7" width="10" height="10" rx="1" />
-            </svg>
-          </div>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+            <rect x="7" y="7" width="10" height="10" rx="1" />
+          </svg>
         </div>
         <span class="tab-label">Scan</span>
       </div>
@@ -5202,7 +5173,7 @@
         const isActive = t.dataset.screen === screenName;
         t.classList.toggle('active', isActive);
         const svg = t.querySelector('svg');
-        if (svg) {
+        if (svg && !t.classList.contains('tab-item-center')) {
           svg.style.stroke = isActive ? 'var(--accent-green)' : '#8A847E';
         }
         const label = t.querySelector('.tab-label');
