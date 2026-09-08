@@ -263,6 +263,39 @@
       padding-top: 10px;
       flex-shrink: 0;
       box-shadow: 0 -4px 20px var(--shadow);
+      position: relative; /* anchors .tab-item-center below */
+    }
+
+    /* The tabs on either side of the elevated center button are grouped into
+       two equal-width halves so the button can be positioned at the bar's
+       true horizontal midpoint (left:50% of .tab-bar) instead of centering
+       within its own flex slot — with an even item count (employee: 4,
+       owner: 6) no single flex slot's center ever lands on the bar's true
+       midpoint, which is what was making Scan/Stamp look off-center. */
+    .tab-bar-half {
+      display: flex;
+      flex: 1;
+      align-items: flex-start;
+    }
+
+    /* Elevated center tab (Stamp/Scan) — taken out of the flex flow entirely
+       and centered directly on .tab-bar, so its position never depends on
+       how many tabs surround it or which flex slot it used to occupy. */
+    .tab-item-center {
+      position: absolute;
+      left: 50%;
+      top: -30px; /* nets ~20px above the bar's visible top edge, after the bar's own 10px padding-top is subtracted for an absolutely-positioned child — this is the "floats 20px above the tab bar" the CLAUDE.md doc describes */
+      transform: translateX(-50%);
+      z-index: 5;
+    }
+
+    /* .tab-icon is normally a fixed 24x24 box sized for the small nav svgs;
+       as a row flex container it was flex-shrinking the 50px .tab-center-btn
+       down to fit inside it. The center tab doesn't need that box at all. */
+    .tab-item-center .tab-icon {
+      width: auto;
+      height: auto;
+      display: block;
     }
 
     .tab-item {
@@ -2696,7 +2729,9 @@
        ROLE / EMPLOYEE / OWNER DEMOS
        ============================ */
 
-    /* Shared elevated center tab button (employee/owner Scan) */
+    /* Shared elevated center tab button (Customer Stamp / Employee+Owner
+       Scan) — a static circle now; the .tab-item-center wrapper it sits
+       inside handles all the positioning/centering on the bar itself. */
     .tab-center-btn {
       width: 50px;
       height: 50px;
@@ -2705,10 +2740,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
       box-shadow: 0 4px 16px rgba(44, 40, 37, 0.3);
     }
 
@@ -4596,33 +4627,34 @@
 
     <!-- Tab Bar (hidden on splash) -->
     <div class="tab-bar" id="tab-bar" style="display:none;">
-      <div class="tab-item active" data-screen="home" onclick="switchTab(this, 'home')">
+      <div class="tab-bar-half">
+        <div class="tab-item active" data-screen="home" onclick="switchTab(this, 'home')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7BAF73" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.93-7.07-1.41 1.41M6.34 17.66l-1.41 1.41M17.66 17.66l-1.41-1.41M6.34 6.34 4.93 4.93" />
+            </svg>
+            <div class="nav-indicator"></div>
+          </div>
+          <span class="tab-label">Explore</span>
+        </div>
+        <div class="tab-item" data-screen="drops" onclick="switchTab(this, 'drops')">
+          <div class="tab-icon" style="position:relative;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            <div class="tab-badge" id="drops-tab-badge" style="display:none;">0</div>
+          </div>
+          <span class="tab-label">Drops</span>
+        </div>
+      </div>
+      <div class="tab-item tab-item-center" data-screen="qr" onclick="switchTab(this, 'qr')">
         <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7BAF73" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path
-              d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.93-7.07-1.41 1.41M6.34 17.66l-1.41 1.41M17.66 17.66l-1.41-1.41M6.34 6.34 4.93 4.93" />
-          </svg>
-          <div class="nav-indicator"></div>
-        </div>
-        <span class="tab-label">Explore</span>
-      </div>
-      <div class="tab-item" data-screen="drops" onclick="switchTab(this, 'drops')">
-        <div class="tab-icon" style="position:relative;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
-            <path d="M12 6v6l4 2" />
-          </svg>
-          <div class="tab-badge" id="drops-tab-badge" style="display:none;">0</div>
-        </div>
-        <span class="tab-label">Drops</span>
-      </div>
-      <div class="tab-item" data-screen="qr" onclick="switchTab(this, 'qr')">
-        <div class="tab-icon" style="position:relative;">
-          <div
-            style="width: 50px; height: 50px; background: var(--text-dark); border-radius: 18px; display: flex; align-items: center; justify-content: center; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); box-shadow: 0 4px 16px rgba(44,40,37,0.3);">
+          <div class="tab-center-btn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -4632,47 +4664,51 @@
             </svg>
           </div>
         </div>
-        <span class="tab-label" style="margin-top: 14px;">Stamp</span>
+        <span class="tab-label">Stamp</span>
       </div>
-      <div class="tab-item" data-screen="leaderboard" onclick="switchTab(this, 'leaderboard')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 6l4-4 4 4" />
-            <path d="M12 2v20" />
-            <path d="M2 12l4 4 4-4" />
-            <path d="M2 16h8" />
-            <path d="M14 12l4 4 4-4" />
-            <path d="M14 16h8" />
-          </svg>
+      <div class="tab-bar-half">
+        <div class="tab-item" data-screen="leaderboard" onclick="switchTab(this, 'leaderboard')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 6l4-4 4 4" />
+              <path d="M12 2v20" />
+              <path d="M2 12l4 4 4-4" />
+              <path d="M2 16h8" />
+              <path d="M14 12l4 4 4-4" />
+              <path d="M14 16h8" />
+            </svg>
+          </div>
+          <span class="tab-label">Ranks</span>
         </div>
-        <span class="tab-label">Ranks</span>
-      </div>
-      <div class="tab-item" data-screen="profile" onclick="switchTab(this, 'profile')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
+        <div class="tab-item" data-screen="profile" onclick="switchTab(this, 'profile')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <span class="tab-label">Profile</span>
         </div>
-        <span class="tab-label">Profile</span>
       </div>
     </div>
 
     <!-- Employee tab bar -->
     <div class="tab-bar" id="tab-bar-emp" style="display:none;">
-      <div class="tab-item" data-screen="emp-home" onclick="showScreen('emp-home')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9.5 12 3l9 6.5" /><path d="M5 10v10h14V10" />
-          </svg>
-          <div class="nav-indicator" style="display:none;"></div>
+      <div class="tab-bar-half">
+        <div class="tab-item" data-screen="emp-home" onclick="showScreen('emp-home')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9.5 12 3l9 6.5" /><path d="M5 10v10h14V10" />
+            </svg>
+            <div class="nav-indicator" style="display:none;"></div>
+          </div>
+          <span class="tab-label">Home</span>
         </div>
-        <span class="tab-label">Home</span>
       </div>
-      <div class="tab-item" data-screen="emp-scan" onclick="showScreen('emp-scan')">
-        <div class="tab-icon" style="position:relative;">
+      <div class="tab-item tab-item-center" data-screen="emp-scan" onclick="showScreen('emp-scan')">
+        <div class="tab-icon">
           <div class="tab-center-btn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
@@ -4680,47 +4716,51 @@
             </svg>
           </div>
         </div>
-        <span class="tab-label" style="margin-top: 14px;">Scan</span>
+        <span class="tab-label">Scan</span>
       </div>
-      <div class="tab-item" data-screen="emp-ranks" onclick="showScreen('emp-ranks')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
-          </svg>
+      <div class="tab-bar-half">
+        <div class="tab-item" data-screen="emp-ranks" onclick="showScreen('emp-ranks')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
+            </svg>
+          </div>
+          <span class="tab-label">Ranks</span>
         </div>
-        <span class="tab-label">Ranks</span>
-      </div>
-      <div class="tab-item" data-screen="emp-profile" onclick="showScreen('emp-profile')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-          </svg>
+        <div class="tab-item" data-screen="emp-profile" onclick="showScreen('emp-profile')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <span class="tab-label">Profile</span>
         </div>
-        <span class="tab-label">Profile</span>
       </div>
     </div>
 
     <!-- Owner tab bar -->
     <div class="tab-bar" id="tab-bar-own" style="display:none;">
-      <div class="tab-item" data-screen="own-dashboard" onclick="showScreen('own-dashboard')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" />
-          </svg>
-          <div class="nav-indicator" style="display:none;"></div>
+      <div class="tab-bar-half">
+        <div class="tab-item" data-screen="own-dashboard" onclick="showScreen('own-dashboard')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" />
+            </svg>
+            <div class="nav-indicator" style="display:none;"></div>
+          </div>
+          <span class="tab-label">Home</span>
         </div>
-        <span class="tab-label">Home</span>
-      </div>
-      <div class="tab-item" data-screen="own-drops" onclick="showScreen('own-drops')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v6" /><path d="M12 22a7 7 0 0 0 7-7c0-3-2.5-5.5-7-11-4.5 5.5-7 8-7 11a7 7 0 0 0 7 7z" />
-          </svg>
+        <div class="tab-item" data-screen="own-drops" onclick="showScreen('own-drops')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v6" /><path d="M12 22a7 7 0 0 0 7-7c0-3-2.5-5.5-7-11-4.5 5.5-7 8-7 11a7 7 0 0 0 7 7z" />
+            </svg>
+          </div>
+          <span class="tab-label">Drops</span>
         </div>
-        <span class="tab-label">Drops</span>
       </div>
-      <div class="tab-item" data-screen="own-scan" onclick="showScreen('own-scan')">
-        <div class="tab-icon" style="position:relative;">
+      <div class="tab-item tab-item-center" data-screen="own-scan" onclick="showScreen('own-scan')">
+        <div class="tab-icon">
           <div class="tab-center-btn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
@@ -4728,31 +4768,33 @@
             </svg>
           </div>
         </div>
-        <span class="tab-label" style="margin-top: 14px;">Scan</span>
+        <span class="tab-label">Scan</span>
       </div>
-      <div class="tab-item" data-screen="own-team" onclick="showScreen('own-team')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
+      <div class="tab-bar-half">
+        <div class="tab-item" data-screen="own-team" onclick="showScreen('own-team')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <span class="tab-label">Team</span>
         </div>
-        <span class="tab-label">Team</span>
-      </div>
-      <div class="tab-item" data-screen="own-ranks" onclick="showScreen('own-ranks')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
-          </svg>
+        <div class="tab-item" data-screen="own-ranks" onclick="showScreen('own-ranks')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
+            </svg>
+          </div>
+          <span class="tab-label">Ranks</span>
         </div>
-        <span class="tab-label">Ranks</span>
-      </div>
-      <div class="tab-item" data-screen="own-profile" onclick="showScreen('own-profile')">
-        <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-          </svg>
+        <div class="tab-item" data-screen="own-profile" onclick="showScreen('own-profile')">
+          <div class="tab-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <span class="tab-label">Profile</span>
         </div>
-        <span class="tab-label">Profile</span>
       </div>
     </div>
 
