@@ -20,15 +20,31 @@ Everything is in one file (`index.html`): static markup for every screen, a CSS 
   - **Owner (Pro tier):** `own-dashboard`, `own-drops`, `own-drop-config`, `own-drop-analytics`, `own-scan`, `own-team`, `own-ranks`, `own-profile`.
 - **JavaScript** — At the bottom, one `<script>` block holds: navigation (`showScreen`/`SCREEN_ROLE`), map/QR logic, the canonical `MERCHANTS` data + punch-write path, and the Density Drop simulation engine (`SIM`/`WORLD`). See the subsections below for the state layer and engine — they're the parts most likely to matter for a future change.
 
-**Screen navigation:** `showScreen(name)` swaps `.active` on screens and picks the tab bar. Each screen's role is looked up in `SCREEN_ROLE`; `ROLE_TABBAR` maps the role to one of three tab bars (`tab-bar` customer / `tab-bar-emp` / `tab-bar-own`). `NO_CHROME` screens (`splash`, `role-picker`, `success`, `pass-qr`) show no tab bar. `enterRole(role)` jumps to a role's first screen; `switchRole()` returns to the picker (wired to every Profile tab). `currentScreenName` tracks the active screen so tick-driven code (the go-live toast) can avoid popping over a screen the tester is already on. Every screen with dynamic content is repainted on entry from `showScreen` — punch surfaces, drop surfaces, period-filtered metrics, team/rank lists — so nothing shown is ever stale static markup. Calling `switchTab(el, screenName)` delegates to `showScreen`.
+### Screen navigation
 
-**Employee/Owner content** is a static port of the Pnchy MVP (`../pnchy-mvp`) staging screens, restyled onto the demo's tokens. Both roles represent **Bloom Coffee**; business names stay consistent with the demo's 5 merchants + coffee-pod leaderboard. Interactions with no static analog use inline overlays, never `alert()`/`confirm()`: `demoScan(role)` (scan-success flash), `ownerPayDrop()` ($20 payment-success overlay), `copyAccessCode()`, `toggleSwitch()`, `switchAPill()`.
+`showScreen(name)` swaps `.active` on screens and picks the tab bar. Each screen's role is looked up in `SCREEN_ROLE`; `ROLE_TABBAR` maps the role to one of three tab bars (`tab-bar` customer / `tab-bar-emp` / `tab-bar-own`). `NO_CHROME` screens (`splash`, `role-picker`, `success`, `pass-qr`) show no tab bar. `enterRole(role)` jumps to a role's first screen; `switchRole()` returns to the picker (wired to every Profile tab). `currentScreenName` tracks the active screen so tick-driven code (the go-live toast) can avoid popping over a screen the tester is already on. Calling `switchTab(el, screenName)` delegates to `showScreen`.
 
-**Map (Explore tab):** Leaflet 1.9.4 + leaflet-heat 0.2.0, loaded from CDN. `initMap()` is called lazily on first `showScreen('home')` and guards against double-init with `mapInitialized`. CartoDB Light tiles, pastel CSS filter (`saturate(0.55) brightness(1.08) hue-rotate(5deg) sepia(0.12)`). Merchant markers use `L.divIcon` with inline HTML, warmed (`pin-warm-*`) or made live while a Density Drop is building/live at that merchant. `heatLayer` is toggled with `toggleHeatmap()`.
+### Employee/Owner content
 
-**Bottom sheet:** `openSheet(type)` populates `#sheet-header`, `#sheet-tags`, and `#sheet-punchcard` dynamically from `MERCHANTS`, then shows `#sheet-overlay`. Closed by clicking the overlay backdrop.
+A static port of the Pnchy MVP (`../pnchy-mvp`) staging screens, restyled onto the demo's tokens. Both roles represent **Bloom Coffee**; business names stay consistent with the demo's 5 merchants + coffee-pod leaderboard, all anchored to **State College, PA** addresses (see the `address` fields on `MERCHANTS` and the map-center comment near `initMap()`) — match that geography if you add a merchant or move the map center. Interactions with no static analog use inline overlays, never `alert()`/`confirm()`: `demoScan(role)` (scan-success flash), `ownerPayDrop()` ($20 payment-success overlay), `copyAccessCode()`, `toggleSwitch()`, `switchAPill()`.
 
-**QR screen:** `generateQR()` builds a 9×9 fake QR grid. `startQRTimer()` counts down from 58 s and calls `generateQR()` on each cycle. Tapping the QR frame calls `showScreen('success')`.
+Most of `emp-home`'s numbers are static illustrative content, but `SCANS TODAY` (`WORLD.empScansToday`) and `Recent Pnches` (`WORLD.recentPnches`, capped at `EMP_RECENT_PNCHES_MAX`) are real state — a stamp scan via `demoScan('emp')` increments/prepends them and `renderEmpHomeActivity()` repaints both, reset by `resetDemo()`.
+
+### Ranks / leaderboard design system
+
+All three roles' ranks screens (customer `leaderboard`, `emp-ranks`, `own-ranks`) share one visual system rather than each having its own: the customer leaderboard's own class family (`.lb-header`/`.lb-category-scroll`/`.lb-top3`/`.lb-podium-*`/`.lb-list`/`.lb-row`). A single `buildStepPodiumHTML()` builds the stepped 3-place podium for all three — `renderLbList()`, `renderEmpRankList()`, and `renderOwnRankList()` each shape their own top-3 rows (`{ icon, name, bg, me, scoreText }`) and call it. A `.me`-flagged row gets a gold ring (podium) or a "You" tag (list row) — the one piece of UI the customer screen never needs but employee/owner do. Don't reintroduce a separate podium/list style for emp/own ranks; change the shared `.lb-*` classes and all three screens move together.
+
+### Map (Explore tab)
+
+Leaflet 1.9.4 + leaflet-heat 0.2.0, loaded from CDN. `initMap()` is called lazily on first `showScreen('home')` and guards against double-init with `mapInitialized`. CartoDB Light tiles, pastel CSS filter (`saturate(0.55) brightness(1.08) hue-rotate(5deg) sepia(0.12)`). Merchant markers use `L.divIcon` with inline HTML, warmed (`pin-warm-*`) or made live while a Density Drop is building/live at that merchant. `heatLayer` is toggled with `toggleHeatmap()`.
+
+### Bottom sheet
+
+`openSheet(type)` populates `#sheet-header`, `#sheet-tags`, and `#sheet-punchcard` dynamically from `MERCHANTS`, then shows `#sheet-overlay`. Closed by clicking the overlay backdrop.
+
+### QR screen
+
+`generateQR()` builds a 9×9 fake QR grid. `startQRTimer()` counts down from 58 s and calls `generateQR()` on each cycle. Tapping the QR frame calls `showScreen('success')`.
 
 ### Merchant data and punches
 
@@ -44,17 +60,17 @@ A compressed-clock simulation drives a Density Drop through building → live �
 
 ### Reset and session-only state
 
-`resetDemo()` is the in-memory reset — it restores `MERCHANTS` from `MERCHANTS_INITIAL`, stops the clock and wipes `WORLD.drop`/`WORLD.history`/`WORLD.ownerConfig` back to their shipped defaults, closes any open overlay/sheet, and re-arms the one-time per-role coach marks (`WORLD.coach`, shown once per role per session by `maybeShowCoachMark()` from `showScreen()`, dismissed by `dismissCoachMark(role)`). **Never use `localStorage`/`sessionStorage` anywhere in this file** — every piece of state (`MERCHANTS`, `WORLD`, `SIM`, `reviewState`, etc.) is in-memory only and this matters more now than it used to, given how much of the app is state-driven rather than static markup.
+`resetDemo()` is the in-memory reset — it restores `MERCHANTS` from `MERCHANTS_INITIAL`, stops the clock and wipes `WORLD.drop`/`WORLD.history`/`WORLD.ownerConfig` back to their shipped defaults, closes any open overlay/sheet, and re-arms the one-time coach marks (`WORLD.coach`). Coach marks are keyed by a shared `COACH_LANDING` lookup (screen name → `{ flag, el }`) and shown once per key per session by `maybeShowCoachMark(key)`. `showScreen()` calls it unconditionally on every navigation, which is enough to cover four of the five keys (`home`/`emp-home`/`own-dashboard`/`leaderboard`, dismissed via `dismissCoachMark(role)` for the three role ones); the fifth (`sheet`, the punch-card-sheet explainer) isn't a real screen, so `openSheet()` calls `maybeShowCoachMark('sheet')` directly, dismissed via `dismissCoachMarkByKey('sheet')`. **Never use `localStorage`/`sessionStorage` anywhere in this file** — every piece of state (`MERCHANTS`, `WORLD`, `SIM`, `reviewState`, etc.) is in-memory only and this matters more now than it used to, given how much of the app is state-driven rather than static markup.
 
 ### Wiring convention
 
 Every interactive-looking element either does something real or has had `cursor:pointer` (and any hover affordance) deliberately removed — there should be no dead buttons that merely look clickable. Follow the same rule for any new element: wire it to a real handler, or de-affordance it.
 
-**Service worker (`sw.js`):** Network-first strategy. Cache name is `pnchy-demo-v7` — bump this string on every deploy to force all clients to re-fetch.
+**Service worker (`sw.js`):** Network-first strategy. `CACHE_NAME` is a version-suffixed string (`pnchy-demo-vN`) — bump the number on every deploy to force all clients to re-fetch.
 
 ## Design conventions
 
 - **Fonts:** `DM Sans` for all body text; `Fraunces` (italic) for display headings and podium numbers; `Instrument Serif` for the splash tagline and CTA button.
-- **Responsive:** `@media (max-width: 480px)` removes the fake phone chrome and fills the viewport using `100dvw` / `100dvh`. `env(safe-area-inset-*)` is applied on the tab bar for iPhone home indicator.
+- **Responsive:** `@media (max-width: 480px)` removes the fake phone chrome and fills the viewport using `100dvw` / `100dvh`. `env(safe-area-inset-bottom, 0px)` is baked into the `--nav-clear` token and the tab bar's `bottom` offset (with a `0px` fallback so an unsupported `env()` can't silently zero out the whole `calc()`), so no separate media-query override is needed for the home-indicator inset.
 - **Animations:** `fadeUp`, `slideIn`, `slideInLeft`, `countUp`, `pulse`, `ripple`, `float`, `spin`, `shimmer`, plus the subtle CTA pulses `ctaPulseNeutral`/`ctaPulseGreen` — all defined in the `<style>` block. CTA pulses are opacity/box-shadow only (never scale/transform) and are applied via existing conditional classes (`.a-drop-btn.locked`, `.dd-pass-btn`) so they need no extra JS to turn off.
-- **Elevated center tab (Stamp):** The QR button floats 20 px above the tab bar using `position: absolute; top: -20px`. Preserve this offset when restyling the tab bar.
+- **Tab bar:** a floating glass pill (`position: absolute`, centered, `border-radius: 999px`, warm-cream `backdrop-filter: blur()`), not a full-width bar — it hugs its own content instead of spanning the screen, so its width differs per role (customer 5 items, employee 4, owner 6). Every `.tab-item` is a direct flex child in reading order; there is no half-wrapper split around the center Stamp/Scan button any more; do not reintroduce one; it is a normal item, distinguished only by a permanent accent-green stroke. Inactive items are icon-only; the active item expands into a labelled chip (`.tab-item.active`), and `updateTabHighlight()` (JS) does pure class/`aria-selected` toggling — all the styling lives in CSS now, so don't reintroduce inline style writes there. Screens with no tab of their own (e.g. `drop-detail`, `own-drop-config`) borrow their parent section's chip via the `PARENT_TAB` map. Because the pill's width animates with the active label and it's centered via `translateX(-50%)`, every icon shifts horizontally on tab switches — this is an accepted trade-off of the hug-content design, not a bug. Scrollable content clears the pill via the shared `--nav-clear` token on `.scroll-content`; any new bottom-anchored element on a screen with tab-bar chrome must use `bottom: var(--nav-clear)` (or its own audited offset) instead of a bare pixel value.

@@ -45,6 +45,9 @@
       --building-faint: rgba(227, 183, 126, 0.08);
       --building-subtle: rgba(227, 183, 126, 0.12);
       --building-glow: rgba(227, 183, 126, 0.25);
+      --nav-h: 60px;
+      --nav-inset: 12px;
+      --nav-clear: calc(88px + env(safe-area-inset-bottom, 0px));
     }
 
     * {
@@ -253,69 +256,42 @@
       }
     }
 
-    /* Bottom tab bar */
+    /* Bottom tab bar — a floating glass pill that hugs its own content,
+       centered above the shell's bottom edge, rather than a full-width
+       opaque bar. Content scrolls underneath it (see --nav-clear). */
     .tab-bar {
-      height: 88px;
-      background: var(--white);
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: flex-start;
-      padding-top: 10px;
-      flex-shrink: 0;
-      box-shadow: 0 -4px 20px var(--shadow);
-      position: relative; /* anchors .tab-item-center below */
-    }
-
-    /* The tabs on either side of the elevated center button are grouped into
-       two equal-width halves so the button can be positioned at the bar's
-       true horizontal midpoint (left:50% of .tab-bar) instead of centering
-       within its own flex slot — with an even item count (employee: 4,
-       owner: 6) no single flex slot's center ever lands on the bar's true
-       midpoint, which is what was making Scan/Stamp look off-center. */
-    .tab-bar-half {
-      display: flex;
-      flex: 1;
-      align-items: flex-start;
-    }
-
-    /* A fixed buffer on the edge facing the center button, so items never
-       crowd it regardless of how many tabs share that half (owner's Team,
-       the first item after center, otherwise sits nearly flush against
-       Scan when there are 3 items packed into that half's width). The
-       center icon is centered independently at the bar's true midpoint and
-       is the same 22px/24px footprint as its siblings (±12px from center),
-       so this only needs to clear that plus a normal inter-tab gap. */
-    .tab-bar-half:first-of-type {
-      padding-right: 15px;
-    }
-    .tab-bar-half:last-of-type {
-      padding-left: 15px;
-    }
-
-    /* Center tab (Stamp/Scan) — taken out of the flex flow and centered
-       directly on .tab-bar (left:50% of the whole bar, not of its own flex
-       slot), so its position never depends on how many tabs surround it.
-       Sits in line with its siblings (top:0 = same start point normal-flow
-       tab-items use), same size and outline style as the others — the only
-       difference is a permanent accent-green stroke instead of gray, so it
-       reads as "this one's always on" rather than a bigger/heavier button. */
-    .tab-item-center {
       position: absolute;
+      bottom: calc(var(--nav-inset) + env(safe-area-inset-bottom, 0px));
       left: 50%;
-      top: 0;
       transform: translateX(-50%);
-      z-index: 5;
+      z-index: 95;
+      height: var(--nav-h);
+      max-width: calc(100% - 28px);
+      overflow: hidden; /* clip instead of spill if content ever exceeds max-width */
+      display: flex;
+      align-items: center;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(247, 244, 239, 0.72);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 8px 32px var(--shadow-lg), 0 2px 8px var(--shadow);
     }
 
     .tab-item {
-      flex: 1;
+      flex: 0 1 auto;
+      min-width: 46px;
+      height: 48px;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      padding: 0 12px;
+      border-radius: 999px;
       cursor: pointer;
-      padding: 4px 0;
-      transition: all 0.2s;
+      position: relative; /* anchors .tab-badge via .tab-icon below */
+      transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1), padding 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .tab-icon {
@@ -325,26 +301,56 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      flex-shrink: 0;
     }
 
     .tab-icon svg {
       transition: all 0.2s;
     }
 
+    .tab-item svg {
+      stroke: var(--text-light);
+      transition: stroke 0.2s;
+    }
+
+    /* Center tab (Stamp/Scan) — same size and position as its siblings;
+       the only difference is a permanent accent-green stroke instead of
+       gray, so it reads as "this one's always on" rather than a
+       bigger/heavier button. */
+    .tab-item-center svg {
+      stroke: var(--accent-green);
+    }
+
     .tab-label {
-      font-size: 10px;
-      font-weight: 500;
-      color: var(--text-light);
-      transition: all 0.2s;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-green);
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, margin-left 0.28s;
+    }
+
+    .tab-item.active {
+      background: var(--white);
+      box-shadow: 0 1px 3px var(--shadow);
+    }
+
+    .tab-item.active svg {
+      stroke: var(--accent-green);
     }
 
     .tab-item.active .tab-label {
-      color: var(--accent-green);
-      font-weight: 600;
+      max-width: 76px;
+      opacity: 1;
+      margin-left: 7px;
     }
 
-    .tab-item.active .tab-icon svg {
-      stroke: var(--accent-green);
+    @media (prefers-reduced-motion: reduce) {
+      .tab-item, .tab-label {
+        transition: none;
+      }
     }
 
     .tab-badge {
@@ -882,7 +888,7 @@
     /* Drop alert banner */
     .drop-alert {
       position: absolute;
-      bottom: 16px;
+      bottom: var(--nav-clear);
       left: 16px;
       right: 16px;
       z-index: 50;
@@ -1348,7 +1354,7 @@
     .drops-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 0 24px;
+      padding: 0 24px var(--nav-clear);
     }
 
     .drops-scroll::-webkit-scrollbar {
@@ -1835,7 +1841,7 @@
     .lb-list {
       flex: 1;
       overflow-y: auto;
-      padding: 16px 24px;
+      padding: 16px 24px var(--nav-clear);
     }
 
     .lb-list::-webkit-scrollbar {
@@ -1912,6 +1918,21 @@
 
     .lb-row-change.down {
       color: var(--accent-rose);
+    }
+
+    /* "This is you" marker — shared by emp-ranks (the logged-in employee)
+       and own-ranks (the owner's own business); the customer leaderboard
+       never ranks the viewer, so these are inert there. */
+    .lb-podium-icon.me {
+      border-color: var(--muted-gold);
+      border-width: 3px;
+    }
+
+    .lb-you-tag {
+      color: var(--muted-gold);
+      font-weight: 700;
+      font-size: 11px;
+      margin-left: 6px;
     }
 
     /* ============================
@@ -2223,9 +2244,7 @@
     .scroll-content {
       overflow-y: auto;
       flex: 1;
-      padding-bottom: 28px; /* clears the elevated center tab button, which
-        floats ~20px above the tab bar — without this, scrolled content on
-        every screen can collide with it right at the bottom of the list */
+      padding-bottom: var(--nav-clear); /* clears the floating tab-bar pill */
     }
 
     .scroll-content::-webkit-scrollbar {
@@ -2244,22 +2263,6 @@
         padding-top: max(env(safe-area-inset-top), 12px);
       }
       .dynamic-island, .status-bar { display: none; } /* hide fake chrome */
-      .tab-bar {
-        height: calc(88px + env(safe-area-inset-bottom));
-        padding-bottom: env(safe-area-inset-bottom); /* extend white bar over home indicator */
-      }
-    }
-
-    /* Nav highlight indicator */
-    .nav-indicator {
-      position: absolute;
-      bottom: 0;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--accent-green);
-      left: 50%;
-      transform: translateX(-50%);
     }
 
     /* ===========================
@@ -2926,7 +2929,7 @@
     .a-scan-success {
       position: absolute; inset: 0; background: var(--text-dark);
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-      opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 30;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 120;
     }
     .a-scan-success.show { opacity: 1; pointer-events: auto; }
     .a-check-circle {
@@ -3038,7 +3041,7 @@
     .a-paywall-btn { background: var(--accent-green); color: #fff; border-radius: 999px; padding: 12px; text-align: center; font-size: 14px; font-weight: 700; }
 
     /* Payment success overlay */
-    .a-pay-overlay { position: absolute; inset: 0; background: var(--accent-green); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.35s; z-index: 40; }
+    .a-pay-overlay { position: absolute; inset: 0; background: var(--accent-green); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.35s; z-index: 120; }
     .a-pay-overlay.show { opacity: 1; pointer-events: auto; }
     .a-pay-circle { width: 96px; height: 96px; border-radius: 50%; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 46px; color: #fff; animation: countUp 0.5s ease; }
     .a-pay-title { font-size: 24px; font-weight: 700; color: #fff; }
@@ -3080,18 +3083,13 @@
     .a-reward-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-rose); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
     .a-reward-text { flex: 1; font-size: 14px; color: var(--text-mid); }
 
-    /* Employee ranks podium (avatar-based) */
-    .a-podium { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
-    .a-podium-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .a-podium-avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
-    .a-podium-avatar.me { border: 3px solid var(--muted-gold); }
-    .a-podium-crown { font-size: 18px; }
-    .a-podium-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
-    .a-podium-scans { font-size: 10px; font-weight: 500; color: var(--text-light); }
-    .a-hero-ranks-top { font-size: 32px; font-weight: 700; color: var(--text-dark); line-height: 1.1; }
-    .a-hero-ranks-accent { font-family: 'Fraunces', serif; font-style: italic; font-size: 40px; color: var(--accent-rose); line-height: 1.1; }
+    /* a-hero-ranks-sub is still used standalone by emp-profile/own-drops
+       subtitles — its former podium-header siblings (a-hero-ranks-top/accent)
+       and the a-podium/a-you-badge families were emp-ranks/own-ranks-only and
+       were retired when those two screens moved onto the leaderboard's own
+       .lb-* podium/list/header system (see .lb-podium-* etc. below) for a
+       single consistent ranks design across all three roles. */
     .a-hero-ranks-sub { font-size: 13px; color: var(--text-mid); margin-top: 8px; line-height: 1.4; }
-    .a-you-badge { display: inline-block; background: var(--muted-gold); color: #6B5A2E; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 700; }
 
     /* ===== DENSITY DROP (Phase 1) ===== */
     /* Config screen header (light-mode back chevron, mirrors .qr-back/.qr-header) */
@@ -3129,7 +3127,7 @@
     /* Activation forecast overlay (dark scrim + centered cream card, mirrors .bottom-sheet-overlay) */
     .a-forecast-overlay {
       position: absolute; inset: 0; background: rgba(44, 40, 37, 0.45);
-      display: none; align-items: center; justify-content: center; z-index: 60; padding: 24px;
+      display: none; align-items: center; justify-content: center; z-index: 120; padding: 24px;
     }
     .a-forecast-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
     .a-forecast-card {
@@ -3283,7 +3281,7 @@
 
     /* Go-live toast — shell-level, floats above whatever screen is active */
     .toast-golive {
-      position: absolute; left: 16px; right: 16px; bottom: 190px; z-index: 200;
+      position: absolute; left: 16px; right: 16px; bottom: calc(var(--nav-clear) + 14px); z-index: 200;
       background: var(--text-dark); color: var(--cream); border-radius: 16px; padding: 14px 16px;
       font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(44, 40, 37, 0.3); cursor: pointer;
       display: none;
@@ -3308,7 +3306,7 @@
        on tuned pixel offsets); the whole bubble is clickable to dismiss, same
        convention as .drop-alert/.toast-golive, with a small × for clarity. */
     .coach-mark {
-      z-index: 90;
+      z-index: 120;
       display: none;
       align-items: flex-start;
       gap: 10px;
@@ -3330,6 +3328,11 @@
     /* Customer's mark floats over the map (nothing critical sits beneath it
        there), so it's the one exception that needs real anchoring. */
     #coach-customer { position: absolute; top: 202px; left: 20px; right: 20px; }
+    /* Ranks tab + punch-card sheet marks sit in normal document flow (like
+       coach-employee/coach-owner), but their screens aren't .a-pad flex
+       columns, so they need their own margin to match the 24px gutter
+       rhythm used everywhere else on those two screens. */
+    #coach-lb, #coach-sheet { margin: 12px 24px 0; }
 
     /* Subtle CTA pulses — opacity/box-shadow only, never scale/transform, so
        nothing shifts layout. Slow (2.5-3s) and low-amplitude by design. */
@@ -3434,7 +3437,7 @@
           <!-- Header overlay -->
           <div class="map-header">
             <div class="map-greeting">Good morning, Jordan 👋</div>
-            <div class="map-title">Williamsburg, <span>Brooklyn</span></div>
+            <div class="map-title">State College, <span>PA</span></div>
             <div class="map-search-wrap">
               <div class="map-search">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
@@ -3528,6 +3531,15 @@
                   <!-- dynamic -->
                 </div>
               </div>
+
+              <!-- Coach mark (first visit only, any business) — explains how
+                   punches turn into rewards and ties it to supporting the
+                   local business, not shown on every sheet, just the first. -->
+              <div class="coach-mark" id="coach-sheet" onclick="dismissCoachMarkByKey('sheet')">
+                <div class="coach-mark-text">Stack pnches here to unlock rewards, your visits help this local spot thrive</div>
+                <div class="coach-mark-close">×</div>
+              </div>
+
               <div class="sheet-info" id="sheet-info">
                 <!-- dynamic -->
               </div>
@@ -3583,7 +3595,7 @@
 
           <!-- Coach mark (Phase 5B) — first-visit nudge, tap to dismiss -->
           <div class="coach-mark" id="coach-customer" onclick="dismissCoachMark('customer')">
-            <div class="coach-mark-text">Tap a pin to see their punch card</div>
+            <div class="coach-mark-text">Tap a pin to peek at their punch card</div>
             <div class="coach-mark-close">×</div>
           </div>
 
@@ -3597,7 +3609,7 @@
         <div class="drops-header">
           <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
             <div>
-              <div class="drops-subtitle">Near you in Williamsburg</div>
+              <div class="drops-subtitle">Near you in State College</div>
               <div class="drops-title">Density <span>Drops</span></div>
             </div>
             <button class="drops-wallet-btn" onclick="showScreen('passes')" aria-label="My passes">🎟️</button>
@@ -3825,7 +3837,7 @@
         </div>
 
         <!-- Demo: tap QR to show success -->
-        <div style="position: absolute; bottom: 32px; left: 24px; right: 24px; text-align: center;">
+        <div style="position: absolute; bottom: var(--nav-clear); left: 24px; right: 24px; text-align: center;">
           <div style="font-size: 12px; color: rgba(247,244,239,0.3);">Tap QR to simulate scan ↑</div>
         </div>
       </div>
@@ -3850,7 +3862,7 @@
       <div class="screen" id="screen-leaderboard">
         <div class="scroll-content">
           <div class="lb-header">
-            <div class="lb-subtitle">Williamsburg, Brooklyn</div>
+            <div class="lb-subtitle">State College, PA</div>
             <div class="lb-title">Owner of <span>the Block</span></div>
           </div>
 
@@ -3868,6 +3880,13 @@
             <button class="lb-cat-btn" onclick="switchPeriod(this, 'lb-period', 'week')">This Week</button>
             <button class="lb-cat-btn" onclick="switchPeriod(this, 'lb-period', 'month')">This Month</button>
             <button class="lb-cat-btn" onclick="switchPeriod(this, 'lb-period', '24h')">24 Hours</button>
+          </div>
+
+          <!-- Coach mark (first visit only) — explains what this tab is and
+               ties it to supporting local business. -->
+          <div class="coach-mark" id="coach-lb" onclick="dismissCoachMarkByKey('leaderboard')">
+            <div class="coach-mark-text">Every pnch you earn helps push your favorite spot up the local leaderboard</div>
+            <div class="coach-mark-close">×</div>
           </div>
 
           <!-- Podium — populated by renderLbList() from LB_BASE -->
@@ -3903,7 +3922,7 @@
             <div class="profile-name">Jordan Reyes</div>
             <div class="profile-handle">@jordanr · Member since Jan 2026</div>
             <div class="profile-pod">
-              <span>📍</span> Williamsburg Pod
+              <span>📍</span> Happy Valley Pod
             </div>
           </div>
 
@@ -3955,7 +3974,7 @@
               </div>
               <div class="profile-list-text">
                 <div class="profile-list-label">My Community</div>
-                <div class="profile-list-sub">Williamsburg Pod • 1.2K members</div>
+                <div class="profile-list-sub">Happy Valley Pod • 1.2K members</div>
               </div>
             </div>
             <div class="profile-list-item">
@@ -4012,7 +4031,7 @@
             <div class="a-hero">
               <div>
                 <div class="a-hero-label">SCANS TODAY</div>
-                <div style="margin-top:4px;"><span class="a-hero-num">24</span><span class="a-hero-unit">punches</span></div>
+                <div style="margin-top:4px;"><span class="a-hero-num" id="emp-hero-scans">24</span><span class="a-hero-unit">punches</span></div>
               </div>
               <div class="a-hero-icon">📲</div>
             </div>
@@ -4030,7 +4049,7 @@
                  normal flex flow (a-pad is a flex column), right after its
                  target card, so it reflows correctly at any viewport width. -->
             <div class="coach-mark" id="coach-employee" onclick="dismissCoachMark('employee')">
-              <div class="coach-mark-text">Tap here to check today's Density Drop</div>
+              <div class="coach-mark-text">Peek at your Density Drop card to see how close you are to a crowd reward</div>
               <div class="coach-mark-close">×</div>
             </div>
 
@@ -4065,13 +4084,7 @@
 
             <div>
               <div class="a-label" style="margin-bottom:8px;">Recent Pnches</div>
-              <div class="a-list">
-                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--sage);">☕</div><div class="a-punch-info"><div class="a-punch-name">Bloom Coffee</div><div class="a-punch-sub">Williamsburg · 2M AGO</div></div><div class="a-punch-badge">+1</div></div>
-                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--lavender);">✂️</div><div class="a-punch-info"><div class="a-punch-name">Fade Studio</div><div class="a-punch-sub">Williamsburg · 15M AGO</div></div><div class="a-punch-badge">+1</div></div>
-                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--blush);">🌮</div><div class="a-punch-info"><div class="a-punch-name">Sol Tacos</div><div class="a-punch-sub">Williamsburg · 45M AGO</div></div><div class="a-punch-badge">+1</div></div>
-                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--sky);">👗</div><div class="a-punch-info"><div class="a-punch-name">Vela Boutique</div><div class="a-punch-sub">Williamsburg · 1H AGO</div></div><div class="a-punch-badge">+1</div></div>
-                <div class="a-punch-row"><div class="a-punch-icon" style="background:var(--peach);">💪</div><div class="a-punch-info"><div class="a-punch-name">Form Fitness</div><div class="a-punch-sub">Williamsburg · 2H AGO</div></div><div class="a-punch-badge">+1</div></div>
-              </div>
+              <div class="a-list" id="emp-recent-pnches"><!-- populated by renderEmpHomeActivity() --></div>
             </div>
           </div>
         </div>
@@ -4116,30 +4129,28 @@
       </div>
 
       <!-- ============================ EMPLOYEE — RANKS ============================ -->
+      <!-- Shares the customer leaderboard's .lb-* header/podium/list design
+           (see #screen-leaderboard) instead of its own bespoke look, so all
+           three roles' ranks screens read as one consistent system. -->
       <div class="screen" id="screen-emp-ranks">
         <div class="scroll-content">
-          <div class="a-pad">
-            <div>
-              <div class="a-hero-ranks-top">The Weekly</div>
-              <div class="a-hero-ranks-accent">Pulse</div>
-              <div class="a-hero-ranks-sub">Celebrating the high-energy champions of our local community ecosystem.</div>
-            </div>
+          <div class="lb-header">
+            <div class="lb-subtitle" id="emp-ranks-subtitle">This Week</div>
+            <div class="lb-title">Crew <span>Champions</span></div>
+          </div>
 
-            <div class="a-pills">
-              <div class="a-pill active" onclick="switchPeriod(this, 'emp-ranks', 'week')">This Week</div>
-              <div class="a-pill" onclick="switchPeriod(this, 'emp-ranks', 'all')">All Time</div>
-            </div>
+          <div class="lb-category-scroll">
+            <button class="lb-cat-btn active" onclick="switchPeriod(this, 'emp-ranks', 'week')">This Week</button>
+            <button class="lb-cat-btn" onclick="switchPeriod(this, 'emp-ranks', 'all')">All Time</button>
+          </div>
 
-            <div class="a-podium" id="emp-ranks-podium">
-              <!-- populated by renderEmpRankList() from EMP_RANKS_BASE -->
-            </div>
+          <!-- Podium — populated by renderEmpRankList() from EMP_RANKS_BASE -->
+          <div class="lb-top3" id="emp-ranks-podium">
+          </div>
 
-            <div>
-              <div class="a-label" style="margin-bottom:8px;">Staff Performance Ranking</div>
-              <div class="a-list" id="emp-ranks-list">
-                <!-- populated by renderEmpRankList() from EMP_RANKS_BASE -->
-              </div>
-            </div>
+          <div class="a-label" style="margin:20px 24px 4px;">Staff Performance Ranking</div>
+          <div class="lb-list" id="emp-ranks-list">
+            <!-- populated by renderEmpRankList() from EMP_RANKS_BASE -->
           </div>
         </div>
       </div>
@@ -4241,7 +4252,7 @@
                  normal flex flow (a-pad is a flex column), right after its
                  target card, so it reflows correctly at any viewport width. -->
             <div class="coach-mark" id="coach-owner" onclick="dismissCoachMark('owner')">
-              <div class="coach-mark-text">Set up a Density Drop to bring your neighborhood in</div>
+              <div class="coach-mark-text">Set up a Density Drop to reward the crowd and bring more neighbors in</div>
               <div class="coach-mark-close">×</div>
             </div>
 
@@ -4550,28 +4561,28 @@
       </div>
 
       <!-- ============================ OWNER — RANKS ============================ -->
+      <!-- Shares the customer leaderboard's .lb-* header/podium/list design
+           (see #screen-leaderboard) instead of its own bespoke look, so all
+           three roles' ranks screens read as one consistent system. -->
       <div class="screen" id="screen-own-ranks">
         <div class="scroll-content">
-          <div class="a-pad">
-            <div>
-              <div class="a-biz" style="letter-spacing:0.3px;">Williamsburg, Brooklyn</div>
-              <div class="a-greet" style="font-size:26px;line-height:1.2;">Neighborhood<br><span class="a-hero-ranks-accent" style="font-size:26px;">Leaderboard</span></div>
-              <div style="margin-top:10px;"><span class="a-you-badge">You're #1 🏆</span></div>
-            </div>
+          <div class="lb-header">
+            <div class="lb-subtitle">State College, PA</div>
+            <div class="lb-title">Best on <span>the Block</span></div>
+          </div>
 
-            <div class="a-pills">
-              <div class="a-pill active" onclick="switchPeriod(this, 'own-ranks', 'all')">All time</div>
-              <div class="a-pill" onclick="switchPeriod(this, 'own-ranks', 'week')">Week</div>
-              <div class="a-pill" onclick="switchPeriod(this, 'own-ranks', 'month')">Month</div>
-            </div>
+          <div class="lb-category-scroll">
+            <button class="lb-cat-btn active" onclick="switchPeriod(this, 'own-ranks', 'all')">All time</button>
+            <button class="lb-cat-btn" onclick="switchPeriod(this, 'own-ranks', 'week')">Week</button>
+            <button class="lb-cat-btn" onclick="switchPeriod(this, 'own-ranks', 'month')">Month</button>
+          </div>
 
-            <div class="a-podium" id="own-ranks-podium">
-              <!-- populated by renderOwnRankList() from OWN_RANKS_BASE -->
-            </div>
+          <!-- Podium — populated by renderOwnRankList() from OWN_RANKS_BASE -->
+          <div class="lb-top3" id="own-ranks-podium">
+          </div>
 
-            <div class="a-list" id="own-ranks-list">
-              <!-- populated by renderOwnRankList() from OWN_RANKS_BASE -->
-            </div>
+          <div class="lb-list" id="own-ranks-list">
+            <!-- populated by renderOwnRankList() from OWN_RANKS_BASE -->
           </div>
         </div>
       </div>
@@ -4583,7 +4594,7 @@
             <div class="a-identity">
               <div class="a-avatar-lg">☕<div class="a-avatar-edit">✏️</div></div>
               <div class="a-id-name">☕ Bloom Coffee</div>
-              <div class="a-id-meta">📍 Williamsburg, Brooklyn</div>
+              <div class="a-id-meta">📍 State College, PA</div>
               <div class="a-id-meta" style="font-weight:500;color:var(--text-mid);">@jordanr</div>
               <div class="a-id-meta">hello@bloomcoffee.com</div>
               <button class="a-switch-btn" style="width:auto;padding:8px 20px;font-size:13px;margin-top:4px;cursor:default;">Edit Profile</button>
@@ -4624,35 +4635,32 @@
     </div>
 
     <!-- Tab Bar (hidden on splash) -->
-    <div class="tab-bar" id="tab-bar" style="display:none;">
-      <div class="tab-bar-half">
-        <div class="tab-item active" data-screen="home" onclick="switchTab(this, 'home')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7BAF73" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path
-                d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.93-7.07-1.41 1.41M6.34 17.66l-1.41 1.41M17.66 17.66l-1.41-1.41M6.34 6.34 4.93 4.93" />
-            </svg>
-            <div class="nav-indicator"></div>
-          </div>
-          <span class="tab-label">Explore</span>
-        </div>
-        <div class="tab-item" data-screen="drops" onclick="switchTab(this, 'drops')">
-          <div class="tab-icon" style="position:relative;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
-              <path d="M12 6v6l4 2" />
-            </svg>
-            <div class="tab-badge" id="drops-tab-badge" style="display:none;">0</div>
-          </div>
-          <span class="tab-label">Drops</span>
-        </div>
-      </div>
-      <div class="tab-item tab-item-center" data-screen="qr" onclick="switchTab(this, 'qr')">
+    <div class="tab-bar" id="tab-bar" role="tablist" style="display:none;">
+      <div class="tab-item active" data-screen="home" onclick="switchTab(this, 'home')" role="tab" aria-label="Explore" aria-selected="true">
         <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2"
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 2v2m0 16v2M2 12h2m16 0h2m-4.93-7.07-1.41 1.41M6.34 17.66l-1.41 1.41M17.66 17.66l-1.41-1.41M6.34 6.34 4.93 4.93" />
+          </svg>
+        </div>
+        <span class="tab-label">Explore</span>
+      </div>
+      <div class="tab-item" data-screen="drops" onclick="switchTab(this, 'drops')" role="tab" aria-label="Drops" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+          <div class="tab-badge" id="drops-tab-badge" style="display:none;">0</div>
+        </div>
+        <span class="tab-label">Drops</span>
+      </div>
+      <div class="tab-item tab-item-center" data-screen="qr" onclick="switchTab(this, 'qr')" role="tab" aria-label="Stamp" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 7V5a2 2 0 0 1 2-2h2" />
             <path d="M17 3h2a2 2 0 0 1 2 2v2" />
@@ -4663,50 +4671,45 @@
         </div>
         <span class="tab-label">Stamp</span>
       </div>
-      <div class="tab-bar-half">
-        <div class="tab-item" data-screen="leaderboard" onclick="switchTab(this, 'leaderboard')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 6l4-4 4 4" />
-              <path d="M12 2v20" />
-              <path d="M2 12l4 4 4-4" />
-              <path d="M2 16h8" />
-              <path d="M14 12l4 4 4-4" />
-              <path d="M14 16h8" />
-            </svg>
-          </div>
-          <span class="tab-label">Ranks</span>
+      <div class="tab-item" data-screen="leaderboard" onclick="switchTab(this, 'leaderboard')" role="tab" aria-label="Ranks" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6l4-4 4 4" />
+            <path d="M12 2v20" />
+            <path d="M2 12l4 4 4-4" />
+            <path d="M2 16h8" />
+            <path d="M14 12l4 4 4-4" />
+            <path d="M14 16h8" />
+          </svg>
         </div>
-        <div class="tab-item" data-screen="profile" onclick="switchTab(this, 'profile')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
-          <span class="tab-label">Profile</span>
+        <span class="tab-label">Ranks</span>
+      </div>
+      <div class="tab-item" data-screen="profile" onclick="switchTab(this, 'profile')" role="tab" aria-label="Profile" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
         </div>
+        <span class="tab-label">Profile</span>
       </div>
     </div>
 
     <!-- Employee tab bar -->
-    <div class="tab-bar" id="tab-bar-emp" style="display:none;">
-      <div class="tab-bar-half">
-        <div class="tab-item" data-screen="emp-home" onclick="showScreen('emp-home')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9.5 12 3l9 6.5" /><path d="M5 10v10h14V10" />
-            </svg>
-            <div class="nav-indicator" style="display:none;"></div>
-          </div>
-          <span class="tab-label">Home</span>
-        </div>
-      </div>
-      <div class="tab-item tab-item-center" data-screen="emp-scan" onclick="showScreen('emp-scan')">
+    <div class="tab-bar" id="tab-bar-emp" role="tablist" style="display:none;">
+      <div class="tab-item" data-screen="emp-home" onclick="showScreen('emp-home')" role="tab" aria-label="Home" aria-selected="false">
         <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9.5 12 3l9 6.5" /><path d="M5 10v10h14V10" />
+          </svg>
+        </div>
+        <span class="tab-label">Home</span>
+      </div>
+      <div class="tab-item tab-item-center" data-screen="emp-scan" onclick="showScreen('emp-scan')" role="tab" aria-label="Scan" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
             <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
             <rect x="7" y="7" width="10" height="10" rx="1" />
@@ -4714,50 +4717,45 @@
         </div>
         <span class="tab-label">Scan</span>
       </div>
-      <div class="tab-bar-half">
-        <div class="tab-item" data-screen="emp-ranks" onclick="showScreen('emp-ranks')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
-            </svg>
-          </div>
-          <span class="tab-label">Ranks</span>
+      <div class="tab-item" data-screen="emp-ranks" onclick="showScreen('emp-ranks')" role="tab" aria-label="Ranks" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
+          </svg>
         </div>
-        <div class="tab-item" data-screen="emp-profile" onclick="showScreen('emp-profile')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
-          <span class="tab-label">Profile</span>
+        <span class="tab-label">Ranks</span>
+      </div>
+      <div class="tab-item" data-screen="emp-profile" onclick="showScreen('emp-profile')" role="tab" aria-label="Profile" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+          </svg>
         </div>
+        <span class="tab-label">Profile</span>
       </div>
     </div>
 
     <!-- Owner tab bar -->
-    <div class="tab-bar" id="tab-bar-own" style="display:none;">
-      <div class="tab-bar-half">
-        <div class="tab-item" data-screen="own-dashboard" onclick="showScreen('own-dashboard')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" />
-            </svg>
-            <div class="nav-indicator" style="display:none;"></div>
-          </div>
-          <span class="tab-label">Home</span>
-        </div>
-        <div class="tab-item" data-screen="own-drops" onclick="showScreen('own-drops')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v6" /><path d="M12 22a7 7 0 0 0 7-7c0-3-2.5-5.5-7-11-4.5 5.5-7 8-7 11a7 7 0 0 0 7 7z" />
-            </svg>
-          </div>
-          <span class="tab-label">Drops</span>
-        </div>
-      </div>
-      <div class="tab-item tab-item-center" data-screen="own-scan" onclick="showScreen('own-scan')">
+    <div class="tab-bar" id="tab-bar-own" role="tablist" style="display:none;">
+      <div class="tab-item" data-screen="own-dashboard" onclick="showScreen('own-dashboard')" role="tab" aria-label="Home" aria-selected="false">
         <div class="tab-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" />
+          </svg>
+        </div>
+        <span class="tab-label">Home</span>
+      </div>
+      <div class="tab-item" data-screen="own-drops" onclick="showScreen('own-drops')" role="tab" aria-label="Drops" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v6" /><path d="M12 22a7 7 0 0 0 7-7c0-3-2.5-5.5-7-11-4.5 5.5-7 8-7 11a7 7 0 0 0 7 7z" />
+          </svg>
+        </div>
+        <span class="tab-label">Drops</span>
+      </div>
+      <div class="tab-item tab-item-center" data-screen="own-scan" onclick="showScreen('own-scan')" role="tab" aria-label="Scan" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 7V5a2 2 0 0 1 2-2h2" /><path d="M17 3h2a2 2 0 0 1 2 2v2" />
             <path d="M21 17v2a2 2 0 0 1-2 2h-2" /><path d="M7 21H5a2 2 0 0 1-2-2v-2" />
             <rect x="7" y="7" width="10" height="10" rx="1" />
@@ -4765,31 +4763,29 @@
         </div>
         <span class="tab-label">Scan</span>
       </div>
-      <div class="tab-bar-half">
-        <div class="tab-item" data-screen="own-team" onclick="showScreen('own-team')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </div>
-          <span class="tab-label">Team</span>
+      <div class="tab-item" data-screen="own-team" onclick="showScreen('own-team')" role="tab" aria-label="Team" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
         </div>
-        <div class="tab-item" data-screen="own-ranks" onclick="showScreen('own-ranks')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
-            </svg>
-          </div>
-          <span class="tab-label">Ranks</span>
+        <span class="tab-label">Team</span>
+      </div>
+      <div class="tab-item" data-screen="own-ranks" onclick="showScreen('own-ranks')" role="tab" aria-label="Ranks" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6l4-4 4 4" /><path d="M12 2v20" /><path d="M2 12l4 4 4-4" /><path d="M2 16h8" /><path d="M14 12l4 4 4-4" /><path d="M14 16h8" />
+          </svg>
         </div>
-        <div class="tab-item" data-screen="own-profile" onclick="showScreen('own-profile')">
-          <div class="tab-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A847E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
-          <span class="tab-label">Profile</span>
+        <span class="tab-label">Ranks</span>
+      </div>
+      <div class="tab-item" data-screen="own-profile" onclick="showScreen('own-profile')" role="tab" aria-label="Profile" aria-selected="false">
+        <div class="tab-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+          </svg>
         </div>
+        <span class="tab-label">Profile</span>
       </div>
     </div>
 
@@ -4969,6 +4965,8 @@
       if (name === 'pass-qr') renderPassQR();
       // Employee-side drop surfaces (Phase 3) — same on-entry repaint pattern.
       if (name === 'emp-drop') renderEmpDropControls();
+      // emp-home's hero stat + Recent Pnches list — same on-entry repaint pattern.
+      if (name === 'emp-home') renderEmpHomeActivity();
       // The tester has now seen (or is about to see) the live/pass surfaces —
       // dismiss the go-live toast so it doesn't linger over them.
       if (name === 'drop-detail' || name === 'pass-qr') hideGoLiveToast();
@@ -5025,6 +5023,11 @@
         netNewCustomers: 0, repeatCustomers: 0, spendCents: 0,
       };
       WORLD.shiftTally = 0;
+      // emp-home's hero stat + Recent Pnches list back to their shipped
+      // illustrative baseline.
+      WORLD.empScansToday = 24;
+      WORLD.recentPnches = structuredClone(EMP_RECENT_PNCHES_SEED);
+      renderEmpHomeActivity();
       // WORLD.baselineDiscovery is a constant (8), never mutated anywhere —
       // nothing to restore here.
       WORLD.ownerConfig = structuredClone(OWNER_CONFIG_INITIAL);
@@ -5057,11 +5060,10 @@
       resetPeriodFiltersUI();
 
       // ---- Phase 5B addition ----
-      // Coach marks back to "not yet shown" so a fresh tester sees each
-      // role's one-time nudge again. The generic '.open, .show' sweep above
-      // already hid any coach mark that happened to be open — this just
-      // re-arms them.
-      WORLD.coach = { customerShown: false, employeeShown: false, ownerShown: false };
+      // Coach marks back to "not yet shown" so a fresh tester sees every
+      // one-time nudge again. The generic '.open, .show' sweep above already
+      // hid any coach mark that happened to be open — this just re-arms them.
+      WORLD.coach = { customerShown: false, employeeShown: false, ownerShown: false, lbShown: false, sheetShown: false };
 
       renderPunchSurfaces('coffee');
       renderDropSurfaces();
@@ -5096,11 +5098,22 @@
         return;
       }
 
-      // Fall through to the original stamp-scan flash — unchanged. (The
-      // pre-Phase-3 'emp' path never called addPunch(); it only showed the
-      // overlay, so that exact behavior is preserved here too.)
+      // Fall through to the original stamp-scan flash. (The pre-Phase-3 'emp'
+      // path never called addPunch() against MERCHANTS.coffee.punches — that's
+      // still true here, since this represents a *different* customer's own
+      // punch card each time, not the demo tester's.) Each scan simulates a
+      // new anonymized customer at a random point on their card and prepends
+      // a row to emp-home's Recent Pnches list (see EMP_RECENT_PNCHES_SEED).
       if (role === 'emp') {
-        setEmpScanSuccessCopy('Punch added!', "Nice — that's a stamp for Maya ☕");
+        const customerNum = Math.floor(100 + Math.random() * 900);
+        const punch = Math.floor(1 + Math.random() * 5);
+        WORLD.empScansToday = (WORLD.empScansToday || 0) + 1;
+        WORLD.recentPnches.unshift({
+          customer: `Customer #${customerNum}`, punch, total: 5, time: 'JUST NOW',
+        });
+        WORLD.recentPnches.length = Math.min(WORLD.recentPnches.length, EMP_RECENT_PNCHES_MAX);
+        renderEmpHomeActivity();
+        setEmpScanSuccessCopy('Punch added!', `Nice — that's punch ${punch} of 5 for Customer #${customerNum} ☕`);
       }
       showScanSuccessOverlay(role);
     }
@@ -5168,21 +5181,20 @@
       setTimeout(() => { btn.textContent = original; }, 1500);
     }
 
+    // Screens with no tab of their own borrow their parent section's chip,
+    // so the pill always shows exactly one active item.
+    const PARENT_TAB = {
+      'drop-detail': 'drops', 'passes': 'drops',
+      'emp-drop': 'emp-home',
+      'own-drop-config': 'own-drops', 'own-drop-analytics': 'own-drops',
+    };
+
     function updateTabHighlight(screenName) {
+      const active = PARENT_TAB[screenName] || screenName;
       document.querySelectorAll('.tab-item').forEach(t => {
-        const isActive = t.dataset.screen === screenName;
+        const isActive = t.dataset.screen === active;
         t.classList.toggle('active', isActive);
-        const svg = t.querySelector('svg');
-        if (svg && !t.classList.contains('tab-item-center')) {
-          svg.style.stroke = isActive ? 'var(--accent-green)' : '#8A847E';
-        }
-        const label = t.querySelector('.tab-label');
-        if (label) {
-          label.style.color = isActive ? 'var(--accent-green)' : 'var(--text-light)';
-          label.style.fontWeight = isActive ? '600' : '500';
-        }
-        const navInd = t.querySelector('.nav-indicator');
-        if (navInd) navInd.style.display = isActive ? 'block' : 'none';
+        t.setAttribute('aria-selected', isActive);
       });
     }
 
@@ -5208,11 +5220,11 @@
         reward: 'Free drink after 5 stamps', punches: 3, total: 5,
         dist: '0.2 mi', hours: { open: '07:00', close: '14:00' },
         tagline: 'Neighborhood coffee, roasted with a little extra care.',
-        address: '412 Bedford Ave, Brooklyn, NY',
-        website: 'bloomcoffeewilliamsburg.com', phone: '(718) 555-0142',
+        address: '132 W College Ave, State College, PA',
+        website: 'bloomcoffeehv.com', phone: '(814) 555-0142',
         hoursDisplay: ['Mon–Fri: 7am–2pm', 'Sat–Sun: 8am–3pm'],
         menuHighlights: ['Honey oat latte', 'Cold brew', 'Morning bun'],
-        lat: 40.7155, lng: -73.9585, drop: true
+        lat: 40.7930, lng: -77.8630, drop: true
       },
       barber: {
         id: 'barber', icon: '✂️', bg: 'var(--lavender)', color: '#D6D0E8',
@@ -5221,12 +5233,12 @@
         tagColors: ['var(--muted-gold)', 'var(--border)'],
         reward: 'Free lineup after 5 cuts', punches: 2, total: 5,
         dist: '0.6 mi', hours: { open: '10:00', close: '20:00' },
-        tagline: 'Sharp cuts, easy conversation, and neighborhood style.',
-        address: '187 Grand St, Brooklyn, NY',
-        website: 'fadestudiobk.com', phone: '(718) 555-0189',
+        tagline: 'Sharp cuts, easy conversation, and Happy Valley style.',
+        address: '119 S Fraser St, State College, PA',
+        website: 'fadestudiohv.com', phone: '(814) 555-0189',
         hoursDisplay: ['Tue–Sat: 10am–8pm', 'Sun–Mon: Closed'],
         menuHighlights: ['Classic cut', 'Skin fade', 'Beard shape-up'],
-        lat: 40.7168, lng: -73.9548, drop: false
+        lat: 40.7920, lng: -77.8660, drop: false
       },
       food: {
         id: 'food', icon: '🌮', bg: 'var(--blush)', color: '#F2DDD5',
@@ -5236,11 +5248,11 @@
         reward: 'Free taco after 5 visits', punches: 1, total: 5,
         dist: '0.3 mi', hours: { open: '17:00', close: '23:00' },
         tagline: 'Big flavor, warm tortillas, and a table for everyone.',
-        address: '96 Metropolitan Ave, Brooklyn, NY',
-        website: 'soltacosbk.com', phone: '(718) 555-0215',
+        address: '220 W Beaver Ave, State College, PA',
+        website: 'soltacoshv.com', phone: '(814) 555-0215',
         hoursDisplay: ['Daily: 5pm–11pm'],
         menuHighlights: ['Al pastor taco', 'Birria quesadilla', 'Horchata'],
-        lat: 40.7128, lng: -73.9602, drop: false
+        lat: 40.7915, lng: -77.8615, drop: false
       },
       boutique: {
         id: 'boutique', icon: '👗', bg: 'var(--sky)', color: '#C5DCE8',
@@ -5250,11 +5262,11 @@
         reward: '20% off after 5 visits', punches: 4, total: 5,
         dist: '0.4 mi', hours: { open: '11:00', close: '19:00' },
         tagline: 'Independent pieces with personality and a softer footprint.',
-        address: '224 Bedford Ave, Brooklyn, NY',
-        website: 'velaboutiquebk.com', phone: '(718) 555-0067',
+        address: '131 S Allen St, State College, PA',
+        website: 'velaboutiquehv.com', phone: '(814) 555-0067',
         hoursDisplay: ['Mon–Sat: 11am–7pm', 'Sunday: 12pm–5pm'],
         menuHighlights: ['New arrivals', 'Local designers', 'Vintage edit'],
-        lat: 40.7138, lng: -73.9555, drop: false
+        lat: 40.7925, lng: -77.8600, drop: false
       },
       fitness: {
         id: 'fitness', icon: '💪', bg: 'var(--muted-gold)', color: '#E8D5A3',
@@ -5264,11 +5276,11 @@
         reward: 'Free class pass after 5 check-ins', punches: 0, total: 5,
         dist: '0.8 mi', hours: { open: '06:00', close: '21:00' },
         tagline: 'Strength, sweat, and a community that shows up for you.',
-        address: '150 N 4th St, Brooklyn, NY',
-        website: 'formfitnessbk.com', phone: '(718) 555-0233',
+        address: '418 W Atherton St, State College, PA',
+        website: 'formfitnesshv.com', phone: '(814) 555-0233',
         hoursDisplay: ['Mon–Fri: 6am–9pm', 'Sat–Sun: 8am–6pm'],
         menuHighlights: ['Sunrise HIIT', 'Strength foundations', 'Sunday Sweat class'],
-        lat: 40.7148, lng: -73.9620, drop: false
+        lat: 40.7908, lng: -77.8560, drop: false
       }
     };
 
@@ -5302,6 +5314,19 @@
     // only coffee has a drop this phase.
     const DWELL_REQUIRED_MIN = 6.4;
 
+    // emp-home's "Recent Pnches" list — anonymized customer + punch-progress
+    // rows, all at Bloom Coffee (the only merchant this employee works at).
+    // Fixed illustrative seed shown before any real scan happens this session;
+    // a real demoScan('emp') stamp scan unshifts a new row (see demoScan()).
+    const EMP_RECENT_PNCHES_SEED = [
+      { customer: 'Customer #482', punch: 4, total: 5, time: '2M AGO' },
+      { customer: 'Customer #217', punch: 2, total: 5, time: '15M AGO' },
+      { customer: 'Customer #905', punch: 5, total: 5, time: '45M AGO' },
+      { customer: 'Customer #368', punch: 1, total: 5, time: '1H AGO' },
+      { customer: 'Customer #740', punch: 3, total: 5, time: '2H AGO' },
+    ];
+    const EMP_RECENT_PNCHES_MAX = EMP_RECENT_PNCHES_SEED.length;
+
     let WORLD = {
       drop: null, // null until first armed via armDrop()
       ownerConfig: {
@@ -5329,14 +5354,20 @@
       // Employee-facing "redemptions this shift" counter (Phase 3) — incremented
       // only by a real demoScan('emp') redemption, reset by resetDemo().
       shiftTally: 0,
+      // emp-home's "SCANS TODAY" hero stat and "Recent Pnches" list — both
+      // start from a fixed illustrative baseline and are updated only by a
+      // real demoScan('emp') stamp scan (see demoScan()), reset by resetDemo().
+      empScansToday: 24,
+      recentPnches: structuredClone(EMP_RECENT_PNCHES_SEED),
       // Employee "App Settings" toggle state (Task 7, Phase 5) — matches the
       // .a-toggle classes shipped in screen-emp-profile's markup (Shift
       // Notifications & Haptic Feedback start on, Dark Mode starts off).
       empSettings: { shiftNotifications: true, darkMode: false, hapticFeedback: true },
-      // One-time landing-screen coach mark per role (Phase 5B) — flips true
-      // the first time that role's coach mark is shown this session and
-      // never shows again after that. In-memory only, reset by resetDemo().
-      coach: { customerShown: false, employeeShown: false, ownerShown: false },
+      // One-time coach mark per screen/moment (Phase 5B, extended later to
+      // cover the Ranks tab and the punch-card sheet too) — flips true the
+      // first time that mark is shown this session and never shows again
+      // after that. In-memory only, reset by resetDemo().
+      coach: { customerShown: false, employeeShown: false, ownerShown: false, lbShown: false, sheetShown: false },
     };
 
     // Invented-but-plausible "normal day" discovery/visit number for Bloom
@@ -5983,6 +6014,28 @@
       }
     }
 
+    // emp-home's "SCANS TODAY" hero stat + "Recent Pnches" list — repainted
+    // from WORLD.empScansToday/recentPnches on screen entry and after every
+    // real stamp scan (see demoScan()), same on-entry repaint pattern as
+    // renderEmpDropCard() above.
+    function renderEmpHomeActivity() {
+      const heroEl = document.getElementById('emp-hero-scans');
+      if (heroEl) heroEl.textContent = WORLD.empScansToday;
+
+      const listEl = document.getElementById('emp-recent-pnches');
+      if (!listEl) return;
+      listEl.innerHTML = WORLD.recentPnches.map(p => `
+        <div class="a-punch-row">
+          <div class="a-punch-icon" style="background:var(--sage);">👤</div>
+          <div class="a-punch-info">
+            <div class="a-punch-name">${p.customer}</div>
+            <div class="a-punch-sub">Punch ${p.punch} of ${p.total} · ${p.time}</div>
+          </div>
+          <div class="a-punch-badge">+1</div>
+        </div>
+      `).join('');
+    }
+
     // Task 2 — screen-emp-drop's full status + pause controls + shift tally.
     function renderEmpDropControls() {
       const el = document.getElementById('emp-drop-content');
@@ -6395,7 +6448,7 @@
           <div class="qr-merchant-icon">${m.icon}</div>
           <div class="qr-merchant-text">
             <div class="qr-merchant-name">${m.name}</div>
-            <div class="qr-merchant-sub">Williamsburg, Brooklyn</div>
+            <div class="qr-merchant-sub">State College, PA</div>
           </div>
           <div class="qr-merchant-punches">
             <div class="qr-merchant-count">${m.punches}/${m.total}</div>
@@ -6451,7 +6504,7 @@
         { authorId: 'user_lex',  emoji: '🌟', text: 'Get the almond croissant. Trust me.', preFriend: false },
       ],
       barber: [
-        { authorId: 'user_zoe', emoji: '💈', text: 'Cleanest fade in Williamsburg, no contest.', preFriend: true },
+        { authorId: 'user_zoe', emoji: '💈', text: 'Cleanest fade in State College, no contest.', preFriend: true },
         { authorId: 'user_kai', emoji: '🔥', text: 'Ask for Marcus. Best line-up hands down.', preFriend: false },
       ],
       food: [
@@ -6760,7 +6813,7 @@
         <div class="sheet-merchant-cat">${m.cat}</div>
         <div class="sheet-merchant-address">📍 ${m.address}</div>
       </div>
-      <div class="sheet-action-top" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(m.name + ' Williamsburg Brooklyn')}', '_blank')">
+      <div class="sheet-action-top" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(m.name + ' State College PA')}', '_blank')">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
       </div>
     `;
@@ -6784,6 +6837,10 @@
       renderReviews(type);
 
       overlay.classList.add('open');
+
+      // First-ever sheet open this session gets the punch-card explainer —
+      // any business works as the trigger, not just one merchant.
+      maybeShowCoachMark('sheet');
     }
 
     // ── Hours / website / phone / menu ──────────────────────────────────────
@@ -6844,44 +6901,44 @@
     // repaint pin dots in place instead of re-initializing the whole map.
     let pnchyMarkers = {};
 
-    // Williamsburg, Brooklyn center
-    const MAP_CENTER = [40.7141, -73.9570];
+    // State College, PA center (downtown, near College Ave & Allen St)
+    const MAP_CENTER = [40.7920, -77.8615];
     const MAP_ZOOM = 16;
 
     // Heatmap data — simulated foot traffic clusters
     const heatData = [
       // Around Bloom Coffee (hot spot — active drop)
-      [40.7155, -73.9585, 1.0],
-      [40.7156, -73.9583, 0.9],
-      [40.7154, -73.9587, 0.85],
-      [40.7157, -73.9582, 0.8],
-      [40.7153, -73.9589, 0.75],
-      [40.7158, -73.9580, 0.7],
-      [40.7152, -73.9591, 0.65],
-      [40.7159, -73.9578, 0.6],
-      [40.7160, -73.9586, 0.55],
-      [40.7151, -73.9592, 0.5],
+      [40.7930, -77.8630, 1.0],
+      [40.7931, -77.8629, 0.9],
+      [40.7929, -77.8632, 0.85],
+      [40.7932, -77.8628, 0.8],
+      [40.7928, -77.8633, 0.75],
+      [40.7932, -77.8626, 0.7],
+      [40.7927, -77.8634, 0.65],
+      [40.7930, -77.8624, 0.6],
+      [40.7931, -77.8632, 0.55],
+      [40.7926, -77.8636, 0.5],
       // Around Sol Tacos (medium cluster)
-      [40.7128, -73.9602, 0.6],
-      [40.7129, -73.9600, 0.55],
-      [40.7127, -73.9604, 0.5],
-      [40.7130, -73.9598, 0.45],
-      [40.7126, -73.9606, 0.4],
+      [40.7915, -77.8615, 0.6],
+      [40.7916, -77.8613, 0.55],
+      [40.7914, -77.8617, 0.5],
+      [40.7917, -77.8612, 0.45],
+      [40.7913, -77.8619, 0.4],
       // Around Vela Boutique (light activity)
-      [40.7138, -73.9555, 0.45],
-      [40.7139, -73.9553, 0.4],
-      [40.7137, -73.9557, 0.35],
+      [40.7925, -77.8600, 0.45],
+      [40.7926, -77.8598, 0.4],
+      [40.7924, -77.8602, 0.35],
       // Fade Studio cluster
-      [40.7168, -73.9548, 0.5],
-      [40.7169, -73.9546, 0.45],
-      [40.7167, -73.9550, 0.4],
+      [40.7920, -77.8660, 0.5],
+      [40.7921, -77.8658, 0.45],
+      [40.7919, -77.8662, 0.4],
       // Scattered foot traffic
-      [40.7145, -73.9570, 0.3],
-      [40.7142, -73.9575, 0.25],
-      [40.7150, -73.9562, 0.3],
-      [40.7133, -73.9580, 0.2],
-      [40.7161, -73.9565, 0.25],
-      [40.7123, -73.9590, 0.2],
+      [40.7920, -77.8615, 0.3],
+      [40.7918, -77.8622, 0.25],
+      [40.7923, -77.8608, 0.3],
+      [40.7912, -77.8635, 0.2],
+      [40.7928, -77.8590, 0.25],
+      [40.7908, -77.8560, 0.2],
     ];
 
     function buildPinHTML(m) {
@@ -6990,10 +7047,10 @@
         iconAnchor: [9, 9],
         iconSize: [18, 18],
       });
-      L.marker([40.7144, -73.9572], { icon: userIcon }).addTo(pnchyMap);
+      L.marker([MERCHANTS.coffee.lat - 0.0001, MERCHANTS.coffee.lng + 0.0003], { icon: userIcon }).addTo(pnchyMap);
 
       // Geofence circle around Bloom Coffee (active drop zone)
-      L.circle([40.7155, -73.9585], {
+      L.circle([MERCHANTS.coffee.lat, MERCHANTS.coffee.lng], {
         radius: 80,
         color: '#C97B6A',
         fillColor: '#C97B6A',
@@ -7072,7 +7129,7 @@
     function openDirections() {
       const m = MERCHANTS[reviewState.activeMerchantKey];
       if (!m) return;
-      window.open('https://maps.google.com/?q=' + encodeURIComponent(m.name + ' Williamsburg Brooklyn'), '_blank');
+      window.open('https://maps.google.com/?q=' + encodeURIComponent(m.name + ' State College PA'), '_blank');
     }
 
     // ---- Task 9: owner-team "Remove" — inline flash, no native confirm() ----
@@ -7243,25 +7300,24 @@
       }).join('');
     }
 
-    // ---- Shared podium builder for emp-ranks + own-ranks (both use the
-    // .a-podium/.a-podium-item family of classes) — sorts descending by
-    // .value and lays out [2nd, 1st (crown, tallest), 3rd] left to right. ----
-    function buildAvatarPodiumHTML(rows) {
-      const sorted = [...rows].sort((a, b) => b.value - a.value);
-      const [first, second, third] = sorted;
-      const order = [second, first, third];
-      return order.map((r, i) => {
-        const isCrown = i === 1;
-        const size = isCrown ? 72 : 56;
-        const fontSize = isCrown ? 26 : 20;
-        const meClass = r.me ? ' me' : '';
-        return `<div class="a-podium-item">
-          ${isCrown ? '<div class="a-podium-crown">👑</div>' : ''}
-          <div class="a-podium-avatar${meClass}" style="width:${size}px;height:${size}px;font-size:${fontSize}px;background:${r.bg};">${r.label}</div>
-          <div class="a-podium-name">${r.name}</div>
-          <div class="a-podium-scans">${r.valueText}</div>
-        </div>`;
-      }).join('');
+    // ---- Shared stepped-bar podium — originally the customer leaderboard's
+    // own class family (.lb-podium-*: colored base of fixed height/color per
+    // visual position, icon square, crown on 1st), now the one podium design
+    // used by all three ranks screens (see renderLbList() below, which shapes
+    // its own top3 rows and calls this same builder). Expects
+    // rows already sorted/shaped as { icon, name, bg, me, scoreText }. ----
+    function buildStepPodiumHTML(top3) {
+      const [first, second, third] = top3;
+      const order = [third, first, second];
+      const baseLabels = ['3', '1', '2'];
+      return order.map((r, i) => `
+        <div class="lb-podium-item">
+          <div class="lb-podium-icon${r.me ? ' me' : ''}" style="background:${r.bg || 'var(--surface)'};">${r.icon}</div>
+          ${i === 1 ? '<div class="lb-podium-crown">👑</div>' : ''}
+          <div class="lb-podium-name">${r.name}</div>
+          <div class="lb-podium-score">${r.scoreText}</div>
+          <div class="lb-podium-base">${baseLabels[i]}</div>
+        </div>`).join('');
     }
 
     // ---- emp-ranks: This Week / All Time ----
@@ -7281,23 +7337,38 @@
     const EMP_RANKS_FACTOR = { week: 1, all: 50 };
 
     function renderEmpRankList() {
-      const factor = EMP_RANKS_FACTOR[activePeriod['emp-ranks']];
+      const period = activePeriod['emp-ranks'];
+      const factor = EMP_RANKS_FACTOR[period];
       const scale = (n) => Math.round(n * factor);
+
+      // Subtitle mirrors the active period pill so it can't go stale next to
+      // it (unlike the customer/owner subtitles, which are location text and
+      // never change).
+      const subtitleEl = document.getElementById('emp-ranks-subtitle');
+      if (subtitleEl) subtitleEl.textContent = period === 'week' ? 'This Week' : 'All Time';
 
       const podiumEl = document.getElementById('emp-ranks-podium');
       if (podiumEl) {
-        const rows = EMP_RANKS_BASE.podium.map((r) => {
-          const value = scale(r.scans);
-          return { label: r.label, name: r.name, bg: r.bg, me: r.me, value, valueText: `${value.toLocaleString()} SCANS` };
-        });
-        podiumEl.innerHTML = buildAvatarPodiumHTML(rows);
+        const top3 = EMP_RANKS_BASE.podium
+          .map((r) => ({ ...r, value: scale(r.scans) }))
+          .sort((a, b) => b.value - a.value)
+          .map((r) => ({ icon: r.label, name: r.name, bg: r.bg, me: r.me, scoreText: `${r.value.toLocaleString()} scans` }));
+        podiumEl.innerHTML = buildStepPodiumHTML(top3);
       }
 
       const listEl = document.getElementById('emp-ranks-list');
       if (listEl) {
         listEl.innerHTML = EMP_RANKS_BASE.list.map((r, i) => {
           const scans = scale(r.scans);
-          return `<div class="a-team-row"><div class="a-team-rank">#${i + 4}</div><div class="a-team-avatar" style="background:${r.bg};">${r.label}</div><div class="a-team-info"><div class="a-team-name">${r.name}</div><div class="a-roster-sub">${r.title}</div></div><div class="a-team-scans">${scans.toLocaleString()}</div></div>`;
+          return `<div class="lb-row${r.me ? ' me' : ''}">
+            <div class="lb-rank">${i + 4}</div>
+            <div class="lb-row-icon">${r.label}</div>
+            <div class="lb-row-info">
+              <div class="lb-row-name">${r.name}${r.me ? '<span class="lb-you-tag">You</span>' : ''}</div>
+              <div class="lb-row-sub">${r.title}</div>
+            </div>
+            <div class="lb-row-score">${scans.toLocaleString()}</div>
+          </div>`;
         }).join('');
       }
     }
@@ -7326,11 +7397,11 @@
 
       const podiumEl = document.getElementById('own-ranks-podium');
       if (podiumEl) {
-        const rows = OWN_RANKS_BASE.podium.map((r) => {
-          const value = scale(r.pts);
-          return { label: r.icon, name: r.name, bg: r.bg, me: r.me, value, valueText: `${value.toLocaleString()} pts` };
-        });
-        podiumEl.innerHTML = buildAvatarPodiumHTML(rows);
+        const top3 = OWN_RANKS_BASE.podium
+          .map((r) => ({ ...r, value: scale(r.pts) }))
+          .sort((a, b) => b.value - a.value)
+          .map((r) => ({ icon: r.icon, name: r.name, bg: r.bg, me: r.me, scoreText: `${r.value.toLocaleString()} pts` }));
+        podiumEl.innerHTML = buildStepPodiumHTML(top3);
       }
 
       const listEl = document.getElementById('own-ranks-list');
@@ -7338,7 +7409,15 @@
         listEl.innerHTML = OWN_RANKS_BASE.list.map((r, i) => {
           const pts = scale(r.pts);
           const visits = scale(r.visits);
-          return `<div class="a-team-row"><div class="a-team-rank">${i + 4}</div><div class="a-punch-icon" style="background:${r.bg};">${r.icon}</div><div class="a-team-info"><div class="a-team-name">${r.name}</div><div class="a-roster-sub">${visits.toLocaleString()} total visits</div></div><div class="a-team-scans">${pts.toLocaleString()}</div></div>`;
+          return `<div class="lb-row${r.me ? ' me' : ''}">
+            <div class="lb-rank">${i + 4}</div>
+            <div class="lb-row-icon">${r.icon}</div>
+            <div class="lb-row-info">
+              <div class="lb-row-name">${r.name}${r.me ? '<span class="lb-you-tag">You</span>' : ''}</div>
+              <div class="lb-row-sub">${visits.toLocaleString()} visits</div>
+            </div>
+            <div class="lb-row-score">${pts.toLocaleString()}</div>
+          </div>`;
         }).join('');
       }
     }
@@ -7391,31 +7470,16 @@
       return base.map((r) => ({ ...r, score: Math.max(1, Math.round(r.score * factor)) }));
     }
 
-    // Leaderboard's podium uses its own class family (.lb-podium-*) with
-    // fixed per-position colors/heights via nth-child CSS — position order is
-    // [3rd place, 1st place (crown, tallest), 2nd place], matching the
-    // markup this screen shipped with.
-    function buildLbPodiumHTML(top3) {
-      const [first, second, third] = top3;
-      const order = [third, first, second];
-      const baseLabels = ['3', '1', '2'];
-      return order.map((r, i) => `
-        <div class="lb-podium-item">
-          <div class="lb-podium-icon" style="background:${r.bg || 'var(--surface)'};">${r.icon}</div>
-          ${i === 1 ? '<div class="lb-podium-crown">👑</div>' : ''}
-          <div class="lb-podium-name">${r.name}</div>
-          <div class="lb-podium-score">${r.score.toLocaleString()} pts</div>
-          <div class="lb-podium-base">${baseLabels[i]}</div>
-        </div>`).join('');
-    }
-
     function renderLbList() {
       const rows = computeLbRows();
       const top3 = rows.slice(0, 3);
       const rest = rows.slice(3);
 
       const podiumEl = document.getElementById('lb-podium');
-      if (podiumEl) podiumEl.innerHTML = buildLbPodiumHTML(top3);
+      if (podiumEl) {
+        const shaped = top3.map((r) => ({ icon: r.icon, name: r.name, bg: r.bg, scoreText: `${r.score.toLocaleString()} pts` }));
+        podiumEl.innerHTML = buildStepPodiumHTML(shaped);
+      }
 
       const listEl = document.getElementById('lb-list');
       if (listEl) {
@@ -7490,17 +7554,26 @@
     }
 
     // ===== PHASE 5B: COACH MARKS + POLISH =====
-    // One-time, dismissible landing-screen nudge per role. Purely a UI hint —
-    // WORLD.coach (declared on the WORLD literal above) is the only state,
-    // no timers involved (tap-to-dismiss only, per spec). showScreen() calls
-    // hideAllCoachMarks() on every navigation and maybeShowCoachMark(name) on
-    // every arrival; resetDemo() re-arms WORLD.coach.
+    // One-time, dismissible nudges — purely a UI hint, WORLD.coach (declared
+    // on the WORLD literal above) is the only state, no timers involved
+    // (tap-to-dismiss only, per spec). Three are shown on a role's landing
+    // screen via showScreen()'s unconditional maybeShowCoachMark(name) call
+    // on every arrival; two (leaderboard, sheet) piggyback on that same
+    // lookup — 'leaderboard' is a real screen name so it's covered by that
+    // same call, and 'sheet' is triggered manually from openSheet() since the
+    // punch-card sheet is an overlay, not a screen. resetDemo() re-arms
+    // WORLD.coach; hideAllCoachMarks() (called on every navigation) closes
+    // whichever of these happens to be open.
 
-    // Landing screen name -> { WORLD.coach flag key, coach-mark element id }
+    // Key -> { WORLD.coach flag key, coach-mark element id }. Keys are either
+    // a real screen name (home/emp-home/own-dashboard/leaderboard) or a
+    // synthetic one ('sheet') that never collides with a screen name.
     const COACH_LANDING = {
       home: { flag: 'customerShown', el: 'coach-customer' },
       'emp-home': { flag: 'employeeShown', el: 'coach-employee' },
       'own-dashboard': { flag: 'ownerShown', el: 'coach-owner' },
+      leaderboard: { flag: 'lbShown', el: 'coach-lb' },
+      sheet: { flag: 'sheetShown', el: 'coach-sheet' },
     };
     // role name (as passed to dismissCoachMark) -> the same entry
     const COACH_BY_ROLE = { customer: COACH_LANDING.home, employee: COACH_LANDING['emp-home'], owner: COACH_LANDING['own-dashboard'] };
@@ -7522,6 +7595,17 @@
       WORLD.coach[entry.flag] = true;
     }
 
+    // Same dismiss mechanics as dismissCoachMark(), keyed by the COACH_LANDING
+    // entry itself instead of a role — for the two marks (leaderboard, sheet)
+    // that aren't tied to a single role.
+    function dismissCoachMarkByKey(key) {
+      const entry = COACH_LANDING[key];
+      if (!entry) return;
+      const el = document.getElementById(entry.el);
+      if (el) el.classList.remove('show');
+      WORLD.coach[entry.flag] = true;
+    }
+
     function hideAllCoachMarks() {
       document.querySelectorAll('.coach-mark.show').forEach((el) => el.classList.remove('show'));
     }
@@ -7532,6 +7616,7 @@
     // interaction happens, so they're never empty on first load.
     renderPunchSurfaces('coffee');
     renderDropSurfaces();
+    renderEmpHomeActivity();
     // Phase 5 — populate every period-driven zone up front too, so screens
     // are never showing stale static markup before their first visit.
     applyEmpSettingsToggles();
