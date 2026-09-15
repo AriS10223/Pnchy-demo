@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 To preview: open `index.html` directly in a browser, or serve it with any static server (e.g. `npx serve .`). On mobile it installs as a PWA via `manifest.json` + `sw.js`.
 
+Deploys live via GitHub Pages straight off this repo (`CNAME` → `pnchy.store`), with no build/CI step — a push to `main` is an instant live deploy, so the `sw.js` `CACHE_NAME` version bump (see below) isn't just a local-testing nicety, it's what forces real installed-PWA users to pick up the change.
+
 ## Architecture
 
 Everything is in one file (`index.html`): static markup for every screen, a CSS design-token system, and a plain-JS layer underneath that owns all state — there is no framework and nothing renders itself; every dynamic surface is repainted by a named render function called from state-changing code or from `showScreen()` on entry.
