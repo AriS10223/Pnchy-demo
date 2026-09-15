@@ -459,9 +459,13 @@
       filter: saturate(0.55) brightness(1.08) hue-rotate(5deg) sepia(0.12);
     }
 
-    /* Leaflet attribution hide */
+    /* Leaflet attribution — kept small and unobtrusive rather than hidden,
+       since the OSM tile provider's usage policy requires it. */
     .leaflet-control-attribution {
-      display: none !important;
+      font-size: 8px;
+      color: var(--text-light);
+      background: rgba(255, 255, 255, 0.55);
+      padding: 0 4px;
     }
 
     .leaflet-control-zoom {
@@ -1473,6 +1477,89 @@
       font-size: 11px;
       color: var(--text-mid);
       border: 1px solid var(--border);
+    }
+
+    /* Inline expand/collapse — the frictionless preview inside a scheduled
+       drop card, toggled by tapping the card. Collapsed by default. */
+    .drop-card-expand-toggle {
+      margin-left: auto;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      transition: transform 0.2s ease-out;
+    }
+
+    .drop-card.expanded .drop-card-expand-toggle {
+      transform: rotate(180deg);
+    }
+
+    .drop-card-expand-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition: grid-template-rows 0.22s ease-out, opacity 0.18s ease-out;
+    }
+
+    .drop-card.expanded .drop-card-expand-panel {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .drop-card-expand-panel > div {
+      overflow: hidden;
+    }
+
+    .drop-card-expand-inner {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .drop-card-expand-merchant {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .drop-card-expand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .drop-card-expand-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .drop-card-expand-sub {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 1px;
+    }
+
+    .drop-card-expand-punchcard {
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .drop-card-expand-toggle,
+      .drop-card-expand-panel {
+        transition: none;
+      }
     }
 
     /* ============================
@@ -3619,107 +3706,10 @@
         <!-- Active/building drop + dwell status — rebuilt from WORLD.drop by renderCustomerDropsList() -->
         <div id="drops-active-section"></div>
 
-        <div class="drops-section-title">Friends are going</div>
+        <div class="drops-section-title">Upcoming Density Drops</div>
 
-        <div class="drops-scroll">
-          <!-- Drop card 1 -->
-          <div class="drop-card" onclick="showScreen('drops')">
-            <div class="drop-card-glow" style="background: var(--peach);"></div>
-            <div class="drop-card-header">
-              <div class="drop-card-icon" style="background: var(--blush);">🌮</div>
-              <div class="drop-card-info">
-                <div class="drop-card-name">Taco Tuesday Freebie</div>
-                <div class="drop-card-merchant">Sol Tacos • 0.3 mi away</div>
-              </div>
-              <div class="drop-card-badge" style="background: var(--blush); color: var(--accent-rose);">5:00 PM</div>
-            </div>
-            <div class="drop-card-progress-bar">
-              <div class="drop-card-progress-fill" style="width: 40%; background: var(--accent-rose);"></div>
-            </div>
-            <div class="drop-card-progress-label">
-              <span>8 of 20 joined</span>
-              <strong>Free taco with any drink</strong>
-            </div>
-            <div class="drop-time-row">
-              <div class="drop-time-chip">⏰ Starts in 3h 20m</div>
-              <div class="drop-time-chip">👥 12 nearby</div>
-            </div>
-          </div>
-
-          <!-- Drop card 2 -->
-          <div class="drop-card">
-            <div class="drop-card-glow" style="background: var(--lavender);"></div>
-            <div class="drop-card-header">
-              <div class="drop-card-icon" style="background: var(--lavender);">✂️</div>
-              <div class="drop-card-info">
-                <div class="drop-card-name">Weekend Fade Deal</div>
-                <div class="drop-card-merchant">Fade Studio • 0.6 mi away</div>
-              </div>
-              <div class="drop-card-badge" style="background: var(--lavender); color: var(--accent-purple);">Sat 2 PM
-              </div>
-            </div>
-            <div class="drop-card-progress-bar">
-              <div class="drop-card-progress-fill" style="width: 20%; background: var(--accent-purple);"></div>
-            </div>
-            <div class="drop-card-progress-label">
-              <span>4 of 20 joined</span>
-              <strong>$5 off any cut</strong>
-            </div>
-            <div class="drop-time-row">
-              <div class="drop-time-chip">⏰ Tomorrow</div>
-              <div class="drop-time-chip">👥 8 nearby</div>
-            </div>
-          </div>
-
-          <!-- Drop card 3 -->
-          <div class="drop-card">
-            <div class="drop-card-glow" style="background: var(--sage);"></div>
-            <div class="drop-card-header">
-              <div class="drop-card-icon" style="background: var(--sage);">👗</div>
-              <div class="drop-card-info">
-                <div class="drop-card-name">New Arrivals Flash Sale</div>
-                <div class="drop-card-merchant">Vela Boutique • 0.4 mi away</div>
-              </div>
-              <div class="drop-card-badge" style="background: var(--sage); color: var(--accent-green);">Sat 4 PM</div>
-            </div>
-            <div class="drop-card-progress-bar">
-              <div class="drop-card-progress-fill" style="width: 60%; background: var(--accent-green);"></div>
-            </div>
-            <div class="drop-card-progress-label">
-              <span>12 of 20 joined</span>
-              <strong>20% off storewide</strong>
-            </div>
-            <div class="drop-time-row">
-              <div class="drop-time-chip">⏰ Tomorrow</div>
-              <div class="drop-time-chip">👥 18 nearby</div>
-            </div>
-          </div>
-
-          <!-- Drop card 4 -->
-          <div class="drop-card">
-            <div class="drop-card-glow" style="background: var(--sky);"></div>
-            <div class="drop-card-header">
-              <div class="drop-card-icon" style="background: var(--sky);">💪</div>
-              <div class="drop-card-info">
-                <div class="drop-card-name">Sunday Sweat Drop</div>
-                <div class="drop-card-merchant">Form Fitness • 0.8 mi away</div>
-              </div>
-              <div class="drop-card-badge" style="background: var(--sky); color: var(--accent-blue);">Sun 9 AM</div>
-            </div>
-            <div class="drop-card-progress-bar">
-              <div class="drop-card-progress-fill" style="width: 85%; background: var(--accent-blue);"></div>
-            </div>
-            <div class="drop-card-progress-label">
-              <span>17 of 20 joined</span>
-              <strong>Free class pass</strong>
-            </div>
-            <div class="drop-time-row">
-              <div class="drop-time-chip">⏰ Sunday</div>
-              <div class="drop-time-chip" style="color: var(--accent-green); border-color: var(--accent-green);">🔥
-                Almost there!</div>
-            </div>
-          </div>
-        </div>
+        <!-- Populated by renderScheduledDrops() from SCHEDULED_DROPS + MERCHANTS -->
+        <div class="drops-scroll" id="drops-scheduled-scroll"></div>
       </div>
 
       <!-- ============================
@@ -4634,6 +4624,11 @@
       🎉 Bloom Coffee is LIVE — your pass is ready
     </div>
 
+    <!-- Fizzle toast — same shell-level dark-pill pattern as golive-toast -->
+    <div class="toast-golive" id="fizzle-toast" onclick="showScreen('drop-detail')">
+      Bloom Coffee's drop ended — it didn't reach enough people this time. Check back soon.
+    </div>
+
     <!-- Tab Bar (hidden on splash) -->
     <div class="tab-bar" id="tab-bar" role="tablist" style="display:none;">
       <div class="tab-item active" data-screen="home" onclick="switchTab(this, 'home')" role="tab" aria-label="Explore" aria-selected="true">
@@ -4959,7 +4954,7 @@
       }
       // Density Drop customer surfaces (Phase 2) — repaint from WORLD.drop
       // every time their screen is entered, same pattern as the owner side.
-      if (name === 'drops') renderCustomerDropsList();
+      if (name === 'drops') { renderCustomerDropsList(); renderScheduledDrops(); }
       if (name === 'drop-detail') renderDropDetail();
       if (name === 'passes') renderPassWallet();
       if (name === 'pass-qr') renderPassQR();
@@ -4970,6 +4965,7 @@
       // The tester has now seen (or is about to see) the live/pass surfaces —
       // dismiss the go-live toast so it doesn't linger over them.
       if (name === 'drop-detail' || name === 'pass-qr') hideGoLiveToast();
+      if (name === 'drop-detail') hideFizzleToast();
 
       // ---- Phase 5 (Task 7): sync the emp-profile toggles with WORLD.empSettings
       // every time the screen is entered, so a flip made earlier this session
@@ -5035,6 +5031,7 @@
       // WORLD.drop = null above also wipes its dwell/myPass/consolationGiven
       // fields (Phase 2) since they only ever lived on that object.
       hideGoLiveToast();
+      hideFizzleToast();
 
       // Close any open overlay/sheet/modal — bottom sheet, review composer,
       // scan-success flashes, the owner payment-success overlay.
@@ -5065,6 +5062,7 @@
       // hid any coach mark that happened to be open — this just re-arms them.
       WORLD.coach = { customerShown: false, employeeShown: false, ownerShown: false, lbShown: false, sheetShown: false };
 
+      expandedScheduledDropKey = null;
       renderPunchSurfaces('coffee');
       renderDropSurfaces();
       showScreen('role-picker');
@@ -5443,6 +5441,14 @@
         expiresAtSim: SIM.nowMin + 120, // 2 real MVP hours = 120 sim-minutes
         redeemed: false,
       };
+      // passesIssued/history.notified reflect an actual pass being created,
+      // not eligibility at go-live — otherwise the employee "X issued" stat
+      // and the owner analytics "Notified" funnel stage both read as done
+      // while the drop is still paused and nothing has actually been issued.
+      // This whole function is a no-op once d.myPass is set (guard above),
+      // so this only ever runs once per drop instance.
+      d.passesIssued = (d.passesIssued || 0) + 1;
+      WORLD.history.notified++;
     }
 
     function advanceDrop() {
@@ -5481,16 +5487,12 @@
           d.state = 'live';
           d.liveAtSim = SIM.nowMin;
           d.liveEndsAtSim = SIM.nowMin + d.configSnapshot.liveWindowMinutes;
-          // Phase 4: guard so "Notified" (passesIssued going from 0 to >=1)
-          // is only ever counted once per drop instance, even though this
-          // branch itself only runs once (building->live is a one-way edge).
-          if (d.passesIssued === 0) {
-            WORLD.history.notified++;
-          }
-          d.passesIssued = d.dwelledCount || 1;
           WORLD.history.drops++;
           WORLD.history[d.configSnapshot.configType] = (WORLD.history[d.configSnapshot.configType] || 0) + 1;
-          issueMyPassIfEligible(d); // no-op (leaves myPass null) if paused right at go-live
+          // passesIssued/history.notified are set inside issueMyPassIfEligible
+          // itself now, only once a pass is actually created — a no-op here
+          // (leaving passesIssued at 0) if paused right at go-live.
+          issueMyPassIfEligible(d);
           if (currentScreenName !== 'drop-detail' && currentScreenName !== 'pass-qr') {
             showGoLiveToast();
           }
@@ -5509,6 +5511,9 @@
           if (d.liveAtSim === null && d.dwell.qualifiedAtSim !== null && !d.consolationGiven) {
             addPunch(d.merchantKey, 1);
             d.consolationGiven = true;
+          }
+          if (currentScreenName !== 'drop-detail') {
+            showFizzleToast();
           }
         }
       } else if (d.state === 'live') {
@@ -5784,9 +5789,12 @@
           circleSub.textContent = `${d.passesIssued} passes issued`;
         } else {
           circleBtn.classList.add('expired-drop');
-          circleEmoji.textContent = '✅';
-          circleLabel.textContent = 'Ended';
-          circleSub.textContent = d.liveAtSim === null ? 'Fizzled — try again' : 'Results are in';
+          const fizzled = d.liveAtSim === null;
+          // A checkmark reads as success either way — distinguish a fizzle
+          // (never went live) from a normal completed drop with its own icon.
+          circleEmoji.textContent = fizzled ? '🔄' : '✅';
+          circleLabel.textContent = fizzled ? 'Try Again' : 'Ended';
+          circleSub.textContent = fizzled ? 'Fizzled — try again' : 'Results are in';
         }
       }
     }
@@ -6134,6 +6142,130 @@
       goLiveToastTimeoutId = null;
     }
 
+    // ---- Fizzle toast — same pattern as the go-live toast above, for the
+    // opposite outcome (drop ended without reaching its threshold) ----
+    let fizzleToastTimeoutId = null;
+
+    function showFizzleToast() {
+      const el = document.getElementById('fizzle-toast');
+      if (!el) return;
+      el.classList.add('show');
+      clearTimeout(fizzleToastTimeoutId);
+      fizzleToastTimeoutId = setTimeout(() => { el.classList.remove('show'); }, 6000);
+    }
+
+    function hideFizzleToast() {
+      const el = document.getElementById('fizzle-toast');
+      if (el) el.classList.remove('show');
+      clearTimeout(fizzleToastTimeoutId);
+      fizzleToastTimeoutId = null;
+    }
+
+    // ---- Customer Drops tab: scheduled drops at the other four merchants ----
+    // Illustrative — not run through the SIM/WORLD engine, which only ever
+    // drives one live drop (at Bloom Coffee). Each `timeRange` is the window
+    // during which the drop can go live once enough people show up — not a
+    // single instant — so it never reads as "the reward happens at exactly
+    // this minute." Tap a card to preview that merchant's live punch count
+    // inline, without leaving this screen.
+    const SCHEDULED_DROPS = [
+      {
+        merchantKey: 'food', dropName: 'Taco Tuesday Freebie', emoji: '🌮',
+        glowColor: 'var(--peach)', badgeBg: 'var(--blush)', badgeColor: 'var(--accent-rose)',
+        progressColor: 'var(--accent-rose)', joined: 8, capacity: 20,
+        timeRange: '5–7 PM', relativeLabel: '⏰ Starts in 3h 20m', extraChip: '👥 12 nearby',
+      },
+      {
+        merchantKey: 'barber', dropName: 'Weekend Fade Deal', emoji: '✂️',
+        glowColor: 'var(--lavender)', badgeBg: 'var(--lavender)', badgeColor: 'var(--accent-purple)',
+        progressColor: 'var(--accent-purple)', joined: 4, capacity: 20,
+        timeRange: 'Sat 2–4 PM', relativeLabel: '⏰ Tomorrow', extraChip: '👥 8 nearby',
+      },
+      {
+        merchantKey: 'boutique', dropName: 'New Arrivals Flash Sale', emoji: '👗',
+        glowColor: 'var(--sage)', badgeBg: 'var(--sage)', badgeColor: 'var(--accent-green)',
+        progressColor: 'var(--accent-green)', joined: 12, capacity: 20,
+        timeRange: 'Sat 4–6 PM', relativeLabel: '⏰ Tomorrow', extraChip: '👥 18 nearby',
+      },
+      {
+        merchantKey: 'fitness', dropName: 'Sunday Sweat Drop', emoji: '💪',
+        glowColor: 'var(--sky)', badgeBg: 'var(--sky)', badgeColor: 'var(--accent-blue)',
+        progressColor: 'var(--accent-blue)', joined: 17, capacity: 20,
+        timeRange: 'Sun 9–11 AM', relativeLabel: '⏰ Sunday',
+        extraChip: '🔥 Almost there!', extraChipHot: true,
+      },
+    ];
+
+    // null when every card is collapsed; a merchantKey while one is expanded.
+    let expandedScheduledDropKey = null;
+
+    function toggleScheduledDropExpand(merchantKey) {
+      expandedScheduledDropKey = expandedScheduledDropKey === merchantKey ? null : merchantKey;
+      renderScheduledDrops();
+    }
+
+    function renderScheduledDrops() {
+      const el = document.getElementById('drops-scheduled-scroll');
+      if (!el) return;
+      el.innerHTML = SCHEDULED_DROPS.map((d) => {
+        const m = MERCHANTS[d.merchantKey];
+        const isExpanded = expandedScheduledDropKey === d.merchantKey;
+        const pct = Math.round((d.joined / d.capacity) * 100);
+        const chipHTML = d.extraChipHot
+          ? `<div class="drop-time-chip" style="color: var(--accent-green); border-color: var(--accent-green);">${d.extraChip}</div>`
+          : `<div class="drop-time-chip">${d.extraChip}</div>`;
+
+        let punches = '';
+        for (let i = 0; i < m.total; i++) {
+          punches += `<div class="punch${i < m.punches ? ' done' : ''}"></div>`;
+        }
+
+        return `
+          <div class="drop-card${isExpanded ? ' expanded' : ''}" onclick="toggleScheduledDropExpand('${d.merchantKey}')">
+            <div class="drop-card-glow" style="background: ${d.glowColor};"></div>
+            <div class="drop-card-header">
+              <div class="drop-card-icon" style="background: ${d.glowColor};">${d.emoji}</div>
+              <div class="drop-card-info">
+                <div class="drop-card-name">${d.dropName}</div>
+                <div class="drop-card-merchant">${m.name} • ${m.cat.split('·')[1] ? m.cat.split('·')[1].trim() : m.cat}</div>
+              </div>
+              <div class="drop-card-badge" style="background: ${d.badgeBg}; color: ${d.badgeColor};">${d.timeRange}</div>
+              <div class="drop-card-expand-toggle" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+            <div class="drop-card-progress-bar">
+              <div class="drop-card-progress-fill" style="width: ${pct}%; background: ${d.progressColor};"></div>
+            </div>
+            <div class="drop-card-progress-label">
+              <span>${d.joined} of ${d.capacity} joined</span>
+              <strong>${m.reward}</strong>
+            </div>
+            <div class="drop-time-row">
+              <div class="drop-time-chip">${d.relativeLabel}</div>
+              ${chipHTML}
+            </div>
+            <div class="drop-card-expand-panel"><div>
+              <div class="drop-card-expand-inner">
+                <div class="drop-card-expand-merchant">
+                  <div class="drop-card-expand-icon" style="background: ${m.bg};">${m.icon}</div>
+                  <div>
+                    <div class="drop-card-expand-name">${m.name}</div>
+                    <div class="drop-card-expand-sub">${m.tagline || m.cat || ''}</div>
+                  </div>
+                </div>
+                <div class="drop-card-expand-punchcard">
+                  <div class="punch-card-title">${m.reward}</div>
+                  <div class="punch-card-reward" style="margin-bottom:10px;">${m.punches} of ${m.total} punches</div>
+                  <div class="punches-grid">${punches}</div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        `;
+      }).join('');
+    }
+
     // ---- Customer Drops tab: active/building drop card + dwell status (Task 4) ----
     function openDropDetail(merchantKey) {
       showScreen('drop-detail');
@@ -6193,7 +6325,19 @@
       const dwell = dwellProgress(d.dwell, SIM.nowMin);
       let dwellHTML;
       if (dwell.qualified) {
-        dwellHTML = `<div class="drops-dwell-qualified">You're in — free to leave. We'll notify you if it goes live.</div>`;
+        // Three distinct states, not two — "ready to redeem" must check the
+        // pass actually exists (d.myPass), not just d.state === 'live'.
+        // Paused live drops qualify the dwell timer but withhold the pass
+        // (see issueMyPassIfEligible's paused guard), so without this check
+        // this text would contradict the Pass wallet ("No passes yet") and
+        // drop-detail (no "View my pass" button) in that exact state.
+        if (d.state === 'live' && d.myPass) {
+          dwellHTML = `<div class="drops-dwell-qualified">You're in — your reward is ready to redeem.</div>`;
+        } else if (d.state === 'live') {
+          dwellHTML = `<div class="drops-dwell-qualified">You're in — sit tight, your reward is on its way.</div>`;
+        } else {
+          dwellHTML = `<div class="drops-dwell-qualified">You're in — free to leave. We'll notify you if it goes live.</div>`;
+        }
       } else {
         const elapsed = Math.max(0, d.dwell.requiredMin - dwell.remainingMin);
         dwellHTML = `<div class="drops-dwell-status">You're at ${elapsed.toFixed(1)} of ${d.dwell.requiredMin} minutes</div>`;
@@ -6410,6 +6554,7 @@
       renderQrMerchantRow(focusKey);
       renderSuccessScreen(focusKey);
       renderMapPins();
+      renderScheduledDrops();
 
       // Only touch the bottom sheet's punch card if it's open for this exact
       // merchant — repainting it for an unrelated merchant would be a no-op
@@ -7001,16 +7146,18 @@
         center: MAP_CENTER,
         zoom: MAP_ZOOM,
         zoomControl: false,
-        attributionControl: false,
+        attributionControl: true,
         dragging: true,
         scrollWheelZoom: false,
         doubleClickZoom: false,
       });
 
-      // Stamen Toner Lite — clean, works well with pastel filter
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      // OpenStreetMap standard tiles — free, no API key required (CARTO's
+      // basemaps.cartocdn.com now requires a key even for anonymous/demo use).
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        subdomains: 'abcd',
+        subdomains: 'abc',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
       }).addTo(pnchyMap);
 
       // Add heatmap layer
@@ -7252,37 +7399,37 @@
         { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 29 },
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 24 },
         { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 19 },
-        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 15 },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 15 },
         { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 12 },
-        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 10 },
-        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 7 },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 10 },
+        { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 7 },
       ],
       week: [
         { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 189, trend: '▲ +3 vs prev week' },
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 142, trend: '▼ -1 vs prev week' },
         { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 126, trend: '▲ +5 vs prev week' },
-        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 112 },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 112 },
         { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 98, trend: '▲ +2 vs prev week' },
-        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 85, trend: '▼ -2 vs prev week' },
-        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 74 },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 85, trend: '▼ -2 vs prev week' },
+        { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 74 },
       ],
       month: [
         { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 813 },
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 611 },
         { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 542 },
-        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 482 },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 482 },
         { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 421 },
-        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 366 },
-        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 318 },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 366 },
+        { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 318 },
       ],
       year: [
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 8200 },
         { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 7800 },
         { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 6552 },
-        { name: 'Jordan Reed', bg: 'var(--accent-blue)', letter: 'J', scans: 5824 },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 5824 },
         { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 5096 },
-        { name: 'Oscar Wilde', bg: 'var(--accent-purple)', letter: 'O', scans: 4420 },
-        { name: 'Maya Angelou', bg: 'var(--text-light)', letter: 'M', scans: 3848 },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 4420 },
+        { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 3848 },
       ],
     };
 
@@ -7327,11 +7474,14 @@
         { label: 'J', name: 'Jordan', bg: 'var(--accent-green)', scans: 189, me: true },
         { label: 'S', name: 'Sam', bg: 'var(--muted-gold)', scans: 142 },
       ],
+      // Distinct from the podium's own "Jordan" (name + initial) so this list
+      // never reads as the same person double-listed with different stats;
+      // ordinary names only, no real (celebrity/historical) namesakes.
       list: [
-        { label: 'J', name: 'Jordan Reed', bg: 'var(--accent-blue)', title: 'Community Lead', scans: 112 },
+        { label: 'M', name: 'Marcus Webb', bg: 'var(--accent-blue)', title: 'Community Lead', scans: 112 },
         { label: 'L', name: 'Lila Chen', bg: 'var(--accent-rose)', title: 'Growth Specialist', scans: 98 },
-        { label: 'O', name: 'Oscar Wilde', bg: 'var(--accent-purple)', title: 'Brand Ambassador', scans: 85 },
-        { label: 'M', name: 'Maya Angelou', bg: 'var(--text-light)', title: 'Curator', scans: 74 },
+        { label: 'D', name: 'Derek Coleman', bg: 'var(--accent-purple)', title: 'Brand Ambassador', scans: 85 },
+        { label: 'P', name: 'Priya Nair', bg: 'var(--text-light)', title: 'Curator', scans: 74 },
       ],
     };
     const EMP_RANKS_FACTOR = { week: 1, all: 50 };
