@@ -3279,7 +3279,8 @@
       font-size: 11px; font-weight: 700; color: #8A6A3D; text-transform: uppercase; letter-spacing: 0.6px;
     }
     .drops-building-title { font-size: 15px; font-weight: 600; color: var(--text-dark); margin-top: 2px; }
-    .drops-active-sub { font-size: 12px; color: var(--text-mid); margin-top: 8px; }
+    .drops-active-primary { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-top: 8px; }
+    .drops-active-sub { font-size: 12px; color: var(--text-mid); margin-top: 4px; }
     .drops-dwell-status { margin: 10px 24px 0; font-size: 12px; color: var(--text-mid); }
     .drops-dwell-qualified { margin: 10px 24px 0; font-size: 12px; font-weight: 600; color: var(--accent-green); }
     .drops-empty-state { margin: 16px 24px 0; font-size: 13px; color: var(--text-light); }
@@ -3314,6 +3315,7 @@
     .pw-reward { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
     .pw-status { margin-top: 12px; font-size: 12px; font-weight: 600; }
     .pw-status.valid { color: var(--building); }
+    .pw-status.pending { color: var(--building); }
     .pw-status.redeemed { color: var(--accent-green); }
     .pw-status.expired { color: var(--accent-rose); }
     .pw-empty { text-align: center; padding: 40px 20px; }
@@ -4322,9 +4324,9 @@
             <div class="a-card">
               <span class="a-label">How It Works</span>
               <div style="margin-top:10px;">
-                <div class="a-info-row"><span class="a-info-emoji">⏰</span><span class="a-info-text">You pick a time window (e.g. next 2 hours)</span></div>
-                <div class="a-info-row"><span class="a-info-emoji">👥</span><span class="a-info-text">Customers gather outside your spot</span></div>
-                <div class="a-info-row"><span class="a-info-emoji">🎁</span><span class="a-info-text">Everyone who shows up earns the reward</span></div>
+                <div class="a-info-row"><span class="a-info-emoji">⏰</span><span class="a-info-text">You set a time limit for the drop to stay open</span></div>
+                <div class="a-info-row"><span class="a-info-emoji">👥</span><span class="a-info-text">Customers dwell at your spot to earn a pass</span></div>
+                <div class="a-info-row"><span class="a-info-emoji">🎁</span><span class="a-info-text">Once enough passes are out, everyone can redeem</span></div>
               </div>
             </div>
 
@@ -4367,8 +4369,9 @@
             </div>
 
             <div class="a-field">
+              <span class="a-field-label">Time limit for drop to stay open</span>
               <div class="a-range-row">
-                <span class="a-field-label">Live window</span>
+                <span class="a-field-hint" style="margin-top:0;">Also how long Redemption stays open once the Bell rings.</span>
                 <span class="a-range-val" id="own-cfg-window-val">60 min</span>
               </div>
               <input type="range" class="a-range" id="own-cfg-window" min="15" max="240" value="60"
@@ -5075,7 +5078,7 @@
       // a stamp. Owner scanning ('own') is untouched — plain stamp only,
       // out of scope this phase.
       if (role === 'emp' && WORLD.drop && WORLD.drop.myPass &&
-          !WORLD.drop.myPass.redeemed && SIM.nowMin <= WORLD.drop.myPass.expiresAtSim) {
+          !WORLD.drop.myPass.redeemed && isRedemptionOpen(WORLD.drop)) {
         const pass = WORLD.drop.myPass;
         pass.redeemed = true;
         WORLD.drop.passesRedeemed = (WORLD.drop.passesRedeemed || 0) + 1;
@@ -5302,10 +5305,31 @@
     const TICK_MS = 250, TICK_MIN = 0.25;
     let simInterval = null;
 
-    // Scripted arrival curve for Bloom Coffee's drop — sums to 12 across
-    // sim-minutes 1-18 (index = whole sim-minutes elapsed since the drop
-    // started building).
+    // Scripted arrival curve for Bloom Coffee's drop — a fixed, deterministic
+    // shape (16 people total across 18 "buckets") that never scales in
+    // headcount, only in timing: buildAmbientQueue() below stretches these
+    // 18 buckets across however long the owner's actual Gathering deadline
+    // is, so a 240-minute deadline still has people trickling in the whole
+    // time instead of everyone arriving in the same first 18 minutes.
     const BUILD_ARRIVALS = [0, 1, 0, 1, 1, 0, 2, 1, 1, 2, 1, 0, 1, 2, 1, 1, 0, 1];
+
+    // Expands BUILD_ARRIVALS into individual ambient people, each with their
+    // own arrival time (scaled to span the full Gathering deadline) and
+    // dwell-completion time (arrival + the fixed DWELL_REQUIRED_MIN — dwell
+    // duration itself is Pnchy-set and never scales, only arrival timing
+    // does). `issued` flips true the moment that person's own pass is
+    // counted into d.passesIssued — see advanceDrop().
+    function buildAmbientQueue(gatheringDeadlineMin) {
+      const scale = gatheringDeadlineMin / BUILD_ARRIVALS.length;
+      const queue = [];
+      BUILD_ARRIVALS.forEach((count, bucketIdx) => {
+        const arrivedAtSim = (bucketIdx + 1) * scale;
+        for (let i = 0; i < count; i++) {
+          queue.push({ arrivedAtSim, dwellCompleteAtSim: arrivedAtSim + DWELL_REQUIRED_MIN, issued: false });
+        }
+      });
+      return queue;
+    }
 
     // Real MVP dwell formula: D = clamp(1.5 * sqrt(V), 3, 15) minutes. For
     // Bloom Coffee (cafe, V=18) that's ~6.4 minutes — hardcoded here since
@@ -5380,12 +5404,29 @@
     const OWNER_CONFIG_INITIAL = structuredClone(WORLD.ownerConfig);
 
     // ---- Pure helpers (no DOM access) — reused by later phases too ----
+    // Passes issued (completed dwells) is what actually drives the quota in
+    // every state — building, live, or expired — so one formula covers all
+    // three; no separate raw-headcount branch needed here anymore.
     function fillFraction(instance) {
       if (!instance) return 0;
-      const numerator = instance.state === 'building'
-        ? instance.currentDensity
-        : Math.max(instance.peakDensity, instance.currentDensity);
-      return Math.min(1, numerator / instance.configSnapshot.threshold);
+      return Math.min(1, instance.passesIssued / instance.configSnapshot.threshold);
+    }
+
+    // Displayed "redeemed" count — your own real redemption plus the
+    // ambient crowd's simulated trickle. Never used for real economics
+    // (WORLD.history.redemptions/spendCents stay driven by passesRedeemed
+    // alone); this is purely what the "X issued · Y redeemed" stat shows.
+    function totalRedeemed(instance) {
+      return (instance.passesRedeemed || 0) + (instance.ambientRedeemed || 0);
+    }
+
+    // Redemption is one shared clock for every pass-holder (no personal
+    // per-pass expiry) — open only while the drop is actually live and
+    // within its liveEndsAtSim, regardless of when any individual pass was
+    // issued (even one issued mid-Gathering, before the Bell, can't be
+    // redeemed until Redemption itself opens).
+    function isRedemptionOpen(instance) {
+      return !!instance && instance.state === 'live' && SIM.nowMin <= instance.liveEndsAtSim;
     }
 
     function deriveDropLabel(instance) {
@@ -5426,11 +5467,14 @@
     }
 
     // ---- State machine ----
-    // Issues "your" pass the moment it's eligible: live, dwell-qualified, no
-    // pass yet, and not paused. Called both at the exact building->live
-    // transition (below) and on every subsequent live tick (Phase 3) — the
-    // latter is what makes a pause-then-resume actually deliver a deferred
-    // pass instead of just cosmetically blocking it.
+    // Issues "your" pass the moment YOU personally finish dwelling — during
+    // Gathering (building) if you finish before the Bell, or during
+    // Redemption (live) if you're a late/grandfathered finisher. Not gated
+    // on drop state, only on dwell-qualified + not paused; called every tick
+    // from both the building and live branches below. Redemption itself is a
+    // single shared clock for every pass-holder (d.liveEndsAtSim) rather than
+    // a personal countdown, so no per-pass expiry is stored here — validity
+    // checks elsewhere compare against d.state/d.liveEndsAtSim directly.
     function issueMyPassIfEligible(d) {
       if (d.myPass || d.dwell.qualifiedAtSim === null || d.paused) return;
       d.myPass = {
@@ -5438,16 +5482,15 @@
         merchantKey: d.merchantKey,
         reward: { ...d.configSnapshot.reward },
         issuedAtSim: SIM.nowMin,
-        expiresAtSim: SIM.nowMin + 120, // 2 real MVP hours = 120 sim-minutes
         redeemed: false,
       };
-      // passesIssued/history.notified reflect an actual pass being created,
-      // not eligibility at go-live — otherwise the employee "X issued" stat
-      // and the owner analytics "Notified" funnel stage both read as done
-      // while the drop is still paused and nothing has actually been issued.
-      // This whole function is a no-op once d.myPass is set (guard above),
-      // so this only ever runs once per drop instance.
       d.passesIssued = (d.passesIssued || 0) + 1;
+      // history.notified reflects an actual pass being created, not just
+      // eligibility — otherwise the owner analytics "Notified" funnel stage
+      // reads as done while the drop is still paused and nothing has
+      // actually been issued to "you" specifically. This whole function is
+      // a no-op once d.myPass is set (guard above), so this only ever runs
+      // once per drop instance.
       WORLD.history.notified++;
     }
 
@@ -5467,37 +5510,55 @@
       // started. Once set, qualifiedAtSim never resets for this drop instance.
       if (d.dwell.qualifiedAtSim === null && (SIM.nowMin - d.dwell.startedAtSim) >= d.dwell.requiredMin) {
         d.dwell.qualifiedAtSim = SIM.nowMin;
-        // dwelledCount already includes "you" from armDrop() — this transition
-        // only flips the qualifying visual state, it does not change the count.
-        // Phase 4: this null->non-null transition happens exactly once per
-        // drop instance, so it's a safe place to count the "Dwelled" funnel
-        // stage for the analytics screen.
+        // This null->non-null transition happens exactly once per drop
+        // instance, so it's a safe place to count the "Dwelled" funnel stage
+        // for the analytics screen.
         WORLD.history.dwelled++;
       }
 
       if (d.state === 'building') {
-        const elapsedWholeMin = Math.floor(SIM.nowMin - d.startedAtSim);
-        while (d.arrivalIdx < elapsedWholeMin && d.arrivalIdx < BUILD_ARRIVALS.length) {
-          d.currentDensity += BUILD_ARRIVALS[d.arrivalIdx] || 0;
-          d.arrivalIdx++;
-        }
+        // Raw headcount — everyone who has physically arrived so far
+        // (regardless of dwell status) plus "you", always present from the
+        // start. Purely a flavor/atmosphere stat now, and the Discovery Lift
+        // analytics' input — no longer what triggers the Bell.
+        d.currentDensity = 1 + d.ambientQueue.filter((p) => p.arrivedAtSim <= SIM.nowMin).length;
         d.peakDensity = Math.max(d.peakDensity, d.currentDensity);
 
-        if (d.currentDensity >= d.configSnapshot.threshold) {
+        // passesIssued is the real quota-driving number: ambient people
+        // whose own dwell timer has finished, gated by pause exactly like
+        // your own pass (pausing withholds ALL new passes, ambient or not).
+        if (!d.paused) {
+          d.ambientQueue.forEach((p) => {
+            if (!p.issued && p.dwellCompleteAtSim <= SIM.nowMin) {
+              p.issued = true;
+              d.passesIssued++;
+            }
+          });
+        }
+        issueMyPassIfEligible(d);
+
+        if (d.passesIssued >= d.configSnapshot.threshold) {
+          // The Bell — quota met. Gathering closes to anyone not already
+          // arrived (see the live branch's arrivedAtSim <= d.liveAtSim
+          // grandfather check below); Redemption opens for the same
+          // duration as the Gathering deadline, one shared clock for every
+          // pass-holder rather than a personal countdown each.
           d.state = 'live';
           d.liveAtSim = SIM.nowMin;
           d.liveEndsAtSim = SIM.nowMin + d.configSnapshot.liveWindowMinutes;
+          // Not everyone who gets a pass redeems it — recalculated each live
+          // tick as a fraction of passesIssued (which can still grow a
+          // little via grandfathered latecomers), so the display never
+          // implies a 100% redemption rate. Fraction itself is fixed once,
+          // here, at go-live.
+          d.redeemFraction = 0.5 + Math.random() * 0.25;
           WORLD.history.drops++;
           WORLD.history[d.configSnapshot.configType] = (WORLD.history[d.configSnapshot.configType] || 0) + 1;
-          // passesIssued/history.notified are set inside issueMyPassIfEligible
-          // itself now, only once a pass is actually created — a no-op here
-          // (leaving passesIssued at 0) if paused right at go-live.
-          issueMyPassIfEligible(d);
           if (currentScreenName !== 'drop-detail' && currentScreenName !== 'pass-qr') {
             showGoLiveToast();
           }
-        } else if (d.arrivalIdx >= BUILD_ARRIVALS.length) {
-          // Fizzle — arrivals exhausted without reaching threshold.
+        } else if (SIM.nowMin - d.startedAtSim >= d.configSnapshot.liveWindowMinutes) {
+          // Fizzle — Gathering deadline hit without reaching quota.
           d.state = 'expired';
           // Phase 4: snapshot this drop's "discovery number" before the next
           // drop overwrites WORLD.drop — peak density IS the discovery count
@@ -5505,8 +5566,10 @@
           d.discoveryCount = d.peakDensity;
           WORLD.history.fizzled++;
           stopClock();
-          // Fizzle consolation — the drop never went live, but the tester
-          // dwelled long enough to have qualified anyway. Guarded by
+          // Fizzle consolation — demo simplification: only "you" (the one
+          // customer this demo actually tracks with a real punch card) get
+          // it, even though other ambient dwellers conceptually would too —
+          // there's no individual account to stamp for them. Guarded by
           // consolationGiven so this can only ever fire once per drop.
           if (d.liveAtSim === null && d.dwell.qualifiedAtSim !== null && !d.consolationGiven) {
             addPunch(d.merchantKey, 1);
@@ -5517,11 +5580,37 @@
           }
         }
       } else if (d.state === 'live') {
-        // Phase 1's scripted redemption trickle is gone — passesRedeemed now
-        // only moves via a real employee scan (demoScan('emp')'s redeem
-        // branch). This tick still needs to catch up a pass that was
-        // deferred by a pause active at the exact go-live moment above.
+        // Grandfather rule: ambient people who'd already arrived before the
+        // Bell rang keep dwelling and still get issued a pass whenever they
+        // finish, even after Gathering has closed to anyone arriving later.
+        if (!d.paused) {
+          d.ambientQueue.forEach((p) => {
+            if (!p.issued && p.arrivedAtSim <= d.liveAtSim && p.dwellCompleteAtSim <= SIM.nowMin) {
+              p.issued = true;
+              d.passesIssued++;
+            }
+          });
+        }
+        // passesRedeemed (your own pass) only ever moves via a real employee
+        // scan (demoScan('emp')'s redeem branch) — no scripted trickle for
+        // that number. This call still needs to catch up a pass that was
+        // deferred by a pause active at the exact go-live moment above, or
+        // deliver yours if you're a grandfathered late finisher.
         issueMyPassIfEligible(d);
+
+        // ambientRedeemed is a simulated trickle for the *other* people the
+        // drop counted — climbs toward redeemFraction * passesIssued in step
+        // with how far through the shared Redemption window we are, driven
+        // by this same tick rather than a new timer, so the "X issued · Y
+        // redeemed" stat never implies everyone redeems. Not gated on
+        // d.paused: pausing only withholds NEW passes (per the
+        // emp-drop-controls copy, "passes already issued stay valid"), and
+        // these ambient passes were already issued.
+        {
+          const cap = Math.round(d.passesIssued * d.redeemFraction);
+          const elapsedFrac = Math.min(1, (SIM.nowMin - d.liveAtSim) / d.configSnapshot.liveWindowMinutes);
+          d.ambientRedeemed = Math.min(cap, Math.round(cap * elapsedFrac));
+        }
 
         if (SIM.nowMin >= d.liveEndsAtSim) {
           d.state = 'expired';
@@ -5552,10 +5641,22 @@
         liveEndsAtSim: null,
         currentDensity: 0,
         peakDensity: 0,
-        arrivalIdx: 0,
-        dwelledCount: 1, // "you" count as dwell-qualified from the start
+        // The ambient crowd, pre-generated with fixed arrival + dwell-
+        // completion timestamps scaled to this drop's Gathering deadline —
+        // see buildAmbientQueue(). Individually marked `issued` as each
+        // person's own dwell timer completes (advanceDrop()), which is what
+        // actually drives passesIssued toward the threshold.
+        ambientQueue: buildAmbientQueue(cfg.liveWindowMinutes),
         passesIssued: 0,
         passesRedeemed: 0,
+        // Ambient crowd redemptions (everyone at the drop besides "you") —
+        // simulated separately from passesRedeemed, which only ever moves
+        // via a real employee scan. Kept apart so the demo's real economics
+        // counters (WORLD.history.redemptions/spendCents) stay grounded in
+        // actual actions; ambientRedeemed only feeds the displayed count.
+        // redeemFraction is picked once at go-live (see advanceDrop()).
+        ambientRedeemed: 0,
+        redeemFraction: null,
         // Personal dwell gate (Phase 2) — starts the instant the drop starts
         // building, since the tester is assumed "already there".
         dwell: { startedAtSim, requiredMin: DWELL_REQUIRED_MIN, qualifiedAtSim: null },
@@ -5696,7 +5797,7 @@
           chip.textContent = deriveDropLabel(d);
           chip.style.color = '';
           chip.style.background = '';
-          sub.textContent = `${d.currentDensity} here · unlocks at ${d.configSnapshot.threshold} people`;
+          sub.textContent = `${d.passesIssued} of ${d.configSnapshot.threshold} passes issued · ${d.currentDensity} here`;
           if (meterTrack) {
             meterTrack.style.display = 'block';
             meterFill.style.width = (fillFraction(d) * 100) + '%';
@@ -5707,7 +5808,7 @@
           chip.textContent = deriveDropLabel(d);
           chip.style.color = 'var(--accent-green)';
           chip.style.background = 'transparent';
-          sub.textContent = `${d.passesIssued} issued · ${d.passesRedeemed} redeemed`;
+          sub.textContent = `${d.passesIssued} issued · ${totalRedeemed(d)} redeemed`;
           if (meterTrack) {
             meterTrack.style.display = 'block';
             meterFill.style.width = (fillFraction(d) * 100) + '%';
@@ -5725,8 +5826,8 @@
           chip.style.color = '';
           chip.style.background = '';
           sub.textContent = d.liveAtSim === null
-            ? `Didn't reach ${d.configSnapshot.threshold} people this time`
-            : `Peak ${d.peakDensity} · ${d.passesRedeemed} redeemed`;
+            ? `Only ${d.passesIssued} of ${d.configSnapshot.threshold} passes issued — didn't reach it in time`
+            : `Peak ${d.peakDensity} · ${totalRedeemed(d)} redeemed`;
           if (meterTrack) {
             meterTrack.style.display = 'block';
             meterFill.style.width = (fillFraction(d) * 100) + '%';
@@ -5781,7 +5882,7 @@
           circleBtn.classList.add('building');
           circleEmoji.textContent = '📈';
           circleLabel.textContent = 'Building';
-          circleSub.textContent = `${d.currentDensity} of ${d.configSnapshot.threshold} people`;
+          circleSub.textContent = `${d.passesIssued} of ${d.configSnapshot.threshold} passes issued`;
         } else if (d.state === 'live') {
           circleBtn.classList.add('live-drop');
           circleEmoji.textContent = '🔥';
@@ -5913,7 +6014,7 @@
       const badge = document.getElementById('drops-tab-badge');
       if (!badge) return;
       const pass = WORLD.drop && WORLD.drop.myPass;
-      const valid = pass && !pass.redeemed && SIM.nowMin <= pass.expiresAtSim;
+      const valid = pass && !pass.redeemed && isRedemptionOpen(WORLD.drop);
       if (valid) {
         badge.textContent = '1';
         badge.style.display = 'flex';
@@ -5973,7 +6074,7 @@
         const frac = fillFraction(d);
         return `
           <div class="a-drop-meter-track"><div class="a-drop-meter-fill" style="width:${frac * 100}%;"></div></div>
-          <div class="a-strip-sub">${d.currentDensity} of ${d.configSnapshot.threshold} people here</div>
+          <div class="a-strip-sub">${d.passesIssued} of ${d.configSnapshot.threshold} passes issued · ${d.currentDensity} here</div>
           <div class="a-strip-sub">Reward: ${d.configSnapshot.reward.description}</div>
         `;
       }
@@ -5984,14 +6085,14 @@
         return `
           <div class="a-drop-live-tag">🔴 Live now</div>
           <div class="emp-drop-countdown">${mm}:${String(ss).padStart(2, '0')}</div>
-          <div class="a-strip-sub">${d.passesIssued} issued · ${d.passesRedeemed} redeemed</div>
+          <div class="a-strip-sub">${d.passesIssued} issued · ${totalRedeemed(d)} redeemed</div>
           <div class="a-strip-sub">Reward: ${d.configSnapshot.reward.description}</div>
         `;
       }
       // expired
       const sub = d.liveAtSim === null
-        ? `Didn't reach ${d.configSnapshot.threshold} people`
-        : `Last drop: peak ${d.peakDensity} people · ${d.passesRedeemed} redeemed`;
+        ? `Only ${d.passesIssued} of ${d.configSnapshot.threshold} passes issued`
+        : `Last drop: peak ${d.peakDensity} people · ${totalRedeemed(d)} redeemed`;
       return `<div class="a-strip-sub">${sub}</div>`;
     }
 
@@ -6300,7 +6401,8 @@
               </div>
             </div>
             <div class="a-drop-meter-track"><div class="a-drop-meter-fill" style="width:${frac * 100}%;"></div></div>
-            <div class="drops-active-sub">${d.currentDensity} here · unlocks at ${d.configSnapshot.threshold} people</div>
+            <div class="drops-active-primary">${d.passesIssued} of ${d.configSnapshot.threshold} passes issued</div>
+            <div class="drops-active-sub">${d.currentDensity} people here</div>
           </div>
         `;
       } else { // live
@@ -6325,18 +6427,21 @@
       const dwell = dwellProgress(d.dwell, SIM.nowMin);
       let dwellHTML;
       if (dwell.qualified) {
-        // Three distinct states, not two — "ready to redeem" must check the
-        // pass actually exists (d.myPass), not just d.state === 'live'.
-        // Paused live drops qualify the dwell timer but withhold the pass
-        // (see issueMyPassIfEligible's paused guard), so without this check
-        // this text would contradict the Pass wallet ("No passes yet") and
-        // drop-detail (no "View my pass" button) in that exact state.
-        if (d.state === 'live' && d.myPass) {
+        // Three distinct states — "ready to redeem" must check the pass
+        // actually exists (d.myPass) and Redemption is open, not just
+        // d.state === 'live'. issueMyPassIfEligible runs every tick in both
+        // building and live, so a qualified-but-no-pass-yet case only
+        // happens while paused (building or live) — the pass is deferred,
+        // not withheld forever (see its paused guard).
+        if (isRedemptionOpen(d) && d.myPass) {
           dwellHTML = `<div class="drops-dwell-qualified">You're in — your reward is ready to redeem.</div>`;
-        } else if (d.state === 'live') {
-          dwellHTML = `<div class="drops-dwell-qualified">You're in — sit tight, your reward is on its way.</div>`;
+        } else if (d.myPass) {
+          // Pass already exists (issued the moment you finished dwelling,
+          // possibly before the Bell rang) — just waiting for the shared
+          // Redemption window to open.
+          dwellHTML = `<div class="drops-dwell-qualified">You're in — waiting for the drop to open.</div>`;
         } else {
-          dwellHTML = `<div class="drops-dwell-qualified">You're in — free to leave. We'll notify you if it goes live.</div>`;
+          dwellHTML = `<div class="drops-dwell-qualified">You're in — sit tight, your reward is on its way.</div>`;
         }
       } else {
         const elapsed = Math.max(0, d.dwell.requiredMin - dwell.remainingMin);
@@ -6358,7 +6463,7 @@
         card.innerHTML = `
           <div class="dd-emoji">☕</div>
           <div class="dd-heading">Quiet right now</div>
-          <div class="dd-sub">Unlocks ${cfg.rewardDescription} at ${cfg.threshold} people</div>
+          <div class="dd-sub">Unlocks ${cfg.rewardDescription} at ${cfg.threshold} passes issued</div>
           <div class="dd-hint">Hang out about ${Math.round(DWELL_REQUIRED_MIN)} minutes while a drop is building to lock in.</div>
         `;
         return;
@@ -6369,12 +6474,21 @@
       if (d.state === 'building') {
         const pct = Math.round(fillFraction(d) * 100);
         const dwell = dwellProgress(d.dwell, SIM.nowMin);
-        const dwellBlock = dwell.qualified
-          ? `<div class="dd-qualified">You're in — free to leave. We'll notify you if it goes live.</div>`
-          : `<div class="dd-ring-row">${buildDwellRingHTML(dwell, 96)}<div class="dd-ring-caption">Stick around a little longer to lock in your pass.</div></div>`;
+        let dwellBlock;
+        if (dwell.qualified && d.myPass) {
+          // Pass already exists — issued the moment you finished dwelling,
+          // possibly before the Bell rings. Just waiting for Redemption
+          // (the shared window) to open.
+          dwellBlock = `<div class="dd-qualified">You're in — waiting for the drop to open.</div>`;
+        } else if (dwell.qualified) {
+          // Qualified but no pass yet — only happens while paused.
+          dwellBlock = `<div class="dd-qualified">You're in — sit tight, your reward is on its way.</div>`;
+        } else {
+          dwellBlock = `<div class="dd-ring-row">${buildDwellRingHTML(dwell, 96)}<div class="dd-ring-caption">Stick around a little longer to lock in your pass.</div></div>`;
+        }
         card.innerHTML = `
-          <div class="dd-percent">This spot is at ${pct}%</div>
-          <div class="dd-sub">Unlocks ${d.configSnapshot.reward.description} at ${d.configSnapshot.threshold} people</div>
+          <div class="dd-percent">${d.passesIssued} of ${d.configSnapshot.threshold} passes issued</div>
+          <div class="dd-sub">Unlocks ${d.configSnapshot.reward.description} · ${d.currentDensity} people here</div>
           ${dwellBlock}
         `;
         return;
@@ -6440,10 +6554,15 @@
       let statusHTML;
       if (pass.redeemed) {
         statusHTML = `<div class="pw-status redeemed">✓ Redeemed</div>`;
-      } else if (SIM.nowMin > pass.expiresAtSim) {
+      } else if (d.state === 'building') {
+        // You finished dwelling before the Bell rang — you're on the list,
+        // but Redemption (one shared clock for every pass-holder) doesn't
+        // open until the Bell actually rings.
+        statusHTML = `<div class="pw-status pending">You're in — waiting for the drop to open</div>`;
+      } else if (!isRedemptionOpen(d)) {
         statusHTML = `<div class="pw-status expired">Expired</div>`;
       } else {
-        const secRemaining = Math.max(0, (pass.expiresAtSim - SIM.nowMin) * 60);
+        const secRemaining = Math.max(0, (d.liveEndsAtSim - SIM.nowMin) * 60);
         const mm = Math.floor(secRemaining / 60);
         const ss = Math.floor(secRemaining % 60);
         statusHTML = `<div class="pw-status valid">${mm}:${String(ss).padStart(2, '0')} left to redeem</div>`;
@@ -6501,18 +6620,31 @@
         return;
       }
 
-      if (SIM.nowMin > pass.expiresAtSim) {
+      if (d.state === 'building') {
+        // You finished dwelling before the Bell rang — on the list, but
+        // Redemption (shared for every pass-holder) hasn't opened yet.
         body.innerHTML = `
           <div class="pass-qr-state">
-            <div class="pass-qr-icon" style="color: var(--accent-rose);">⏱️</div>
-            <div class="pass-qr-heading">This pass expired</div>
-            <div class="pass-qr-sub">Your 2-hour redemption window closed. Watch for the next drop.</div>
+            <div class="pass-qr-icon" style="color: var(--building);">⏳</div>
+            <div class="pass-qr-heading">You're in!</div>
+            <div class="pass-qr-sub">Waiting for the drop to open — your pass will be ready to scan the moment it does.</div>
           </div>
         `;
         return;
       }
 
-      const secRemaining = Math.max(0, (pass.expiresAtSim - SIM.nowMin) * 60);
+      if (!isRedemptionOpen(d)) {
+        body.innerHTML = `
+          <div class="pass-qr-state">
+            <div class="pass-qr-icon" style="color: var(--accent-rose);">⏱️</div>
+            <div class="pass-qr-heading">This pass expired</div>
+            <div class="pass-qr-sub">The redemption window closed. Watch for the next drop.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const secRemaining = Math.max(0, (d.liveEndsAtSim - SIM.nowMin) * 60);
       const mm = Math.floor(secRemaining / 60);
       const ss = Math.floor(secRemaining % 60);
       body.innerHTML = `
@@ -6524,7 +6656,7 @@
         </div>
         <div class="qr-countdown">
           <div class="qr-countdown-num">${mm}:${String(ss).padStart(2, '0')}</div>
-          <div class="qr-countdown-label">Your 2-hour window to redeem</div>
+          <div class="qr-countdown-label">Time left to redeem</div>
         </div>
         <div class="pass-qr-caption">Show this to the team</div>
       `;
