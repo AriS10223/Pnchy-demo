@@ -3166,6 +3166,15 @@
     .a-id-meta { font-size: 13px; color: var(--text-light); }
     .a-plan-price { font-size: 22px; font-weight: 700; color: var(--text-dark); }
     .a-plan-price span { font-size: 14px; font-weight: 400; color: var(--text-light); }
+
+    /* Compare Plans screen */
+    .a-plan-tabs { display: flex; gap: 8px; }
+    .a-plan-tabs .a-pill { flex: 1; text-align: center; padding: 10px 8px; font-size: 13px; font-weight: 600; }
+    .a-feature-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .a-feature-row:last-child { border-bottom: none; }
+    .a-feature-check { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--sage); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-dark); font-weight: 700; margin-top: 1px; }
+    .a-feature-text { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
+    .a-plan-current-tag { display: inline-block; background: var(--sage); color: var(--text-dark); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
     .a-reward-row { display: flex; align-items: center; gap: 12px; }
     .a-reward-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-rose); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
     .a-reward-text { flex: 1; font-size: 14px; color: var(--text-mid); }
@@ -4211,7 +4220,7 @@
                 <div class="a-greet" style="font-size:13px;font-weight:400;color:var(--text-light);">Good morning, Jordan 👋</div>
                 <div class="a-greet" style="margin-top:2px;">☕ Bloom Coffee</div>
               </div>
-              <div class="tier-badge pro">👑 Pro</div>
+              <div class="tier-badge pro" id="own-dash-plan-badge" onclick="showScreen('own-plans')" style="cursor:pointer;">👑 Pro</div>
             </div>
 
             <div class="a-card a-map-card">
@@ -4279,6 +4288,12 @@
               </div>
             </div>
 
+            <div class="a-navrow" onclick="showScreen('own-pnch-card')"><span class="a-navrow-label">Your Pnch Card</span><span class="a-navrow-chev">›</span></div>
+            <div class="a-navrow" onclick="showScreen('own-peak-hours')"><span class="a-navrow-label">Peak Hour Analytics <span id="own-dash-nav-lock-peak-hours" style="display:none;">🔒</span></span><span class="a-navrow-chev">›</span></div>
+            <div class="a-navrow" onclick="showScreen('own-lapsed')"><span class="a-navrow-label">Lapsed Customers <span id="own-dash-nav-lock-lapsed" style="display:none;">🔒</span></span><span class="a-navrow-chev">›</span></div>
+            <div class="a-navrow" onclick="showScreen('own-ai-insights')"><span class="a-navrow-label">AI Insights <span id="own-dash-nav-lock-ai-insights" style="display:none;">🔒</span></span><span class="a-navrow-chev">›</span></div>
+            <div class="a-navrow" onclick="showScreen('own-campaigns')"><span class="a-navrow-label">Customer Sample Campaigns <span id="own-dash-nav-lock-campaigns" style="display:none;">🔒</span></span><span class="a-navrow-chev">›</span></div>
+
             <button class="a-switch-btn" onclick="feedbackFlash(this)">💬 Tell us what to build next</button>
           </div>
         </div>
@@ -4305,7 +4320,8 @@
 
             <div>
               <div class="a-greet" style="font-size:26px;">Density Drop</div>
-              <div class="a-hero-ranks-sub" style="margin-top:6px;">Bring your neighborhood together. You can activate once every 2 weeks.</div>
+              <div class="a-hero-ranks-sub" style="margin-top:6px;">Bring your neighborhood together.</div>
+              <div class="a-hero-ranks-sub" style="margin-top:2px;font-weight:600;color:var(--text-dark);" id="own-drops-cycle-sub"></div>
             </div>
 
             <div class="a-drop-wrap">
@@ -4330,10 +4346,10 @@
               </div>
             </div>
 
-            <div class="a-paywall" onclick="ownerPayDrop()">
+            <div class="a-paywall" id="own-drops-paywall" onclick="ownerPayDrop()" style="display:none;">
               <div class="a-paywall-title">Need another drop now? 💰</div>
-              <div class="a-paywall-sub">Unlock an extra density drop for a one-time payment of $20.</div>
-              <div class="a-paywall-btn">Unlock for $20 →</div>
+              <div class="a-paywall-sub">You've used this cycle's included drops. Unlock one more for a one-time payment of $19.99.</div>
+              <div class="a-paywall-btn">Unlock for $19.99 →</div>
             </div>
           </div>
         </div>
@@ -4341,7 +4357,7 @@
           <div class="a-pay-circle">✓</div>
           <div style="text-align:center;">
             <div class="a-pay-title">Payment Successful</div>
-            <div class="a-pay-amount">$20 charged</div>
+            <div class="a-pay-amount">$19.99 charged</div>
             <div class="a-pay-unlock">Extra drop unlocked 💥</div>
           </div>
         </div>
@@ -4362,6 +4378,11 @@
           </div>
 
           <div class="a-pad">
+            <div class="a-paywall" id="own-cfg-cap-banner" onclick="showScreen('own-drops')" style="display:none;margin-bottom:16px;">
+              <div class="a-paywall-title">🔒 Cycle limit reached</div>
+              <div class="a-paywall-sub" id="own-cfg-cap-banner-sub"></div>
+              <div class="a-paywall-btn">Buy an extra drop →</div>
+            </div>
             <div class="a-field">
               <span class="a-field-label">Threshold — people needed to go live</span>
               <input type="number" class="a-input" id="own-cfg-threshold" min="2" value="12">
@@ -4404,7 +4425,7 @@
               <input type="number" class="a-input" id="own-cfg-cap" min="0" value="120">
             </div>
 
-            <button class="a-btn a-btn-green" onclick="openActivationForecast()">Get Activation Forecast</button>
+            <button class="a-btn a-btn-green" id="own-cfg-forecast-btn" onclick="openActivationForecast()">Get Activation Forecast</button>
           </div>
         </div>
 
@@ -4412,14 +4433,14 @@
           <div class="a-forecast-card">
             <div class="a-forecast-title">Activation Forecast</div>
             <div class="a-forecast-stat">
-              <span class="a-forecast-stat-num" id="own-forecast-freq">~3</span>
-              <span class="a-forecast-stat-label">times/week it would've gone Live</span>
+              <span class="a-forecast-stat-num" id="own-forecast-freq">3</span>
+              <span class="a-forecast-stat-label" id="own-forecast-freq-label">drops left this 60-day cycle</span>
             </div>
             <div class="a-forecast-stat">
               <span class="a-forecast-stat-num" id="own-forecast-redemptions">14</span>
               <span class="a-forecast-stat-label">predicted redemptions per drop</span>
             </div>
-            <div class="a-forecast-caveat">⚠️ Estimate — not observed activity</div>
+            <div class="a-forecast-caveat">⚠️ Redemption count is an estimate — not observed activity</div>
             <div class="a-forecast-actions">
               <button class="a-btn a-btn-outline" onclick="closeForecastOverlay()">Cancel</button>
               <button class="a-btn a-btn-green" onclick="confirmForecast()">Confirm &amp; Save</button>
@@ -4520,35 +4541,39 @@
           <div class="a-pad">
             <div>
               <div class="a-greet" style="font-size:26px;">Your Team</div>
-              <div class="a-biz">7 employees · 826 total scans</div>
+              <div class="a-biz" id="own-team-header-stat">7 employees · 826 total scans</div>
             </div>
 
-            <div>
-              <div class="a-card-title" style="margin-bottom:8px;">Density Drop team</div>
-              <div class="a-list">
-                <div class="a-roster-row"><div class="a-roster-avatar">🌿</div><div class="a-roster-info"><div class="a-roster-name">Maya</div><div class="a-roster-sub">@maya · barista</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
-                <div class="a-roster-row"><div class="a-roster-avatar">📷</div><div class="a-roster-info"><div class="a-roster-name">Sam</div><div class="a-roster-sub">@sam · cashier</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
-                <div class="a-roster-row"><div class="a-roster-avatar">🎧</div><div class="a-roster-info"><div class="a-roster-name">Lex</div><div class="a-roster-sub">@lex · floor</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
+            <div id="own-team-locked" style="display:none;"></div>
+
+            <div id="own-team-gated-content">
+              <div>
+                <div class="a-card-title" style="margin-bottom:8px;">Density Drop team</div>
+                <div class="a-list">
+                  <div class="a-roster-row"><div class="a-roster-avatar">🌿</div><div class="a-roster-info"><div class="a-roster-name">Maya</div><div class="a-roster-sub">@maya · barista</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
+                  <div class="a-roster-row"><div class="a-roster-avatar">📷</div><div class="a-roster-info"><div class="a-roster-name">Sam</div><div class="a-roster-sub">@sam · cashier</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
+                  <div class="a-roster-row"><div class="a-roster-avatar">🎧</div><div class="a-roster-info"><div class="a-roster-name">Lex</div><div class="a-roster-sub">@lex · floor</div></div><div class="a-remove-btn" onclick="removeTeamMember(this)">Remove</div></div>
+                </div>
+                <div class="a-code-card">
+                  <div class="a-card-title" style="font-size:14px;">Add staff</div>
+                  <div class="a-paywall-sub" style="margin-top:4px;" id="own-team-cap-sub">Share your access code — anyone who signs up with it joins your team automatically.</div>
+                  <div class="a-code-row"><span class="a-code-text" id="own-access-code">BLOOM-4417</span><button class="a-copy-btn" onclick="copyAccessCode(this)">Copy</button></div>
+                </div>
               </div>
-              <div class="a-code-card">
-                <div class="a-card-title" style="font-size:14px;">Add staff</div>
-                <div class="a-paywall-sub" style="margin-top:4px;">Share your access code — anyone who signs up with it joins your team automatically.</div>
-                <div class="a-code-row"><span class="a-code-text" id="own-access-code">BLOOM-4417</span><button class="a-copy-btn" onclick="copyAccessCode(this)">Copy</button></div>
+
+              <div class="a-pills">
+                <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'today')">Today</div>
+                <div class="a-pill active" onclick="switchPeriod(this, 'own-team-scans', 'week')">This week</div>
+                <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'month')">This month</div>
+                <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'year')">This year</div>
               </div>
-            </div>
 
-            <div class="a-pills">
-              <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'today')">Today</div>
-              <div class="a-pill active" onclick="switchPeriod(this, 'own-team-scans', 'week')">This week</div>
-              <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'month')">This month</div>
-              <div class="a-pill" onclick="switchPeriod(this, 'own-team-scans', 'year')">This year</div>
-            </div>
+              <div class="a-list" id="own-team-list">
+                <!-- populated by renderOwnTeamList() from PERIOD_DATA_TEAM_SCANS -->
+              </div>
 
-            <div class="a-list" id="own-team-list">
-              <!-- populated by renderOwnTeamList() from PERIOD_DATA_TEAM_SCANS -->
+              <div class="a-card" style="padding:14px 16px;"><span style="font-size:12px;color:var(--text-light);">📊 Trend arrows compare to the previous week</span></div>
             </div>
-
-            <div class="a-card" style="padding:14px 16px;"><span style="font-size:12px;color:var(--text-light);">📊 Trend arrows compare to the previous week</span></div>
           </div>
         </div>
       </div>
@@ -4564,11 +4589,13 @@
             <div class="lb-title">Best on <span>the Block</span></div>
           </div>
 
-          <div class="lb-category-scroll">
-            <button class="lb-cat-btn active" onclick="switchPeriod(this, 'own-ranks', 'all')">All time</button>
-            <button class="lb-cat-btn" onclick="switchPeriod(this, 'own-ranks', 'week')">Week</button>
-            <button class="lb-cat-btn" onclick="switchPeriod(this, 'own-ranks', 'month')">Month</button>
+          <div class="lb-category-scroll" id="own-ranks-category-scroll">
+            <button class="lb-cat-btn" id="own-ranks-cat-day" onclick="switchPeriod(this, 'own-ranks', 'day')">Day</button>
+            <button class="lb-cat-btn" id="own-ranks-cat-week" onclick="switchPeriod(this, 'own-ranks', 'week')">Week</button>
+            <button class="lb-cat-btn" id="own-ranks-cat-month" onclick="switchPeriod(this, 'own-ranks', 'month')">Month</button>
+            <button class="lb-cat-btn active" id="own-ranks-cat-all" onclick="switchPeriod(this, 'own-ranks', 'all')">All time</button>
           </div>
+          <div id="own-ranks-locked" style="display:none;padding:0 24px;"></div>
 
           <!-- Podium — populated by renderOwnRankList() from OWN_RANKS_BASE -->
           <div class="lb-top3" id="own-ranks-podium">
@@ -4596,10 +4623,10 @@
             <div class="a-card">
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span class="a-row-k">Current plan</span>
-                <div class="tier-badge pro">👑 Pro</div>
+                <div class="tier-badge pro" id="own-profile-plan-badge">👑 Pro</div>
               </div>
-              <div class="a-plan-price" style="margin-top:12px;">$79 <span>per month</span></div>
-              <button class="a-btn a-btn-outline" style="margin-top:12px;cursor:default;">Manage plan →</button>
+              <div class="a-plan-price" style="margin-top:12px;" id="own-profile-plan-price">$99.99 <span>per month</span></div>
+              <button class="a-btn a-btn-outline" style="margin-top:12px;" onclick="showScreen('own-plans')">Manage plan →</button>
             </div>
 
             <div class="a-card">
@@ -4616,6 +4643,140 @@
             <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
             <button class="a-switch-btn" style="margin-top:8px;" onclick="resetDemo()">↺  Reset demo</button>
             <button class="a-btn" style="background:transparent;border:1.5px solid var(--accent-rose);color:var(--accent-rose);" onclick="switchRole()">Sign out</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — COMPARE PLANS ============================ -->
+      <div class="screen" id="screen-own-plans">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-profile')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Compare Plans</div>
+            <div class="a-cfg-subtitle">See what's included at each level.</div>
+          </div>
+
+          <div class="a-pad">
+            <div class="a-plan-tabs" id="own-plans-tabs">
+              <!-- populated by renderComparePlans() -->
+            </div>
+
+            <div class="a-card" style="margin-top:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <span class="a-card-title" id="own-plans-name">Starter</span>
+                <span id="own-plans-current-tag"></span>
+              </div>
+              <div class="a-plan-price" style="margin-top:8px;" id="own-plans-price">Free</div>
+              <div style="margin-top:14px;" id="own-plans-features">
+                <!-- populated by renderComparePlans() -->
+              </div>
+              <button class="a-btn a-btn-green" style="margin-top:16px;" id="own-plans-select-btn" onclick="selectPlanTier()">Switch to this plan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — YOUR PNCH CARD ============================ -->
+      <div class="screen" id="screen-own-pnch-card">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Your Pnch Card</div>
+            <div class="a-cfg-subtitle">Reconfigurable every <span id="own-pnch-card-cadence-label">3</span> months on your current plan.</div>
+          </div>
+
+          <div class="a-pad" id="own-pnch-card-content">
+            <!-- populated by renderPnchCardScreen() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — PEAK HOUR ANALYTICS ============================ -->
+      <div class="screen" id="screen-own-peak-hours">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Peak Hour Analytics</div>
+            <div class="a-cfg-subtitle">When your customers actually show up.</div>
+          </div>
+
+          <div class="a-pad" id="own-peak-hours-content">
+            <!-- populated by renderPeakHoursScreen() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — LAPSED CUSTOMERS ============================ -->
+      <div class="screen" id="screen-own-lapsed">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Lapsed Customers</div>
+            <div class="a-cfg-subtitle">Regulars who haven't been back in a while.</div>
+          </div>
+
+          <div class="a-pad" id="own-lapsed-content">
+            <!-- populated by renderLapsedScreen() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — AI INSIGHTS ============================ -->
+      <div class="screen" id="screen-own-ai-insights">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">AI Insights</div>
+            <div class="a-cfg-subtitle">Customer, competitor, foot-traffic & employee patterns.</div>
+          </div>
+
+          <div class="a-pad" id="own-ai-insights-content">
+            <!-- populated by renderAiInsightsScreen() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ OWNER — CUSTOMER SAMPLE CAMPAIGNS ============================ -->
+      <div class="screen" id="screen-own-campaigns">
+        <div class="scroll-content">
+          <div class="a-cfg-header">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="a-cfg-title">Customer Sample Campaigns</div>
+            <div class="a-cfg-subtitle">Let new neighbors try you out, on your terms.</div>
+          </div>
+
+          <div class="a-pad" id="own-campaigns-content">
+            <!-- populated by renderCampaignsScreen() -->
           </div>
         </div>
       </div>
@@ -4890,6 +5051,8 @@
       'emp-home': 'employee', 'emp-scan': 'employee', 'emp-drop': 'employee', 'emp-ranks': 'employee', 'emp-profile': 'employee',
       'own-dashboard': 'owner', 'own-drops': 'owner', 'own-drop-config': 'owner', 'own-drop-analytics': 'owner', 'own-scan': 'owner', 'own-team': 'owner',
       'own-ranks': 'owner', 'own-profile': 'owner',
+      'own-plans': 'owner', 'own-pnch-card': 'owner', 'own-peak-hours': 'owner', 'own-lapsed': 'owner',
+      'own-ai-insights': 'owner', 'own-campaigns': 'owner',
     };
     const ROLE_TABBAR = { customer: 'tab-bar', employee: 'tab-bar-emp', owner: 'tab-bar-own' };
     const NO_CHROME = ['splash', 'role-picker', 'success', 'pass-qr'];
@@ -4950,6 +5113,17 @@
       if (name === 'own-drop-config') {
         initDropConfigForm();
       }
+      if (name === 'own-drops') renderOwnDropsCycleGate();
+      // Subscription-tier screens — same on-entry repaint pattern as every
+      // other data-driven screen. Compare Plans resets its viewed tab back
+      // to the actually-active plan every time it's (re-)entered, so a
+      // half-browsed comparison from a prior visit never lingers.
+      if (name === 'own-plans') { comparePlansViewingTier = WORLD.planTier; renderComparePlans(); }
+      if (name === 'own-pnch-card') renderPnchCardScreen();
+      if (name === 'own-peak-hours') renderPeakHoursScreen();
+      if (name === 'own-lapsed') renderLapsedScreen();
+      if (name === 'own-ai-insights') renderAiInsightsScreen();
+      if (name === 'own-campaigns') renderCampaignsScreen();
       // Owner drop-analytics screen (Phase 4) — repaint from WORLD.history/
       // WORLD.drop every time it's entered, same on-entry repaint pattern.
       if (name === 'own-drop-analytics') {
@@ -4977,9 +5151,9 @@
       // ---- Phase 5 (Task 11): repaint each screen's period-driven zone from
       // PERIOD_DATA whenever it's entered, same on-entry repaint pattern used
       // by the drop surfaces above.
-      if (name === 'own-dashboard') { renderOwnDashMetrics(); renderOwnDashAge(); }
-      if (name === 'own-team') renderOwnTeamList();
-      if (name === 'own-ranks') renderOwnRankList();
+      if (name === 'own-dashboard') { renderOwnDashMetrics(); renderOwnDashAge(); renderOwnDashFeatureNav(); }
+      if (name === 'own-team') { renderOwnTeamGate(); renderOwnTeamList(); }
+      if (name === 'own-ranks') { renderOwnRanksGate(); renderOwnRankList(); }
       if (name === 'emp-ranks') renderEmpRankList();
       if (name === 'leaderboard') renderLbList();
 
@@ -5031,6 +5205,20 @@
       // nothing to restore here.
       WORLD.ownerConfig = structuredClone(OWNER_CONFIG_INITIAL);
       dropConfigDraft = null;
+      // Subscription tier back to the shipped default and this cycle's
+      // usage counters/cooldowns cleared.
+      WORLD.planTier = 'pro';
+      WORLD.dropsUsedThisCycle = 0;
+      WORLD.extraDropsPurchased = 0;
+      WORLD.pnchCardEditedThisCycle = false;
+      // Re-derive every tier-gated surface from the now-reset plan — without
+      // this, a tester who downgraded to Starter (hiding the Team tab's
+      // content and the Ranks screen's day/week/month buttons) would still
+      // see them hidden after Reset even though the plan is back to Pro.
+      renderPlanBadges();
+      renderOwnDashFeatureNav();
+      renderOwnTeamGate();
+      renderOwnRanksGate();
       // WORLD.drop = null above also wipes its dwell/myPass/consolationGiven
       // fields (Phase 2) since they only ever lived on that object.
       hideGoLiveToast();
@@ -5135,8 +5323,13 @@
       setTimeout(() => overlay.classList.remove('show'), 2400);
     }
 
-    // Owner density-drop "Unlock for $20" → animated payment-success overlay
+    // Owner density-drop "Unlock for $19.99" → grants one extra drop this
+    // cycle (on top of the tier's base allotment) and shows the animated
+    // payment-success overlay. Real state change, not just a visual flash.
     function ownerPayDrop() {
+      WORLD.extraDropsPurchased++;
+      renderOwnDropsCycleGate();
+      renderOwnerDropStrip();
       const overlay = document.getElementById('own-pay-overlay');
       if (!overlay) return;
       overlay.classList.add('show');
@@ -5188,6 +5381,9 @@
       'drop-detail': 'drops', 'passes': 'drops',
       'emp-drop': 'emp-home',
       'own-drop-config': 'own-drops', 'own-drop-analytics': 'own-drops',
+      'own-plans': 'own-profile',
+      'own-pnch-card': 'own-dashboard', 'own-peak-hours': 'own-dashboard', 'own-lapsed': 'own-dashboard',
+      'own-ai-insights': 'own-dashboard', 'own-campaigns': 'own-dashboard',
     };
 
     function updateTabHighlight(screenName) {
@@ -5336,6 +5532,78 @@
     // only coffee has a drop this phase.
     const DWELL_REQUIRED_MIN = 6.4;
 
+    // ---- Subscription tiers (Pnchy_Subscription_Model.md) ----
+    // Single source of truth for every tier-gated feature in the owner demo.
+    // densityDropsPerCycle/employeeCap/leaderboardPeriods/etc. are read by the
+    // relevant screen's render function rather than duplicated there. All
+    // three tiers share the same 60-day density-drop cycle length and 1.6%
+    // transaction fee; only the allotments differ.
+    const CYCLE_DAYS = 60;
+    const PLAN_TIERS = {
+      starter: {
+        key: 'starter', name: 'Starter', badgeEmoji: '🌱', priceCents: 0, priceLabel: 'Free',
+        transactionFeePct: 1.6,
+        pnchCards: 1, cardReconfigureDays: 90,
+        footTrafficData: true,
+        leaderboardPeriods: ['all'],
+        densityDropsPerCycle: 1,
+        employeeCap: 0,
+        peakHourAnalytics: false, lapsedCustomerNotif: false,
+        aiInsights: false, sampleCampaigns: false,
+        features: [
+          '1.6% merchant transaction fee (ACH & credit card)',
+          '1 Pnch Card, reconfigurable every 3 months',
+          'Foot traffic data',
+          'All-time neighborhood leaderboard',
+          '1 density drop every 60 days',
+        ],
+      },
+      standard: {
+        key: 'standard', name: 'Standard', badgeEmoji: '⭐', priceCents: 3999, priceLabel: '$39.99/mo',
+        transactionFeePct: 1.6,
+        pnchCards: 3, cardReconfigureDays: 60,
+        footTrafficData: true,
+        leaderboardPeriods: ['all'],
+        densityDropsPerCycle: 2,
+        employeeCap: 50,
+        peakHourAnalytics: true, lapsedCustomerNotif: true,
+        features: [
+          'Everything in Starter, plus:',
+          '3 Pnch Cards, reconfigurable every 2 months',
+          'Customer and peak-hour analytics',
+          'Lapsed customer notifications',
+          '2 density drops every 60 days',
+          'Up to 50 employees, with a personal employee leaderboard',
+        ],
+        aiInsights: false, sampleCampaigns: false,
+      },
+      pro: {
+        key: 'pro', name: 'Pro', badgeEmoji: '👑', priceCents: 9999, priceLabel: '$99.99/mo',
+        transactionFeePct: 1.6,
+        pnchCards: 3, cardReconfigureDays: 30,
+        footTrafficData: true,
+        leaderboardPeriods: ['day', 'week', 'month', 'all'],
+        densityDropsPerCycle: 4,
+        employeeCap: 50,
+        peakHourAnalytics: true, lapsedCustomerNotif: true,
+        features: [
+          'Everything in Standard, plus:',
+          'Pnch Card reconfigurable every month',
+          '4 density drops every 60 days',
+          'AI-driven customer, competitor, foot-traffic & employee insights',
+          'Customer sample test campaigns',
+          'Enhanced neighborhood leaderboard insights — daily, weekly, monthly & all-time',
+        ],
+        aiInsights: true, sampleCampaigns: true,
+      },
+    };
+    // Ordered list for the Compare Plans tabs — object key order isn't a
+    // reliable enough contract to build UI iteration on.
+    const PLAN_TIER_ORDER = ['starter', 'standard', 'pro'];
+    // Extra density drop, purchasable a la carte on any tier once the
+    // cycle's included allotment is used up.
+    const EXTRA_DROP_PRICE_CENTS = 1999;
+
     // emp-home's "Recent Pnches" list — anonymized customer + punch-progress
     // rows, all at Bloom Coffee (the only merchant this employee works at).
     // Fixed illustrative seed shown before any real scan happens this session;
@@ -5390,6 +5658,22 @@
       // first time that mark is shown this session and never shows again
       // after that. In-memory only, reset by resetDemo().
       coach: { customerShown: false, employeeShown: false, ownerShown: false, lbShown: false, sheetShown: false },
+      // ---- Subscription tier state ----
+      // 'pro' by default so the demo's out-of-box behavior (previously a
+      // hardcoded "👑 Pro" badge everywhere) is unchanged unless the tester
+      // actually visits Compare Plans and switches it.
+      planTier: 'pro',
+      // Simple usage counter against PLAN_TIERS[planTier].densityDropsPerCycle
+      // — no fake calendar/day-tracking, just "X of Y used," incremented each
+      // time a drop is armed, reset by resetDemo(). extraDropsPurchased adds
+      // on top of the tier's base allotment (see ownerPayDrop()).
+      dropsUsedThisCycle: 0,
+      extraDropsPurchased: 0,
+      // Pnch Card reconfigure cooldown (3/2/1 months by tier) — the card's
+      // actual stamps-required/reward values live on MERCHANTS.coffee
+      // itself (the one canonical source), this just tracks whether this
+      // cycle's one allowed edit has already been used.
+      pnchCardEditedThisCycle: false,
     };
 
     // Invented-but-plausible "normal day" discovery/visit number for Bloom
@@ -5427,6 +5711,19 @@
     // redeemed until Redemption itself opens).
     function isRedemptionOpen(instance) {
       return !!instance && instance.state === 'live' && SIM.nowMin <= instance.liveEndsAtSim;
+    }
+
+    // ---- Subscription tier helpers ----
+    function currentPlan() {
+      return PLAN_TIERS[WORLD.planTier];
+    }
+
+    function dropAllowanceThisCycle() {
+      return currentPlan().densityDropsPerCycle + WORLD.extraDropsPurchased;
+    }
+
+    function dropsRemainingThisCycle() {
+      return Math.max(0, dropAllowanceThisCycle() - WORLD.dropsUsedThisCycle);
     }
 
     function deriveDropLabel(instance) {
@@ -5623,6 +5920,13 @@
     }
 
     function armDrop() {
+      // Consumes one drop from this cycle's tier allowance (base + any
+      // purchased extras). confirmForecast()/handleDropCircleClick() already
+      // gate the entry points that lead here, so this should never be
+      // called past the cap — but guard anyway rather than let a negative
+      // "remaining" count silently happen.
+      if (dropsRemainingThisCycle() <= 0) return;
+      WORLD.dropsUsedThisCycle++;
       const cfg = WORLD.ownerConfig;
       const startedAtSim = SIM.nowMin;
       WORLD.drop = {
@@ -5708,6 +6012,23 @@
       document.querySelectorAll('#own-cfg-reward-chips .a-reward-chip').forEach((chip) => {
         chip.classList.toggle('active', chip.dataset.type === cfg.rewardType);
       });
+
+      // Cap-blocking: if this cycle's drop allotment (base + purchased
+      // extras) is used up, say so up front and disable the forecast button
+      // instead of letting the owner fill out the whole form only to hit a
+      // silent no-op at Confirm & Save (armDrop() itself refuses to start).
+      const capped = dropsRemainingThisCycle() <= 0;
+      const banner = document.getElementById('own-cfg-cap-banner');
+      const bannerSub = document.getElementById('own-cfg-cap-banner-sub');
+      const forecastBtn = document.getElementById('own-cfg-forecast-btn');
+      if (banner) banner.style.display = capped ? 'flex' : 'none';
+      if (bannerSub) {
+        bannerSub.textContent = `You've used all ${dropAllowanceThisCycle()} drops on your ${currentPlan().name} plan this cycle. Buy an extra one to configure another drop now.`;
+      }
+      if (forecastBtn) {
+        forecastBtn.disabled = capped;
+        forecastBtn.style.opacity = capped ? '0.5' : '1';
+      }
     }
 
     function selectRewardChip(el) {
@@ -5719,6 +6040,7 @@
     // computes plausible-but-invented forecast numbers from it, and opens the
     // forecast overlay. Only "Confirm & Save" in that overlay commits the draft.
     function openActivationForecast() {
+      if (dropsRemainingThisCycle() <= 0) return; // button is disabled in this state too, see initDropConfigForm()
       const threshold = Math.max(2, parseInt(document.getElementById('own-cfg-threshold').value, 10) || 12);
       const liveWindowMinutes = Math.min(240, Math.max(15, parseInt(document.getElementById('own-cfg-window').value, 10) || 60));
       const activeChip = document.querySelector('#own-cfg-reward-chips .a-reward-chip.active');
@@ -5733,13 +6055,15 @@
         rewardDescription, estCostCents, capType: 'dollars', capValue,
       };
 
-      // Simple inverse relationship for the forecast — lower threshold reads
-      // as "easier to hit", so it predicts more weekly activations. Invented
-      // but plausible; explicitly flagged as an estimate in the UI.
-      const weeklyActivations = Math.max(1, Math.round(60 / threshold));
+      // The "times/week it would've gone Live" stat this used to show was
+      // fabricated (a bare 60/threshold formula with no connection to the
+      // real tiered cadence caps) and could contradict the plan's actual
+      // "N drops per 60 days" limit. Show the real number instead: how many
+      // drops this plan actually has left this cycle. Only the redemption
+      // count below remains an estimate.
       const predictedRedemptions = Math.max(threshold, Math.round(threshold * 1.15));
 
-      document.getElementById('own-forecast-freq').textContent = '~' + weeklyActivations;
+      document.getElementById('own-forecast-freq').textContent = dropsRemainingThisCycle();
       document.getElementById('own-forecast-redemptions').textContent = predictedRedemptions;
 
       document.getElementById('own-forecast-overlay').classList.add('show');
@@ -5752,10 +6076,267 @@
 
     function confirmForecast() {
       if (!dropConfigDraft) return;
+      if (dropsRemainingThisCycle() <= 0) return; // guarded in the UI too; see initDropConfigForm()'s cap banner
       WORLD.ownerConfig = { ...dropConfigDraft };
       closeForecastOverlay();
       armDrop();
       showScreen('own-drops');
+    }
+
+    // ---- Subscription tiers: shared locked-state card ----
+    // One consistent "this needs plan X" pattern reused by every gated
+    // screen/section, built on the existing .a-paywall visual language
+    // (same component already used for the extra-drop upsell) rather than
+    // inventing a second locked-content style.
+    function buildLockedStateHTML(requiredTierKey, featureLabel) {
+      const tier = PLAN_TIERS[requiredTierKey];
+      return `
+        <div class="a-paywall" onclick="showScreen('own-plans')">
+          <div class="a-paywall-title">🔒 ${featureLabel} needs ${tier.name}</div>
+          <div class="a-paywall-sub">Upgrade to ${tier.name} (${tier.priceLabel}) to unlock this.</div>
+          <div class="a-paywall-btn">Compare plans →</div>
+        </div>
+      `;
+    }
+
+    // ---- Your Pnch Card screen ----
+    // Every tier gets a Pnch Card to configure — only the reconfigure cooldown
+    // differs by plan, so this screen is never behind buildLockedStateHTML;
+    // it's gated per-cycle instead (pnchCardEditedThisCycle), same "one edit,
+    // then wait" idea as the real cooldown, without modeling actual dates.
+    // Edits go straight to MERCHANTS.coffee — the one canonical merchant
+    // record — same convention as every other punch-card surface.
+    function renderPnchCardScreen() {
+      const plan = currentPlan();
+      const months = Math.round(plan.cardReconfigureDays / 30);
+      const label = document.getElementById('own-pnch-card-cadence-label');
+      if (label) label.textContent = months;
+
+      const c = MERCHANTS.coffee;
+      const locked = WORLD.pnchCardEditedThisCycle;
+      const el = document.getElementById('own-pnch-card-content');
+      if (!el) return;
+      el.innerHTML = `
+        <div class="a-card">
+          <span class="a-label">Stamps required</span>
+          <input type="number" class="a-input" id="own-pnch-card-total" min="2" max="20" value="${c.total}" style="margin-top:8px;" ${locked ? 'disabled' : ''}>
+        </div>
+        <div class="a-card" style="margin-top:14px;">
+          <span class="a-label">Reward</span>
+          <input type="text" class="a-input" id="own-pnch-card-reward" value="${c.reward}" style="margin-top:8px;" ${locked ? 'disabled' : ''}>
+        </div>
+        <button class="a-btn a-btn-green" style="margin-top:16px;${locked ? 'opacity:0.5;' : ''}" onclick="savePnchCard()" ${locked ? 'disabled' : ''}>
+          ${locked ? `Already reconfigured this cycle` : 'Save changes'}
+        </button>
+        ${locked ? `<div class="a-field-hint" style="margin-top:10px;text-align:center;">You can reconfigure again next cycle, or on a faster cooldown with a higher plan.</div>` : ''}
+      `;
+    }
+
+    function savePnchCard() {
+      if (WORLD.pnchCardEditedThisCycle) return;
+      const totalInput = document.getElementById('own-pnch-card-total');
+      const rewardInput = document.getElementById('own-pnch-card-reward');
+      const total = Math.max(2, Math.min(20, parseInt(totalInput.value, 10) || MERCHANTS.coffee.total));
+      const reward = rewardInput.value.trim() || MERCHANTS.coffee.reward;
+      MERCHANTS.coffee.total = total;
+      MERCHANTS.coffee.reward = reward;
+      WORLD.pnchCardEditedThisCycle = true;
+      renderPunchSurfaces('coffee');
+      renderPnchCardScreen();
+    }
+
+    // ---- Peak Hour Analytics screen (Standard+) ----
+    // Fixed illustrative hourly distribution — same "invented but plausible,
+    // clearly a demo simplification" spirit as WORLD.baselineDiscovery.
+    const PEAK_HOURS_DATA = [
+      { label: '7–9am', pct: 55 }, { label: '9–11am', pct: 40 }, { label: '11am–1pm', pct: 75 },
+      { label: '1–3pm', pct: 60 }, { label: '3–5pm', pct: 35 }, { label: '5–7pm', pct: 25 },
+    ];
+    function renderPeakHoursScreen() {
+      const el = document.getElementById('own-peak-hours-content');
+      if (!el) return;
+      if (!currentPlan().peakHourAnalytics) {
+        el.innerHTML = buildLockedStateHTML('standard', 'Peak Hour Analytics');
+        return;
+      }
+      const rows = PEAK_HOURS_DATA.map((h) =>
+        `<div class="a-hist-row"><span class="a-hist-label">${h.label}</span><div class="a-hist-track"><div class="a-hist-fill" style="width:${h.pct}%;background:var(--accent-green);"></div></div><span class="a-hist-pct">${h.pct}%</span></div>`
+      ).join('');
+      el.innerHTML = `
+        <div class="a-card">
+          <div class="a-card-title" style="font-size:14px;margin-bottom:10px;">Busiest hours this week</div>
+          ${rows}
+        </div>
+        <div class="a-card" style="margin-top:14px;">
+          <div class="a-card-title" style="font-size:14px;margin-bottom:6px;">Suggestion</div>
+          <div class="a-reward-text">Your 11am–1pm rush is your strongest window — consider timing your next Density Drop to build through it.</div>
+        </div>
+      `;
+    }
+
+    // ---- Lapsed Customers screen (Standard+) ----
+    const LAPSED_CUSTOMERS_DATA = [
+      { name: 'Customer #214', last: '34 days ago', punches: 3, total: 5 },
+      { name: 'Customer #559', last: '41 days ago', punches: 4, total: 5 },
+      { name: 'Customer #073', last: '52 days ago', punches: 1, total: 5 },
+      { name: 'Customer #886', last: '60+ days ago', punches: 2, total: 5 },
+    ];
+    function renderLapsedScreen() {
+      const el = document.getElementById('own-lapsed-content');
+      if (!el) return;
+      if (!currentPlan().lapsedCustomerNotif) {
+        el.innerHTML = buildLockedStateHTML('standard', 'Lapsed customer notifications');
+        return;
+      }
+      const rows = LAPSED_CUSTOMERS_DATA.map((c) =>
+        `<div class="a-team-row" style="margin-bottom:10px;"><div class="a-team-avatar" style="background:var(--peach);">${c.name.slice(-3)}</div><div class="a-team-info"><div class="a-team-name">${c.name}</div><div class="a-hist-label" style="font-size:12px;">Last visit ${c.last} · ${c.punches}/${c.total} stamps</div></div></div>`
+      ).join('');
+      el.innerHTML = `
+        <div class="a-hero-ranks-sub" style="margin-bottom:12px;">${LAPSED_CUSTOMERS_DATA.length} regulars haven't been back in 30+ days.</div>
+        ${rows}
+      `;
+    }
+
+    // ---- AI Insights screen (Pro only) ----
+    const AI_INSIGHTS_DATA = [
+      { icon: '📈', title: 'Foot traffic', text: 'Foot traffic near your block is up 12% this month — mostly weekday afternoons.' },
+      { icon: '🏪', title: 'Competitor', text: 'Matcha House started a loyalty promo this week — your repeat-visit rate is holding steady.' },
+      { icon: '👥', title: 'Customers', text: 'Customers who redeem a Density Drop pass return within 9 days on average.' },
+      { icon: '🧑‍💼', title: 'Employees', text: 'Scans are fastest during the 11am–1pm rush — no bottlenecks detected.' },
+    ];
+    function renderAiInsightsScreen() {
+      const el = document.getElementById('own-ai-insights-content');
+      if (!el) return;
+      if (!currentPlan().aiInsights) {
+        el.innerHTML = buildLockedStateHTML('pro', 'AI Insights');
+        return;
+      }
+      el.innerHTML = AI_INSIGHTS_DATA.map((i) => `
+        <div class="a-card" style="margin-bottom:14px;">
+          <div class="a-card-title" style="font-size:14px;margin-bottom:6px;">${i.icon} ${i.title}</div>
+          <div class="a-reward-text">${i.text}</div>
+        </div>
+      `).join('');
+    }
+
+    // ---- Customer Sample Campaigns screen (Pro only) ----
+    const SAMPLE_CAMPAIGNS_DATA = [
+      { title: 'Free drip coffee, first visit', sub: 'Send a one-time free-item offer to neighbors who\'ve never visited.' },
+      { title: '$2 off, welcome back', sub: 'Nudge lapsed customers with a small discount instead of a full punch reset.' },
+    ];
+    function renderCampaignsScreen() {
+      const el = document.getElementById('own-campaigns-content');
+      if (!el) return;
+      if (!currentPlan().sampleCampaigns) {
+        el.innerHTML = buildLockedStateHTML('pro', 'Customer sample campaigns');
+        return;
+      }
+      el.innerHTML = SAMPLE_CAMPAIGNS_DATA.map((c) => `
+        <div class="a-card" style="margin-bottom:14px;">
+          <div class="a-card-title" style="font-size:14px;margin-bottom:6px;">${c.title}</div>
+          <div class="a-reward-text" style="margin-bottom:12px;">${c.sub}</div>
+          <button class="a-btn a-btn-outline">Preview campaign</button>
+        </div>
+      `).join('');
+    }
+
+    // ---- Compare Plans screen ----
+    // Tracks which tier's feature list is being *viewed* — independent of
+    // WORLD.planTier (the actually active plan) until "Switch to this plan"
+    // is tapped. Reset to the active plan every time the screen is entered
+    // (see showScreen()'s dispatch table).
+    let comparePlansViewingTier = null;
+
+    function renderComparePlans() {
+      if (!comparePlansViewingTier) comparePlansViewingTier = WORLD.planTier;
+      const tabsEl = document.getElementById('own-plans-tabs');
+      if (!tabsEl) return;
+      const viewing = PLAN_TIERS[comparePlansViewingTier];
+
+      tabsEl.innerHTML = PLAN_TIER_ORDER.map((key) => {
+        const t = PLAN_TIERS[key];
+        const active = key === comparePlansViewingTier;
+        return `<div class="a-pill${active ? ' active' : ''}" onclick="viewPlanTab('${key}')">${t.badgeEmoji} ${t.name}</div>`;
+      }).join('');
+
+      document.getElementById('own-plans-name').textContent = `${viewing.badgeEmoji} ${viewing.name}`;
+      document.getElementById('own-plans-price').innerHTML = viewing.priceCents === 0
+        ? 'Free'
+        : `${viewing.priceLabel.split('/')[0]} <span>per month</span>`;
+
+      const isCurrent = comparePlansViewingTier === WORLD.planTier;
+      document.getElementById('own-plans-current-tag').innerHTML = isCurrent
+        ? `<span class="a-plan-current-tag">Current plan</span>` : '';
+
+      document.getElementById('own-plans-features').innerHTML = viewing.features.map((f) =>
+        `<div class="a-feature-row"><div class="a-feature-check">✓</div><div class="a-feature-text">${f}</div></div>`
+      ).join('');
+
+      const btn = document.getElementById('own-plans-select-btn');
+      if (isCurrent) {
+        btn.textContent = 'Current plan';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+      } else {
+        btn.textContent = `Switch to ${viewing.name}`;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    }
+
+    function viewPlanTab(tierKey) {
+      comparePlansViewingTier = tierKey;
+      renderComparePlans();
+    }
+
+    // Switching tiers is immediate in this demo (no real billing) — commits
+    // the viewed tab as WORLD.planTier and repaints every gated surface at
+    // once, same pattern as resetPeriodFiltersUI()'s full-repaint approach.
+    function selectPlanTier() {
+      if (!comparePlansViewingTier || comparePlansViewingTier === WORLD.planTier) return;
+      WORLD.planTier = comparePlansViewingTier;
+      renderPlanBadges();
+      renderOwnDashFeatureNav();
+      renderComparePlans();
+      renderOwnerDropStrip();
+      renderOwnDropsCycleGate();
+      renderOwnTeamGate();
+      renderOwnRanksGate();
+      showScreen('own-profile');
+    }
+
+    // Dynamic plan badge + price wherever they're shown (own-dashboard header,
+    // own-profile's plan card) — replaces what used to be a hardcoded
+    // "👑 Pro" everywhere.
+    function renderPlanBadges() {
+      const plan = currentPlan();
+      const badgeHTML = `${plan.badgeEmoji} ${plan.name}`;
+      const dashBadge = document.getElementById('own-dash-plan-badge');
+      const profileBadge = document.getElementById('own-profile-plan-badge');
+      const profilePrice = document.getElementById('own-profile-plan-price');
+      if (dashBadge) dashBadge.textContent = badgeHTML;
+      if (profileBadge) profileBadge.textContent = badgeHTML;
+      if (profilePrice) {
+        profilePrice.innerHTML = plan.priceCents === 0
+          ? 'Free'
+          : `${plan.priceLabel.split('/')[0]} <span>per month</span>`;
+      }
+    }
+
+    // 🔒 indicators on own-dashboard's feature nav-rows — the rows themselves
+    // stay tappable either way (so locking a feature never de-affordances a
+    // row into a dead button); tapping through just shows that feature's own
+    // buildLockedStateHTML() upsell instead of its real content.
+    function renderOwnDashFeatureNav() {
+      const plan = currentPlan();
+      const setLock = (id, locked) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = locked ? 'inline' : 'none';
+      };
+      setLock('own-dash-nav-lock-peak-hours', !plan.peakHourAnalytics);
+      setLock('own-dash-nav-lock-lapsed', !plan.lapsedCustomerNotif);
+      setLock('own-dash-nav-lock-ai-insights', !plan.aiInsights);
+      setLock('own-dash-nav-lock-campaigns', !plan.sampleCampaigns);
     }
 
     // Locked drop circle on screen-own-drops: if nothing is configured yet,
@@ -5765,9 +6346,13 @@
     // finished (Phase 4, Task 5), where tapping it also opens the config
     // form so the owner can arm another one.
     function handleDropCircleClick() {
-      if (WORLD.drop === null || WORLD.drop.state === 'expired') {
-        showScreen('own-drop-config');
-      }
+      if (WORLD.drop !== null && WORLD.drop.state !== 'expired') return;
+      // No in-progress drop to view — but if this cycle's allotment (plus any
+      // purchased extras) is exhausted, config would just be a dead end
+      // (armDrop() itself refuses to start one); the paywall card below is
+      // the only path forward, so don't navigate away from it.
+      if (dropsRemainingThisCycle() <= 0) return;
+      showScreen('own-drop-config');
     }
 
     // ---- Render ----
@@ -5900,6 +6485,41 @@
       }
     }
 
+    // Cycle-usage indicator + extra-drop paywall on screen-own-drops, and the
+    // cap override on the drop circle — separate from renderOwnerDropStrip()
+    // above (which owns the circle's per-drop-state visuals) so this can run
+    // after it every time and override the circle only when the cycle's
+    // allotment (base + purchased extras) is exhausted and there's no
+    // in-progress drop to show instead.
+    function renderOwnDropsCycleGate() {
+      const plan = currentPlan();
+      const allowance = dropAllowanceThisCycle();
+      const remaining = dropsRemainingThisCycle();
+      const cycleSub = document.getElementById('own-drops-cycle-sub');
+      if (cycleSub) {
+        cycleSub.textContent = `${Math.min(WORLD.dropsUsedThisCycle, allowance)} of ${allowance} drops used this 60-day cycle · ${plan.name} plan`;
+      }
+
+      const paywall = document.getElementById('own-drops-paywall');
+      if (paywall) paywall.style.display = remaining <= 0 ? 'flex' : 'none';
+
+      const d = WORLD.drop;
+      const capLocked = remaining <= 0 && (!d || d.state === 'expired');
+      if (capLocked) {
+        const circleBtn = document.getElementById('own-drop-circle-btn');
+        const circleEmoji = document.getElementById('own-drop-circle-emoji');
+        const circleLabel = document.getElementById('own-drop-circle-label');
+        const circleSub = document.getElementById('own-drop-circle-sub');
+        if (circleBtn) {
+          circleBtn.classList.remove('building', 'live-drop', 'expired-drop');
+          circleBtn.classList.add('locked');
+          circleEmoji.textContent = '🔒';
+          circleLabel.textContent = 'Limit reached';
+          circleSub.textContent = 'Buy an extra drop below to keep going';
+        }
+      }
+    }
+
     // ---- Owner drop-analytics screen (Phase 4, Task 3) ----
     // Reads WORLD.history + WORLD.drop only — never mutates state. Safe to
     // call on every tick (via renderDropSurfaces()) and on screen entry.
@@ -5995,6 +6615,7 @@
 
     function renderDropSurfaces() {
       renderOwnerDropStrip();
+      renderOwnDropsCycleGate();
       renderOwnerDropAnalytics();
       renderMapPins();
       renderCustomerDropsList();
@@ -7565,6 +8186,35 @@
       ],
     };
 
+    // Starter has no employee slots at all (per PLAN_TIERS), so own-team
+    // shows a locked upsell instead of the roster/scan-leaderboard content.
+    // Standard/Pro share the same 50-employee cap, shown as flavor context
+    // next to "Add staff" — this demo's fixed 3-person roster never gets
+    // close to it, but the number is still worth surfacing for the showcase.
+    function renderOwnTeamGate() {
+      const lockedEl = document.getElementById('own-team-locked');
+      const gatedEl = document.getElementById('own-team-gated-content');
+      const headerStat = document.getElementById('own-team-header-stat');
+      const capSub = document.getElementById('own-team-cap-sub');
+      if (!lockedEl || !gatedEl) return;
+      const plan = currentPlan();
+      if (plan.employeeCap === 0) {
+        lockedEl.innerHTML = buildLockedStateHTML('standard', 'Team management');
+        lockedEl.style.display = 'block';
+        gatedEl.style.display = 'none';
+        // The header stat sits above both the gate and the gated content, so
+        // it must be corrected here too — otherwise it keeps showing
+        // whatever the last unlocked-plan render left behind (e.g. "3 of 50
+        // employees") even though this plan has no team feature at all.
+        if (headerStat) headerStat.textContent = 'No team yet on your plan';
+      } else {
+        lockedEl.style.display = 'none';
+        gatedEl.style.display = 'block';
+        if (headerStat) headerStat.textContent = `3 of ${plan.employeeCap} employees · 826 total scans`;
+        if (capSub) capSub.textContent = `Share your access code — anyone who signs up with it joins your team automatically. Up to ${plan.employeeCap} on your plan.`;
+      }
+    }
+
     function renderOwnTeamList() {
       const el = document.getElementById('own-team-list');
       if (!el) return;
@@ -7669,9 +8319,40 @@
         { icon: '✂️', name: "Manny's Cuts", bg: 'var(--blush)', pts: 7680, visits: 1920 },
       ],
     };
-    // "All time" keeps the shipped numbers as-is; week/month are invented
-    // smaller slices of the same total (week ≈ all/50, month ≈ week × 4.3).
-    const OWN_RANKS_FACTOR = { all: 1, week: 0.02, month: 0.086 };
+    // "All time" keeps the shipped numbers as-is; day/week/month are invented
+    // smaller slices of the same total (day ≈ week/7, week ≈ all/50, month
+    // ≈ week × 4.3).
+    const OWN_RANKS_FACTOR = { all: 1, week: 0.02, month: 0.086, day: 0.003 };
+
+    // Starter/Standard get All-time only; Pro adds Day/Week/Month, per the
+    // "Enhanced neighborhood leaderboard insights" feature being Pro-only.
+    // If a downgrade leaves the currently-active period unavailable, falls
+    // back to 'all' rather than leaving a hidden period selected.
+    function renderOwnRanksGate() {
+      const scrollEl = document.getElementById('own-ranks-category-scroll');
+      const lockedEl = document.getElementById('own-ranks-locked');
+      if (!scrollEl || !lockedEl) return;
+      const plan = currentPlan();
+      const allowed = plan.leaderboardPeriods;
+
+      if (!allowed.includes(activePeriod['own-ranks'])) {
+        activePeriod['own-ranks'] = 'all';
+      }
+
+      ['day', 'week', 'month', 'all'].forEach((key) => {
+        const btn = document.getElementById('own-ranks-cat-' + key);
+        if (!btn) return;
+        btn.style.display = allowed.includes(key) ? '' : 'none';
+        btn.classList.toggle('active', activePeriod['own-ranks'] === key);
+      });
+
+      if (allowed.length > 1) {
+        lockedEl.style.display = 'none';
+      } else {
+        lockedEl.style.display = 'block';
+        lockedEl.innerHTML = buildLockedStateHTML('pro', 'Daily, weekly & monthly leaderboard views');
+      }
+    }
 
     function renderOwnRankList() {
       const factor = OWN_RANKS_FACTOR[activePeriod['own-ranks']];
@@ -7904,7 +8585,10 @@
     applyEmpSettingsToggles();
     renderOwnDashMetrics();
     renderOwnDashAge();
+    renderOwnDashFeatureNav();
+    renderOwnTeamGate();
     renderOwnTeamList();
+    renderOwnRanksGate();
     renderOwnRankList();
     renderEmpRankList();
     renderLbList();
