@@ -811,6 +811,13 @@
     .static-brand-icon {
       width: 18px; height: 18px; vertical-align: -4px; margin-right: 3px;
     }
+    /* .a-greet and .a-id-name reuse this flourish next to a 22px/700 heading
+       (own-dashboard's business name, own-profile's identity line) — the
+       base 18px size was tuned for the 13px .a-biz/.qr-subtitle contexts and
+       reads stunted next to a heading nearly its own height. */
+    .a-greet .static-brand-icon, .a-id-name .static-brand-icon {
+      width: 26px; height: 26px; vertical-align: -5px; margin-right: 6px;
+    }
 
     .filter-chip.active {
       background: var(--text-dark);
