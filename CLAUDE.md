@@ -38,7 +38,9 @@ All three roles' ranks screens (customer `leaderboard`, `emp-ranks`, `own-ranks`
 
 ### Map (Explore tab)
 
-Leaflet 1.9.4 + leaflet-heat 0.2.0, loaded from CDN. `initMap()` is called lazily on first `showScreen('home')` and guards against double-init with `mapInitialized`. CartoDB Light tiles, pastel CSS filter (`saturate(0.55) brightness(1.08) hue-rotate(5deg) sepia(0.12)`). Merchant markers use `L.divIcon` with inline HTML, warmed (`pin-warm-*`) or made live while a Density Drop is building/live at that merchant. `heatLayer` is toggled with `toggleHeatmap()`.
+Leaflet 1.9.4 + leaflet-heat 0.2.0, loaded from CDN. `initMap()` is called lazily on first `showScreen('home')` and guards against double-init with `mapInitialized`. Tiles are plain OpenStreetMap (CartoDB's basemaps now require an API key even for anonymous/demo use, so that's a dead end if you're tempted to switch back), with a pastel CSS filter (`saturate(0.55) brightness(1.08) hue-rotate(5deg) sepia(0.12)`) over them. Merchant markers use `L.divIcon` with inline HTML, warmed (`pin-warm-*`) or made live while a Density Drop is building/live at that merchant. `heatLayer` is toggled with `toggleHeatmap()`.
+
+Each pin's `iconSize`/`iconAnchor` is a fixed `[152, 58]`/`[76, 58]` (set in both `initMap()` and `renderMapPins()` — keep them in sync). `.pnchy-pin-name` truncates with an ellipsis rather than overflow, because the name+dots column needs `min-width: 0` to let flexbox shrink it below its nowrap text's natural width — without that, a long business name pushes past the pin's own rounded edge instead of respecting it. If a future merchant name is consistently getting ellipsized, widen `iconSize` rather than fighting the truncation.
 
 ### Bottom sheet
 
