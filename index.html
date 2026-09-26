@@ -519,10 +519,21 @@
       justify-content: center;
     }
 
+    /* Lets the name+dots column shrink below its text's natural width — the
+       flexbox default (min-width:auto) would otherwise refuse to shrink a
+       nowrap text child, pushing long business names past the pin's own
+       rounded edge instead of truncating inside it. */
+    .pnchy-pin-info {
+      min-width: 0;
+    }
+
     .pnchy-pin-name {
       font-size: 11px;
       font-weight: 600;
       color: var(--text-dark);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .pnchy-pin-dots {
@@ -8037,7 +8048,7 @@
       <div class="pnchy-pin${m.drop ? ' drop-active' : ''}${dropStateClass}" onclick="openSheet('${m.id}')">
         ${dropBadge}
         <span class="pnchy-pin-emoji">${merchantIconHTML(m.iconType, m.icon)}</span>
-        <div>
+        <div class="pnchy-pin-info">
           <div class="pnchy-pin-name">${m.name}</div>
           <div class="pnchy-pin-dots">${dots}</div>
         </div>
@@ -8055,8 +8066,8 @@
         marker.setIcon(L.divIcon({
           className: '',
           html: buildPinHTML(m),
-          iconAnchor: [60, 58],
-          iconSize: [120, 58],
+          iconAnchor: [76, 58],
+          iconSize: [152, 58],
         }));
       });
     }
@@ -8108,8 +8119,8 @@
         const icon = L.divIcon({
           className: '',
           html: buildPinHTML(m),
-          iconAnchor: [60, 58],
-          iconSize: [120, 58],
+          iconAnchor: [76, 58],
+          iconSize: [152, 58],
         });
         pnchyMarkers[m.id] = L.marker([m.lat, m.lng], { icon }).addTo(pnchyMap);
       });
