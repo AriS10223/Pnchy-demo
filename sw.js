@@ -2,8 +2,15 @@
 // Network-first (not cache-first) so redeploying the demo always shows the
 // latest version on any device that has previously loaded it.
 
-const CACHE_NAME = 'pnchy-demo-v12';
-const PRECACHE_URLS = ['./index.html', './manifest.json'];
+const CACHE_NAME = 'pnchy-demo-v13';
+const PRECACHE_URLS = [
+  './index.html', './manifest.json',
+  './icons/merchants/cafe.png', './icons/merchants/barber.png',
+  './icons/merchants/restaurant.png', './icons/merchants/boutique.png',
+  './icons/merchants/bar.png', './icons/merchants/pizza.png',
+  './icons/merchants/bowling.png', './icons/merchants/pottery.png',
+  './icons/merchants/art-hobby.png', './icons/merchants/comic.png',
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(

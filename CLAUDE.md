@@ -28,7 +28,7 @@ Everything is in one file (`index.html`): static markup for every screen, a CSS 
 
 ### Employee/Owner content
 
-A static port of the Pnchy MVP (`../pnchy-mvp`) staging screens, restyled onto the demo's tokens. Both roles represent **Bloom Coffee**; business names stay consistent with the demo's 5 merchants + coffee-pod leaderboard, all anchored to **State College, PA** addresses (see the `address` fields on `MERCHANTS` and the map-center comment near `initMap()`) — match that geography if you add a merchant or move the map center. Interactions with no static analog use inline overlays, never `alert()`/`confirm()`: `demoScan(role)` (scan-success flash), `ownerPayDrop()` ($19.99 payment-success overlay — and a real state change, see "Subscription tiers" below), `copyAccessCode()`, `toggleSwitch()`, `switchAPill()`.
+A static port of the Pnchy MVP (`../pnchy-mvp`) staging screens, restyled onto the demo's tokens. Both roles represent **Bloom Coffee**; business names stay consistent with the demo's 10 merchants + leaderboard pods, all anchored to **State College, PA** addresses (see the `address` fields on `MERCHANTS` and the map-center comment near `initMap()`) — match that geography if you add a merchant or move the map center. Interactions with no static analog use inline overlays, never `alert()`/`confirm()`: `demoScan(role)` (scan-success flash), `ownerPayDrop()` ($19.99 payment-success overlay — and a real state change, see "Subscription tiers" below), `copyAccessCode()`, `toggleSwitch()`, `switchAPill()`.
 
 Most of `emp-home`'s numbers are static illustrative content, but `SCANS TODAY` (`WORLD.empScansToday`) and `Recent Pnches` (`WORLD.recentPnches`, capped at `EMP_RECENT_PNCHES_MAX`) are real state — a stamp scan via `demoScan('emp')` increments/prepends them and `renderEmpHomeActivity()` repaints both, reset by `resetDemo()`.
 
@@ -51,6 +51,16 @@ Leaflet 1.9.4 + leaflet-heat 0.2.0, loaded from CDN. `initMap()` is called lazil
 ### Merchant data and punches
 
 `MERCHANTS` is the single canonical merchant data source (id, name, icon, category, punches/total, etc.) — it replaced an earlier split between two separately-maintained merchant objects that could disagree with each other, so `MERCHANTS` (plus its `MERCHANTS_INITIAL` deep-clone snapshot, used by `resetDemo()`) is the only merchant data to ever touch. `addPunch(key, n)` is the one place punch counts are incremented; it writes to `MERCHANTS[key].punches` and then calls `renderPunchSurfaces(key)`, which repaints every surface that shows a punch count — bottom sheet, profile loyalty cards, QR screen, success screen, map pins — from `MERCHANTS`. Never hardcode a punch count anywhere; always go through `addPunch`/`renderPunchSurfaces`.
+
+There are 10 merchants, one per category: `coffee` (cafe), `barber`, `food` (restaurant), `boutique`, `pottery`, `bar`, `pizza`, `bowling`, `art` (art/hobby), `comic`. Each has an `iconType` alongside its emoji `icon` fallback.
+
+### Merchant icon artwork
+
+Every merchant/category is illustrated with a hand-drawn PNG in `icons/merchants/` (192×192, transparent, cropped to content, ~4% margin) instead of a stock emoji. `MERCHANT_ICON` maps each `iconType` (`cafe`/`barber`/`restaurant`/`boutique`/`bar`/`pizza`/`bowling`/`pottery`/`art`/`comic`) to its file. `merchantIconHTML(iconType, fallbackEmoji)` is the **one** render point for this artwork — every surface that shows merchant/category identity calls it (never inlines `${m.icon}` or its own `<img>`), and it falls back to the emoji if `iconType` is missing/unrecognized. Leaderboard/own-ranks row data keeps both `iconType` and its original `icon` emoji (the emoji doubles as a distinguishing fallback for loosely-categorized rows, e.g. Matcha House's 🍵 vs. the shared cafe illustration).
+
+Sizing is entirely CSS via `.m-icon` under the caller's container class (search "MERCHANT ICON ARTWORK — sizing" in the `<style>` block for the full table — sheet 40px, search result 26px, loyalty card 28px, QR row 30px, drop card 34px, podium 36px, list row 30px, review circle 30px, map pin 22px, drop detail 44px) — never set icon size inline. A few one-off static Bloom Coffee identity spots (employee/owner headers, avatar, scan screens) use the `.static-brand-icon` class instead, since they're hardcoded to the cafe icon rather than driven by `MERCHANTS`. Dark screens (the emp/owner scan screens) back the icon with a small cream chip (`.a-scan-emoji`), since the illustrations' black outlines disappear on a dark background.
+
+Regenerating or adding an icon: crop to the alpha bounding box, pad to a square, downsample to 192×192 with **premultiplied-alpha** averaging (a naive downsample of transparent-black pixels produces dark fringes), kebab-case the filename, and keep it out of `icons/merchants/` naming collisions with the app icons (`icon-192.png`/`icon-512.png`).
 
 ### Density Drop engine
 
