@@ -31,7 +31,11 @@
       --muted-gold: #E8D5A3;
       --text-dark: #2C2825;
       --text-mid: #5A544E;
-      --text-light: #8A847E;
+      --text-light: #6A645F;
+      /* Original --text-light value, preserved for non-text (icon stroke /
+         border / chrome) uses that must not shift when --text-light darkens
+         for contrast — see .tab-item svg below. */
+      --text-light-deco: #8A847E;
       --white: #FFFFFF;
       --surface: #FDFAF6;
       --border: #EAE4DC;
@@ -39,12 +43,26 @@
       --accent-rose: #C97B6A;
       --accent-blue: #5A8FA8;
       --accent-purple: #8B7BAF;
+      /* Text-only variants of the accent hues, darkened to clear 4.5:1 against
+         both --cream and --white — use these (never the base --accent-*)
+         wherever an accent is the color of literal text, or the solid
+         background sitting directly behind white/light text. */
+      --accent-green-text: #55794F;
+      --accent-rose-text: #9D6053;
+      --accent-blue-text: #4A758A;
+      --accent-purple-text: #766995;
       --shadow: rgba(44, 40, 37, 0.08);
       --shadow-lg: rgba(44, 40, 37, 0.14);
       --building: #E3B77E;
       --building-faint: rgba(227, 183, 126, 0.08);
       --building-subtle: rgba(227, 183, 126, 0.12);
       --building-glow: rgba(227, 183, 126, 0.25);
+      --gold-text: #6B5A2E;
+      --gold-text-alt: #8A6A3D;
+      --checker-light: #EFEAE0;
+      --checker-dark: #E7E1D6;
+      --neutral-gradient-a: #B7B0A5;
+      --neutral-gradient-b: #948C80;
       --nav-h: 60px;
       --nav-inset: 12px;
       --nav-clear: calc(88px + env(safe-area-inset-bottom, 0px));
@@ -309,7 +327,7 @@
     }
 
     .tab-item svg {
-      stroke: var(--text-light);
+      stroke: var(--text-light-deco);
       transition: stroke 0.2s;
     }
 
@@ -324,7 +342,7 @@
     .tab-label {
       font-size: 11px;
       font-weight: 600;
-      color: var(--accent-green);
+      color: var(--accent-green-text);
       max-width: 0;
       opacity: 0;
       overflow: hidden;
@@ -359,9 +377,9 @@
       right: -4px;
       width: 16px;
       height: 16px;
-      background: var(--accent-rose);
+      background: var(--accent-rose-text);
       border-radius: 50%;
-      font-size: 9px;
+      font-size: 11px;
       color: white;
       display: flex;
       align-items: center;
@@ -405,7 +423,7 @@
       margin-top: 40px;
       margin-left: 24px;
       margin-right: 24px;
-      background: var(--accent-blue);
+      background: var(--accent-blue-text);
       color: var(--white);
       border: none;
       border-radius: 28px;
@@ -615,7 +633,7 @@
     }
 
     .map-title span {
-      color: var(--accent-green);
+      color: var(--accent-green-text);
     }
 
     .map-search {
@@ -736,7 +754,7 @@
 
     .search-status.closed {
       background: var(--blush);
-      color: var(--accent-rose);
+      color: var(--accent-rose-text);
     }
 
     .search-result-dist {
@@ -1328,7 +1346,7 @@
     }
 
     .drops-title span {
-      color: var(--accent-rose);
+      color: var(--accent-rose-text);
       font-style: italic;
     }
 
@@ -1395,7 +1413,7 @@
     }
 
     .live-count-label {
-      font-size: 9px;
+      font-size: 11px;
       color: rgba(255, 255, 255, 0.8);
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -1769,7 +1787,7 @@
     }
 
     .qr-merchant-count-label {
-      font-size: 10px;
+      font-size: 11px;
       color: rgba(247, 244, 239, 0.5);
     }
 
@@ -1953,7 +1971,7 @@
     }
 
     .lb-podium-score {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-light);
       margin-bottom: 8px;
     }
@@ -1973,7 +1991,7 @@
 
     .lb-podium-item:nth-child(1) .lb-podium-base {
       height: 70px;
-      background: var(--accent-blue);
+      background: var(--accent-blue-text);
     }
 
     .lb-podium-item:nth-child(2) .lb-podium-base {
@@ -2059,15 +2077,15 @@
     }
 
     .lb-row-change {
-      font-size: 10px;
-      color: var(--accent-green);
+      font-size: 11px;
+      color: var(--accent-green-text);
       font-weight: 600;
       margin-top: 2px;
       text-align: right;
     }
 
     .lb-row-change.down {
-      color: var(--accent-rose);
+      color: var(--accent-rose-text);
     }
 
     /* "This is you" marker — shared by emp-ranks (the logged-in employee)
@@ -2256,7 +2274,7 @@
     }
 
     .loyalty-card-progress {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-light);
       margin-top: 6px;
     }
@@ -2443,7 +2461,7 @@
     }
 
     .info-card-label-dark {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       color: rgba(247, 244, 239, 0.6);
       text-transform: uppercase;
@@ -2487,7 +2505,7 @@
     .info-card-text-light {
       font-size: 12px;
       font-weight: 600;
-      color: var(--accent-green);
+      color: var(--accent-green-text);
       margin-top: 4px;
     }
 
@@ -2639,7 +2657,7 @@
     .review-mine-label {
       font-size: 11px;
       font-weight: 700;
-      color: var(--accent-rose);
+      color: var(--accent-rose-text);
     }
 
     /* Locked (unfriended author) card */
@@ -2776,7 +2794,7 @@
     .review-modal-save {
       font-size: 14px;
       font-weight: 700;
-      color: var(--accent-rose);
+      color: var(--accent-rose-text);
       cursor: pointer;
     }
 
@@ -2842,7 +2860,7 @@
     }
 
     .review-emoji-hint.picked {
-      color: var(--accent-green);
+      color: var(--accent-green-text);
     }
 
     .review-textarea-row {
@@ -2859,7 +2877,7 @@
     }
 
     .review-char-counter.urgent {
-      color: var(--accent-rose);
+      color: var(--accent-rose-text);
     }
 
     .review-textarea {
@@ -2910,7 +2928,7 @@
       font-family: 'Fraunces', serif;
       font-style: italic;
       font-size: 22px;
-      color: var(--accent-rose);
+      color: var(--accent-rose-text);
       margin-bottom: 10px;
     }
     .rp-title {
@@ -2970,12 +2988,12 @@
       padding: 18px;
       box-shadow: 0 2px 10px var(--shadow);
     }
-    .a-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text-light); text-transform: uppercase; }
+    .a-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--text-light); text-transform: uppercase; }
     .a-card-title { font-size: 15px; font-weight: 700; color: var(--text-dark); }
 
     /* App header (dashboard tops) */
     .a-head { display: flex; justify-content: space-between; align-items: flex-start; }
-    .a-brand { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: var(--accent-rose); letter-spacing: 0.5px; }
+    .a-brand { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: var(--accent-rose-text); letter-spacing: 0.5px; }
     .a-greet { font-size: 22px; font-weight: 700; color: var(--text-dark); margin-top: 2px; }
     .a-biz { font-size: 13px; font-weight: 500; color: var(--text-light); margin-top: 1px; }
     .a-gear {
@@ -2990,12 +3008,12 @@
       padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 700;
       border: 1px solid var(--border); background: var(--surface); color: var(--text-mid);
     }
-    .tier-badge.pro { background: linear-gradient(135deg, #F6E3B4, #E8D5A3); border-color: #E0C98A; color: #6B5A2E; }
+    .tier-badge.pro { background: linear-gradient(135deg, #F6E3B4, #E8D5A3); border-color: #E0C98A; color: var(--gold-text); }
     .tier-badge.locked { opacity: 0.7; }
 
     /* Employee hero (scans today) */
     .a-hero {
-      background: var(--accent-green); border-radius: 20px; padding: 22px;
+      background: var(--accent-green-text); border-radius: 20px; padding: 22px;
       display: flex; align-items: center; justify-content: space-between; color: #fff;
     }
     .a-hero-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: rgba(255,255,255,0.75); }
@@ -3006,8 +3024,8 @@
     /* Density drop strip */
     .a-strip-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .a-chip {
-      background: var(--muted-gold); color: #6B5A2E; border-radius: 999px;
-      padding: 2px 9px; font-size: 10px; font-weight: 700;
+      background: var(--muted-gold); color: var(--gold-text); border-radius: 999px;
+      padding: 2px 9px; font-size: 11px; font-weight: 700;
     }
     .a-meter-track { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; }
     .a-meter-fill { height: 100%; background: linear-gradient(90deg, var(--accent-rose), var(--muted-gold)); border-radius: 999px; }
@@ -3025,7 +3043,7 @@
     .a-metric { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 14px; box-shadow: 0 2px 10px var(--shadow); }
     .a-metric.center { text-align: center; }
     .a-metric-emoji { font-size: 20px; }
-    .a-metric-period { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; color: var(--text-light); text-transform: uppercase; }
+    .a-metric-period { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; color: var(--text-light); text-transform: uppercase; }
     .a-metric-val { font-size: 26px; font-weight: 700; color: var(--text-dark); margin-top: 4px; }
     .a-metric-label { font-size: 11px; font-weight: 500; color: var(--text-light); margin-top: 2px; }
 
@@ -3034,12 +3052,12 @@
     .a-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
     .a-bar { width: 70%; border-radius: 6px; background: var(--border); }
     .a-bar.today { background: var(--accent-green); }
-    .a-day { font-size: 9px; font-weight: 500; color: var(--text-light); }
-    .a-day.today { color: var(--accent-green); font-weight: 700; }
+    .a-day { font-size: 11px; font-weight: 500; color: var(--text-light); }
+    .a-day.today { color: var(--accent-green-text); font-weight: 700; }
 
     /* Daily goal */
     .a-goal-head { display: flex; justify-content: space-between; align-items: center; }
-    .a-goal-count { font-size: 16px; font-weight: 700; color: var(--accent-green); }
+    .a-goal-count { font-size: 16px; font-weight: 700; color: var(--accent-green-text); }
     .a-goal-sub { font-size: 13px; color: var(--text-mid); margin: 8px 0 10px; }
     .a-prog-track { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
     .a-prog-fill { height: 100%; background: var(--accent-green); border-radius: 999px; }
@@ -3051,7 +3069,7 @@
     .a-punch-info { flex: 1; }
     .a-punch-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
     .a-punch-sub { font-size: 11px; color: var(--text-light); }
-    .a-punch-badge { background: var(--muted-gold); color: #6B5A2E; border-radius: 999px; padding: 3px 9px; font-size: 12px; font-weight: 700; }
+    .a-punch-badge { background: var(--muted-gold); color: var(--gold-text); border-radius: 999px; padding: 3px 9px; font-size: 12px; font-weight: 700; }
 
     /* Dark scan screen */
     .a-scan { background: var(--text-dark); justify-content: center; align-items: center; }
@@ -3064,7 +3082,7 @@
     .a-scan-name { font-size: 20px; font-weight: 700; color: var(--cream); }
     .a-scan-hint { font-size: 14px; color: rgba(247,244,239,0.55); }
     .a-scan-btn {
-      background: var(--accent-rose); border: none; border-radius: 26px; padding: 22px;
+      background: var(--accent-rose-text); border: none; border-radius: 26px; padding: 22px;
       width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
       box-shadow: 0 6px 20px rgba(201,123,106,0.45); transition: transform 0.15s;
     }
@@ -3115,15 +3133,15 @@
     /* Primary / secondary pill buttons */
     .a-btn { border: none; border-radius: 999px; padding: 13px; width: 100%; font-size: 14px; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
     .a-btn:active { transform: scale(0.98); }
-    .a-btn-green { background: var(--accent-green); color: #fff; }
+    .a-btn-green { background: var(--accent-green-text); color: #fff; }
     .a-btn-dark { background: var(--text-dark); color: var(--cream); }
     .a-btn-outline { background: var(--surface); border: 1px solid var(--border); color: var(--text-dark); }
 
     /* Logout / switch role section */
     .a-logout { background: var(--blush); border: 1px solid var(--accent-rose); border-radius: 20px; padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; }
-    .a-logout-title { font-family: 'Fraunces', serif; font-style: italic; font-size: 22px; color: var(--accent-rose); }
+    .a-logout-title { font-family: 'Fraunces', serif; font-style: italic; font-size: 22px; color: var(--accent-rose-text); }
     .a-logout-sub { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
-    .a-btn-rose { background: var(--accent-rose); color: #fff; }
+    .a-btn-rose { background: var(--accent-rose-text); color: #fff; }
     .a-switch-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 13px; width: 100%; font-size: 14px; font-weight: 600; color: var(--text-dark); cursor: pointer; }
 
     /* Pills (period selectors) */
@@ -3135,7 +3153,7 @@
     .a-locked { display: flex; align-items: center; gap: 10px; opacity: 0.75; }
     .a-locked-text { flex: 1; font-size: 13px; color: var(--text-light); }
     .a-insight-val { font-size: 15px; color: var(--text-mid); margin-top: 6px; }
-    .a-insight-val b { color: var(--accent-green); }
+    .a-insight-val b { color: var(--accent-green-text); }
     .a-insight-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
 
     /* Age histogram */
@@ -3152,15 +3170,15 @@
       height: 170px; position: relative;
       background:
         radial-gradient(circle at 30% 40%, rgba(123,175,115,0.18), transparent 40%),
-        repeating-linear-gradient(45deg, #E7E1D6, #E7E1D6 22px, #EFEAE0 22px, #EFEAE0 24px);
+        repeating-linear-gradient(45deg, var(--checker-dark), var(--checker-dark) 22px, var(--checker-light) 22px, var(--checker-light) 24px);
       display: flex; align-items: center; justify-content: center;
     }
     .a-map-pin { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-rose); box-shadow: 0 0 0 6px rgba(201,123,106,0.25), 0 0 0 14px rgba(201,123,106,0.12); z-index: 2; }
     .a-map-ripple { position: absolute; width: 30px; height: 30px; border-radius: 50%; background: rgba(201,123,106,0.4); animation: ripple 2.4s ease-out infinite; }
     .a-map-foot { display: flex; align-items: center; gap: 10px; padding: 14px 18px; }
-    .a-live { font-size: 11px; font-weight: 700; color: var(--accent-green); }
+    .a-live { font-size: 11px; font-weight: 700; color: var(--accent-green-text); }
     .a-coord { font-size: 12px; font-weight: 500; color: var(--text-mid); }
-    .a-rank-chip { background: var(--muted-gold); color: #6B5A2E; border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+    .a-rank-chip { background: var(--muted-gold); color: var(--gold-text); border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
 
     /* Nav rows */
     .a-navrow { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 14px 18px; box-shadow: 0 2px 8px var(--shadow); cursor: pointer; }
@@ -3175,7 +3193,7 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #fff;
       box-shadow: 0 10px 30px rgba(155,93,229,0.4);
     }
-    .a-drop-btn.locked { background: radial-gradient(circle at 50% 40%, #B7B0A5, #948C80); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+    .a-drop-btn.locked { background: radial-gradient(circle at 50% 40%, var(--neutral-gradient-a), var(--neutral-gradient-b)); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
     .a-drop-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(155,93,229,0.5); animation: ripple 2.6s ease-out infinite; }
     .a-drop-btn.locked .a-drop-ring { display: none; }
     .a-drop-emoji { font-size: 40px; }
@@ -3192,10 +3210,10 @@
     .a-paywall { background: rgba(123,175,115,0.08); border: 1.5px solid var(--accent-green); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
     .a-paywall-title { font-size: 16px; font-weight: 700; color: var(--text-dark); }
     .a-paywall-sub { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
-    .a-paywall-btn { background: var(--accent-green); color: #fff; border-radius: 999px; padding: 12px; text-align: center; font-size: 14px; font-weight: 700; }
+    .a-paywall-btn { background: var(--accent-green-text); color: #fff; border-radius: 999px; padding: 12px; text-align: center; font-size: 14px; font-weight: 700; }
 
     /* Payment success overlay */
-    .a-pay-overlay { position: absolute; inset: 0; background: var(--accent-green); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.35s; z-index: 120; }
+    .a-pay-overlay { position: absolute; inset: 0; background: var(--accent-green-text); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.35s; z-index: 120; }
     .a-pay-overlay.show { opacity: 1; pointer-events: auto; }
     .a-pay-circle { width: 96px; height: 96px; border-radius: 50%; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 46px; color: #fff; animation: countUp 0.5s ease; }
     .a-pay-title { font-size: 24px; font-weight: 700; color: #fff; }
@@ -3208,11 +3226,11 @@
     .a-roster-info { flex: 1; }
     .a-roster-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
     .a-roster-sub { font-size: 12px; color: var(--text-light); }
-    .a-remove-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--accent-rose); cursor: pointer; }
+    .a-remove-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--accent-rose-text); cursor: pointer; }
     .a-code-card { background: rgba(232,213,163,0.18); border: 1px solid var(--muted-gold); border-radius: 18px; padding: 14px; margin-top: 8px; }
     .a-code-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-top: 10px; }
     .a-code-text { font-size: 16px; font-weight: 700; color: var(--text-dark); letter-spacing: 1px; }
-    .a-copy-btn { background: var(--accent-rose); color: #fff; border: none; border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .a-copy-btn { background: var(--accent-rose-text); color: #fff; border: none; border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
     /* Team leaderboard rows */
     .a-team-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: 0 2px 8px var(--shadow); }
@@ -3221,8 +3239,8 @@
     .a-team-info { flex: 1; }
     .a-team-name { font-size: 15px; font-weight: 600; color: var(--text-dark); }
     .a-team-trend { font-size: 11px; font-weight: 500; }
-    .a-team-trend.up { color: var(--accent-green); }
-    .a-team-trend.down { color: var(--accent-rose); }
+    .a-team-trend.up { color: var(--accent-green-text); }
+    .a-team-trend.down { color: var(--accent-rose-text); }
     .a-team-scans { font-size: 17px; font-weight: 700; color: var(--text-dark); }
 
     /* Owner profile identity */
@@ -3244,7 +3262,7 @@
     .a-feature-text { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
     .a-plan-current-tag { display: inline-block; background: var(--sage); color: var(--text-dark); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
     .a-reward-row { display: flex; align-items: center; gap: 12px; }
-    .a-reward-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-rose); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+    .a-reward-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-rose-text); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
     .a-reward-text { flex: 1; font-size: 14px; color: var(--text-mid); }
 
     /* a-hero-ranks-sub is still used standalone by emp-profile/own-drops
@@ -3303,7 +3321,7 @@
     .a-forecast-stat-num { font-family: 'Fraunces', serif; font-size: 26px; color: var(--text-dark); }
     .a-forecast-stat-label { font-size: 12px; color: var(--text-mid); margin-top: 2px; display: block; }
     .a-forecast-caveat {
-      font-size: 11px; font-weight: 600; color: #8A6A3D; background: var(--building-faint);
+      font-size: 11px; font-weight: 600; color: var(--gold-text-alt); background: var(--building-faint);
       border: 1px solid var(--building-subtle); border-radius: 12px; padding: 8px 12px;
     }
     .a-forecast-actions { display: flex; gap: 10px; }
@@ -3312,7 +3330,7 @@
     .a-drop-meter-track { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 10px; }
     .a-drop-meter-fill { height: 100%; border-radius: 999px; background: var(--building); transition: width 0.25s linear; }
     .a-drop-pace-chip {
-      display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+      display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
       color: var(--text-mid); background: var(--building-faint); border: 1px solid var(--building-subtle);
       border-radius: 999px; padding: 3px 9px;
     }
@@ -3321,7 +3339,7 @@
     /* Drop circle button state modifiers */
     .a-drop-btn.building { background: radial-gradient(circle at 50% 40%, var(--building), #C9A05A 75%); box-shadow: 0 10px 26px var(--building-glow); }
     .a-drop-btn.live-drop { background: radial-gradient(circle at 50% 40%, var(--accent-green), #4F8A48 75%); box-shadow: 0 10px 26px rgba(123,175,115,0.4); }
-    .a-drop-btn.expired-drop { background: radial-gradient(circle at 50% 40%, #B7B0A5, #948C80); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+    .a-drop-btn.expired-drop { background: radial-gradient(circle at 50% 40%, var(--neutral-gradient-a), var(--neutral-gradient-b)); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
 
     /* ===== DENSITY DROP (Phase 2) ===== */
     /* Map pin warmth tiers while a drop is building at that merchant, plus a
@@ -3353,13 +3371,13 @@
     .drops-building-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
     .drops-building-emoji { font-size: 22px; line-height: 1; }
     .drops-building-label {
-      font-size: 11px; font-weight: 700; color: #8A6A3D; text-transform: uppercase; letter-spacing: 0.6px;
+      font-size: 11px; font-weight: 700; color: var(--gold-text-alt); text-transform: uppercase; letter-spacing: 0.6px;
     }
     .drops-building-title { font-size: 15px; font-weight: 600; color: var(--text-dark); margin-top: 2px; }
     .drops-active-primary { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-top: 8px; }
     .drops-active-sub { font-size: 12px; color: var(--text-mid); margin-top: 4px; }
     .drops-dwell-status { margin: 10px 24px 0; font-size: 12px; color: var(--text-mid); }
-    .drops-dwell-qualified { margin: 10px 24px 0; font-size: 12px; font-weight: 600; color: var(--accent-green); }
+    .drops-dwell-qualified { margin: 10px 24px 0; font-size: 12px; font-weight: 600; color: var(--accent-green-text); }
     .drops-empty-state { margin: 16px 24px 0; font-size: 13px; color: var(--text-light); }
 
     /* Drop detail screen (screen-drop-detail) */
@@ -3370,15 +3388,15 @@
     .dd-percent { font-family: 'Fraunces', serif; font-size: 24px; color: var(--text-dark); font-weight: 500; }
     .dd-ring-row { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
     .dd-ring-caption { font-size: 12px; color: var(--text-mid); line-height: 1.5; }
-    .dd-qualified { margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--accent-green); line-height: 1.5; }
+    .dd-qualified { margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--accent-green-text); line-height: 1.5; }
     .dd-card-live { background: var(--sage); border-color: var(--sage); }
     .dd-live-pill {
-      display: inline-block; background: var(--accent-green); color: var(--white); font-size: 11px; font-weight: 700;
+      display: inline-block; background: var(--accent-green-text); color: var(--white); font-size: 11px; font-weight: 700;
       letter-spacing: 0.6px; text-transform: uppercase; padding: 5px 12px; border-radius: 999px;
     }
     .dd-reward { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text-dark); margin-top: 12px; font-weight: 500; }
     .dd-countdown { font-size: 13px; color: var(--text-mid); margin-top: 6px; }
-    .dd-pass-btn { margin-top: 16px; background: var(--accent-green); color: var(--white); }
+    .dd-pass-btn { margin-top: 16px; background: var(--accent-green-text); color: var(--white); }
     .dd-consolation {
       margin-top: 14px; font-size: 12px; font-weight: 600; color: var(--text-dark); background: var(--sage);
       border-radius: 12px; padding: 10px 12px; line-height: 1.5;
@@ -3393,8 +3411,8 @@
     .pw-status { margin-top: 12px; font-size: 12px; font-weight: 600; }
     .pw-status.valid { color: var(--building); }
     .pw-status.pending { color: var(--building); }
-    .pw-status.redeemed { color: var(--accent-green); }
-    .pw-status.expired { color: var(--accent-rose); }
+    .pw-status.redeemed { color: var(--accent-green-text); }
+    .pw-status.expired { color: var(--accent-rose-text); }
     .pw-empty { text-align: center; padding: 40px 20px; }
     .pw-empty-title { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text-dark); }
     .pw-empty-sub { font-size: 13px; color: var(--text-light); margin-top: 8px; line-height: 1.5; }
@@ -3416,7 +3434,7 @@
     .a-drop-live-tag { font-size: 13px; font-weight: 700; color: var(--accent-green); }
     .emp-drop-countdown { font-family: 'Fraunces', serif; font-size: 30px; color: var(--accent-green); margin: 6px 0 2px; }
     .a-paused-banner {
-      display: inline-block; font-size: 11px; font-weight: 700; color: #8A6A3D;
+      display: inline-block; font-size: 11px; font-weight: 700; color: var(--gold-text-alt);
       background: var(--building-faint); border: 1px solid var(--building-subtle);
       border-radius: 10px; padding: 6px 10px; margin-bottom: 10px;
     }
@@ -3432,7 +3450,7 @@
     .emp-pause-btn {
       width: 100%; border: none; border-radius: 16px; padding: 15px; margin-top: 4px;
       font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;
-      background: var(--accent-rose); color: var(--white);
+      background: var(--accent-rose-text); color: var(--white);
     }
     .emp-pause-sub { font-size: 12px; color: rgba(247, 244, 239, 0.5); margin-top: 10px; line-height: 1.5; text-align: center; }
     .emp-pause-lift { font-size: 14px; font-weight: 700; color: var(--building); text-align: center; }
@@ -3441,7 +3459,7 @@
       flex: 1; border: none; border-radius: 14px; padding: 14px;
       font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer;
     }
-    .emp-resume-btn { background: var(--accent-green); color: var(--white); }
+    .emp-resume-btn { background: var(--accent-green-text); color: var(--white); }
     .emp-extend-btn { background: rgba(255, 255, 255, 0.1); color: var(--cream); border: 1px solid rgba(255, 255, 255, 0.18); }
     .emp-shift-tally { font-size: 12px; color: rgba(247, 244, 239, 0.5); text-align: center; }
 
@@ -4249,7 +4267,7 @@
             </div>
 
             <div class="a-tiles">
-              <div class="a-tile" style="background:var(--muted-gold);color:#6B5A2E;"><div class="a-tile-emoji">📅</div><div class="a-tile-label">My Shifts</div></div>
+              <div class="a-tile" style="background:var(--muted-gold);color:var(--gold-text);"><div class="a-tile-emoji">📅</div><div class="a-tile-label">My Shifts</div></div>
               <div class="a-tile" style="background:var(--accent-green);"><div class="a-tile-emoji">🕐</div><div class="a-tile-label">Work History</div></div>
               <div class="a-tile" style="background:var(--accent-blue);"><div class="a-tile-emoji">📋</div><div class="a-tile-label">Availability</div></div>
               <div class="a-tile" style="background:var(--accent-purple);"><div class="a-tile-emoji">📈</div><div class="a-tile-label">Performance Goals</div></div>
