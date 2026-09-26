@@ -4377,9 +4377,9 @@
 
             <div class="a-tiles">
               <div class="a-tile" style="background:var(--muted-gold);color:var(--gold-text);"><div class="a-tile-emoji">📅</div><div class="a-tile-label">My Shifts</div></div>
-              <div class="a-tile" style="background:var(--accent-green);"><div class="a-tile-emoji">🕐</div><div class="a-tile-label">Work History</div></div>
-              <div class="a-tile" style="background:var(--accent-blue);"><div class="a-tile-emoji">📋</div><div class="a-tile-label">Availability</div></div>
-              <div class="a-tile" style="background:var(--accent-purple);"><div class="a-tile-emoji">📈</div><div class="a-tile-label">Performance Goals</div></div>
+              <div class="a-tile" style="background:var(--accent-green-text);"><div class="a-tile-emoji">🕐</div><div class="a-tile-label">Work History</div></div>
+              <div class="a-tile" style="background:var(--accent-blue-text);"><div class="a-tile-emoji">📋</div><div class="a-tile-label">Availability</div></div>
+              <div class="a-tile" style="background:var(--accent-purple-text);"><div class="a-tile-emoji">📈</div><div class="a-tile-label">Performance Goals</div></div>
             </div>
 
             <div class="a-card">
@@ -4448,7 +4448,7 @@
                 <div class="a-drop-meter-fill" id="own-dash-drop-meter-fill" style="width:0%;"></div>
               </div>
               <div class="a-drop-countdown-row" id="own-dash-drop-countdown-row">
-                <span id="own-dash-drop-countdown" style="font-size:13px;font-weight:700;color:var(--accent-green);"></span>
+                <span id="own-dash-drop-countdown" style="font-size:13px;font-weight:700;color:var(--accent-green-text);"></span>
                 <span class="a-drop-pace-chip">⚡ compressed time</span>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:10px;">
@@ -4519,7 +4519,7 @@
                 <div class="a-drop-meter-fill" id="own-drops-drop-meter-fill" style="width:0%;"></div>
               </div>
               <div class="a-drop-countdown-row" id="own-drops-drop-countdown-row">
-                <span id="own-drops-drop-countdown" style="font-size:13px;font-weight:700;color:var(--accent-green);"></span>
+                <span id="own-drops-drop-countdown" style="font-size:13px;font-weight:700;color:var(--accent-green-text);"></span>
                 <span class="a-drop-pace-chip">⚡ compressed time</span>
               </div>
             </div>
@@ -4699,7 +4699,7 @@
                   <div class="a-drop-meter-fill" id="own-analytics-cap-fill" style="width:0%;"></div>
                 </div>
                 <div class="a-strip-sub" id="own-analytics-cap-caption" style="margin-top:6px;"></div>
-                <div id="own-analytics-cap-exceeded" style="display:none;font-size:12px;font-weight:700;color:var(--accent-rose);margin-top:6px;">Cap exceeded — new passes paused until midnight</div>
+                <div id="own-analytics-cap-exceeded" style="display:none;font-size:12px;font-weight:700;color:var(--accent-rose-text);margin-top:6px;">Cap exceeded — new passes paused until midnight</div>
               </div>
             </div>
 
@@ -4851,7 +4851,7 @@
 
             <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
             <button class="a-switch-btn" style="margin-top:8px;" onclick="resetDemo()">↺  Reset demo</button>
-            <button class="a-btn" style="background:transparent;border:1.5px solid var(--accent-rose);color:var(--accent-rose);" onclick="switchRole()">Sign out</button>
+            <button class="a-btn" style="background:transparent;border:1.5px solid var(--accent-rose);color:var(--accent-rose-text);" onclick="switchRole()">Sign out</button>
           </div>
         </div>
       </div>
@@ -6866,7 +6866,7 @@
             const next = stages[i + 1];
             if (stage.count > next.count && stage.count > 0) {
               const dropPct = Math.round(((stage.count - next.count) / stage.count) * 100);
-              rows += `<div style="font-size:11px;font-weight:600;color:var(--accent-rose);text-align:right;margin-top:-4px;">−${dropPct}% drop-off</div>`;
+              rows += `<div style="font-size:11px;font-weight:600;color:var(--accent-rose-text);text-align:right;margin-top:-4px;">−${dropPct}% drop-off</div>`;
             }
           }
         });
@@ -7208,25 +7208,25 @@
     const SCHEDULED_DROPS = [
       {
         merchantKey: 'food', dropName: 'Taco Tuesday Freebie',
-        glowColor: 'var(--peach)', badgeBg: 'var(--blush)', badgeColor: 'var(--accent-rose)',
+        glowColor: 'var(--peach)', badgeBg: 'var(--blush)', badgeColor: 'var(--accent-rose-text)',
         progressColor: 'var(--accent-rose)', joined: 8, capacity: 20,
         timeRange: '5–7 PM', relativeLabel: '⏰ Starts in 3h 20m', extraChip: '👥 12 nearby',
       },
       {
         merchantKey: 'barber', dropName: 'Weekend Fade Deal',
-        glowColor: 'var(--lavender)', badgeBg: 'var(--lavender)', badgeColor: 'var(--accent-purple)',
+        glowColor: 'var(--lavender)', badgeBg: 'var(--lavender)', badgeColor: 'var(--accent-purple-text)',
         progressColor: 'var(--accent-purple)', joined: 4, capacity: 20,
         timeRange: 'Sat 2–4 PM', relativeLabel: '⏰ Tomorrow', extraChip: '👥 8 nearby',
       },
       {
         merchantKey: 'boutique', dropName: 'New Arrivals Flash Sale',
-        glowColor: 'var(--sage)', badgeBg: 'var(--sage)', badgeColor: 'var(--accent-green)',
+        glowColor: 'var(--sage)', badgeBg: 'var(--sage)', badgeColor: 'var(--accent-green-text)',
         progressColor: 'var(--accent-green)', joined: 12, capacity: 20,
         timeRange: 'Sat 4–6 PM', relativeLabel: '⏰ Tomorrow', extraChip: '👥 18 nearby',
       },
       {
         merchantKey: 'pottery', dropName: 'Open Studio Drop',
-        glowColor: 'var(--sky)', badgeBg: 'var(--sky)', badgeColor: 'var(--accent-blue)',
+        glowColor: 'var(--sky)', badgeBg: 'var(--sky)', badgeColor: 'var(--accent-blue-text)',
         progressColor: 'var(--accent-blue)', joined: 17, capacity: 20,
         timeRange: 'Sun 1–3 PM', relativeLabel: '⏰ Sunday',
         extraChip: '🔥 Almost there!', extraChipHot: true,
@@ -7249,7 +7249,7 @@
         const isExpanded = expandedScheduledDropKey === d.merchantKey;
         const pct = Math.round((d.joined / d.capacity) * 100);
         const chipHTML = d.extraChipHot
-          ? `<div class="drop-time-chip" style="color: var(--accent-green); border-color: var(--accent-green);">${d.extraChip}</div>`
+          ? `<div class="drop-time-chip" style="color: var(--accent-green-text); border-color: var(--accent-green);">${d.extraChip}</div>`
           : `<div class="drop-time-chip">${d.extraChip}</div>`;
 
         let punches = '';
@@ -8525,39 +8525,39 @@
     // visibly changes between periods — Sam Rivera overtakes Jordan Lee.
     const PERIOD_DATA_TEAM_SCANS = {
       today: [
-        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 29 },
+        { name: 'Jordan Lee', bg: 'var(--accent-green-text)', letter: 'J', scans: 29 },
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 24 },
-        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 19 },
-        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 15 },
-        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 12 },
-        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 10 },
+        { name: 'Alex Kim', bg: 'var(--accent-rose-text)', letter: 'A', scans: 19 },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue-text)', letter: 'M', scans: 15 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose-text)', letter: 'L', scans: 12 },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple-text)', letter: 'D', scans: 10 },
         { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 7 },
       ],
       week: [
-        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 189, trend: '▲ +3 vs prev week' },
+        { name: 'Jordan Lee', bg: 'var(--accent-green-text)', letter: 'J', scans: 189, trend: '▲ +3 vs prev week' },
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 142, trend: '▼ -1 vs prev week' },
-        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 126, trend: '▲ +5 vs prev week' },
-        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 112 },
-        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 98, trend: '▲ +2 vs prev week' },
-        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 85, trend: '▼ -2 vs prev week' },
+        { name: 'Alex Kim', bg: 'var(--accent-rose-text)', letter: 'A', scans: 126, trend: '▲ +5 vs prev week' },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue-text)', letter: 'M', scans: 112 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose-text)', letter: 'L', scans: 98, trend: '▲ +2 vs prev week' },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple-text)', letter: 'D', scans: 85, trend: '▼ -2 vs prev week' },
         { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 74 },
       ],
       month: [
-        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 813 },
+        { name: 'Jordan Lee', bg: 'var(--accent-green-text)', letter: 'J', scans: 813 },
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 611 },
-        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 542 },
-        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 482 },
-        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 421 },
-        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 366 },
+        { name: 'Alex Kim', bg: 'var(--accent-rose-text)', letter: 'A', scans: 542 },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue-text)', letter: 'M', scans: 482 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose-text)', letter: 'L', scans: 421 },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple-text)', letter: 'D', scans: 366 },
         { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 318 },
       ],
       year: [
         { name: 'Sam Rivera', bg: 'var(--muted-gold)', textColor: '#6B5A2E', letter: 'S', scans: 8200 },
-        { name: 'Jordan Lee', bg: 'var(--accent-green)', letter: 'J', scans: 7800 },
-        { name: 'Alex Kim', bg: 'var(--accent-rose)', letter: 'A', scans: 6552 },
-        { name: 'Marcus Webb', bg: 'var(--accent-blue)', letter: 'M', scans: 5824 },
-        { name: 'Lila Chen', bg: 'var(--accent-rose)', letter: 'L', scans: 5096 },
-        { name: 'Derek Coleman', bg: 'var(--accent-purple)', letter: 'D', scans: 4420 },
+        { name: 'Jordan Lee', bg: 'var(--accent-green-text)', letter: 'J', scans: 7800 },
+        { name: 'Alex Kim', bg: 'var(--accent-rose-text)', letter: 'A', scans: 6552 },
+        { name: 'Marcus Webb', bg: 'var(--accent-blue-text)', letter: 'M', scans: 5824 },
+        { name: 'Lila Chen', bg: 'var(--accent-rose-text)', letter: 'L', scans: 5096 },
+        { name: 'Derek Coleman', bg: 'var(--accent-purple-text)', letter: 'D', scans: 4420 },
         { name: 'Priya Nair', bg: 'var(--text-light)', letter: 'P', scans: 3848 },
       ],
     };
@@ -8628,17 +8628,17 @@
     // ---- emp-ranks: This Week / All Time ----
     const EMP_RANKS_BASE = {
       podium: [
-        { label: 'A', name: 'Alex', bg: 'var(--accent-rose)', scans: 126 },
-        { label: 'J', name: 'Jordan', bg: 'var(--accent-green)', scans: 189, me: true },
+        { label: 'A', name: 'Alex', bg: 'var(--accent-rose-text)', scans: 126 },
+        { label: 'J', name: 'Jordan', bg: 'var(--accent-green-text)', scans: 189, me: true },
         { label: 'S', name: 'Sam', bg: 'var(--muted-gold)', scans: 142 },
       ],
       // Distinct from the podium's own "Jordan" (name + initial) so this list
       // never reads as the same person double-listed with different stats;
       // ordinary names only, no real (celebrity/historical) namesakes.
       list: [
-        { label: 'M', name: 'Marcus Webb', bg: 'var(--accent-blue)', title: 'Community Lead', scans: 112 },
-        { label: 'L', name: 'Lila Chen', bg: 'var(--accent-rose)', title: 'Growth Specialist', scans: 98 },
-        { label: 'D', name: 'Derek Coleman', bg: 'var(--accent-purple)', title: 'Brand Ambassador', scans: 85 },
+        { label: 'M', name: 'Marcus Webb', bg: 'var(--accent-blue-text)', title: 'Community Lead', scans: 112 },
+        { label: 'L', name: 'Lila Chen', bg: 'var(--accent-rose-text)', title: 'Growth Specialist', scans: 98 },
+        { label: 'D', name: 'Derek Coleman', bg: 'var(--accent-purple-text)', title: 'Brand Ambassador', scans: 85 },
         { label: 'P', name: 'Priya Nair', bg: 'var(--text-light)', title: 'Curator', scans: 74 },
       ],
     };
