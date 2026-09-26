@@ -3524,15 +3524,32 @@
        =========================================================== */
     /* Keyboard-only focus ring for every element this pass made a tab stop
        (divs with a new tabindex, tab-bar items, inputs, native buttons/links).
-       :focus-visible (not :focus) so mouse/touch users never see it. 2px solid
-       accent-blue at 4.1:1 against the darkest screen background (--text-dark,
-       used by Splash/QR/scan/Success) comfortably clears the 3:1 WCAG 1.4.11
-       floor for non-text UI, and reads clearly against every light screen too,
-       so one rule covers both themes without an override. */
+       :focus-visible (not :focus) so mouse/touch users never see it. No
+       border-radius override — the outline already follows each element's
+       own corner radius in evergreen browsers, and forcing one here would
+       visibly reshape square/round controls (chips, map-control circles,
+       the tab pill, map pins) for keyboard users. 2px solid accent-blue at
+       4.1:1 against the darkest screen background (--text-dark, used by
+       Splash/QR/scan/Success) comfortably clears the 3:1 WCAG 1.4.11 floor
+       for non-text UI, and reads clearly against every light screen too, so
+       one rule covers both themes without an override. */
     *:focus-visible {
       outline: 2px solid var(--accent-blue);
       outline-offset: 2px;
-      border-radius: 4px;
+    }
+
+    /* Text-style inputs (.a-input) already show a focus change via their own
+       :focus border-color swap (see .a-input:focus above), and browsers treat
+       typeable fields as always "focus-visible" — even on a plain mouse click
+       — so without this override the ring above would appear on every
+       .a-input click, not just keyboard focus, breaking the "no visible
+       change for mouse/touch users" rule. .review-textarea and
+       #map-search-input need no equivalent override: their own :focus/
+       :focus-within rules already win on selector specificity (a type
+       selector beats this pass's class-only *:focus-visible reach), so they
+       already keep their existing border-color-only pattern unchanged. */
+    .a-input:focus-visible {
+      outline: none;
     }
 
     /* Map search bar — mirrors .a-input:focus / .review-textarea:focus (both
@@ -3743,7 +3760,7 @@
               </div>
               <div class="sheet-cta">
                 <button class="btn-primary" onclick="showScreen('qr')">Get Stamped 🎯</button>
-                <div class="btn-secondary" onclick="openDirections()" tabindex="0" role="button">
+                <div class="btn-secondary" onclick="openDirections()" tabindex="0" role="button" aria-label="Get directions">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A544E" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -3826,7 +3843,7 @@
       <div class="screen" id="screen-drop-detail">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('drops')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('drops')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -3850,7 +3867,7 @@
       <div class="screen" id="screen-passes">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('drops')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('drops')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825" stroke-width="2.5"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4300,9 +4317,9 @@
 
             <div class="a-card">
               <div class="a-card-title" style="margin-bottom:6px;">App Settings</div>
-              <div class="a-toggle-row"><div><div class="a-toggle-label">Shift Notifications</div><div class="a-toggle-sub">Notify for upcoming assignments</div></div><div class="a-toggle on" data-setting="shiftNotifications" onclick="toggleSwitch(this)" tabindex="0" role="button"></div></div>
-              <div class="a-toggle-row"><div><div class="a-toggle-label">Dark Mode</div><div class="a-toggle-sub">Reduced glare for night shifts</div></div><div class="a-toggle" data-setting="darkMode" onclick="toggleSwitch(this)" tabindex="0" role="button"></div></div>
-              <div class="a-toggle-row"><div><div class="a-toggle-label">Haptic Feedback</div><div class="a-toggle-sub">Tactile response on interactions</div></div><div class="a-toggle on" data-setting="hapticFeedback" onclick="toggleSwitch(this)" tabindex="0" role="button"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Shift Notifications</div><div class="a-toggle-sub">Notify for upcoming assignments</div></div><div class="a-toggle on" data-setting="shiftNotifications" onclick="toggleSwitch(this)" tabindex="0" role="button" aria-label="Shift Notifications"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Dark Mode</div><div class="a-toggle-sub">Reduced glare for night shifts</div></div><div class="a-toggle" data-setting="darkMode" onclick="toggleSwitch(this)" tabindex="0" role="button" aria-label="Dark Mode"></div></div>
+              <div class="a-toggle-row"><div><div class="a-toggle-label">Haptic Feedback</div><div class="a-toggle-sub">Tactile response on interactions</div></div><div class="a-toggle on" data-setting="hapticFeedback" onclick="toggleSwitch(this)" tabindex="0" role="button" aria-label="Haptic Feedback"></div></div>
             </div>
 
             <button class="a-switch-btn" onclick="switchRole()">↺  Switch demo role</button>
@@ -4473,7 +4490,7 @@
       <div class="screen" id="screen-own-drop-config">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-drops')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-drops')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4559,7 +4576,7 @@
       <div class="screen" id="screen-own-drop-analytics">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-drops')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-drops')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4757,7 +4774,7 @@
       <div class="screen" id="screen-own-plans">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-profile')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-profile')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4791,7 +4808,7 @@
       <div class="screen" id="screen-own-pnch-card">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4811,7 +4828,7 @@
       <div class="screen" id="screen-own-peak-hours">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4831,7 +4848,7 @@
       <div class="screen" id="screen-own-lapsed">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4851,7 +4868,7 @@
       <div class="screen" id="screen-own-ai-insights">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -4871,7 +4888,7 @@
       <div class="screen" id="screen-own-campaigns">
         <div class="scroll-content">
           <div class="a-cfg-header">
-            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button">
+            <div class="a-cfg-back" onclick="showScreen('own-dashboard')" tabindex="0" role="button" aria-label="Back">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C2825"
                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -7748,7 +7765,7 @@
           <div class="reviews-heading-title">Friends' reviews</div>
         </div>
         <div class="reviews-carousel" id="reviews-carousel">${cards.join('')}</div>
-        ${cards.length > 1 ? `<div class="reviews-dots" id="reviews-dots">${cards.map((_, i) => `<div class="reviews-dot${i === 0 ? ' active' : ''}" onclick="scrollReviewsTo(${i})" tabindex="0" role="button"></div>`).join('')}</div>` : ''}
+        ${cards.length > 1 ? `<div class="reviews-dots" id="reviews-dots">${cards.map((_, i) => `<div class="reviews-dot${i === 0 ? ' active' : ''}" onclick="scrollReviewsTo(${i})" tabindex="0" role="button" aria-label="Show review ${i + 1}"></div>`).join('')}</div>` : ''}
         <button class="review-compose-btn" onclick="openReview('${key}')">${mine ? 'Edit your review ✏️' : 'Leave a review ✍️'}</button>
       `;
 
@@ -7915,11 +7932,10 @@
       }
 
       if (e.key === 'Escape') {
-        const sheetOverlay = document.getElementById('sheet-overlay');
-        if (sheetOverlay && sheetOverlay.classList.contains('open')) {
-          closeSheet({ target: sheetOverlay });
-          return;
-        }
+        // Checked topmost-first: the review modal (z-index 110) renders on
+        // top of the bottom sheet (z-index 100) and both can be open at once
+        // (openReview() is reached from inside the sheet), so it must be
+        // checked before the sheet or Escape would close the wrong layer.
         const reviewOverlay = document.getElementById('review-overlay');
         if (reviewOverlay && reviewOverlay.classList.contains('open')) {
           closeReview();
@@ -7928,6 +7944,11 @@
         const forecastOverlay = document.getElementById('own-forecast-overlay');
         if (forecastOverlay && forecastOverlay.classList.contains('show')) {
           closeForecastOverlay();
+          return;
+        }
+        const sheetOverlay = document.getElementById('sheet-overlay');
+        if (sheetOverlay && sheetOverlay.classList.contains('open')) {
+          closeSheet({ target: sheetOverlay });
           return;
         }
       }
@@ -7967,7 +7988,7 @@
         <div class="sheet-merchant-cat">${m.cat}</div>
         <div class="sheet-merchant-address">📍 ${m.address}</div>
       </div>
-      <div class="sheet-action-top" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(m.name + ' State College PA')}', '_blank')">
+      <div class="sheet-action-top" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(m.name + ' State College PA')}', '_blank')" tabindex="0" role="button" aria-label="Open in Google Maps">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
       </div>
     `;
@@ -8193,12 +8214,17 @@
           iconAnchor: [76, 58],
           iconSize: [152, 58],
         });
-        // keyboard: true is Leaflet's default already, set explicitly so this
-        // marker's own tab-stop/Enter-to-open behavior can't regress silently;
-        // title/alt give it a real accessible name (also the pnchy-pin div's
-        // own aria-label, set in buildPinHTML, since divIcon content is raw
-        // HTML Leaflet doesn't otherwise label).
-        pnchyMarkers[m.id] = L.marker([m.lat, m.lng], { icon, keyboard: true, title: m.name, alt: m.name }).addTo(pnchyMap);
+        // keyboard: false — Leaflet's own keyboard handling (its default)
+        // would make its .leaflet-marker-icon wrapper a second, outer tab
+        // stop that fires Leaflet's internal 'click' event on Enter, but
+        // nothing in this file listens for marker 'click' events (the real
+        // handler is the inline onclick on the .pnchy-pin div inside the
+        // icon's own HTML, which already got its own tabindex/role/aria-label
+        // in buildPinHTML). Leaving Leaflet's keyboard handling on would just
+        // add a second, dead, unlabeled tab stop in front of the real one.
+        // title is also skipped: it renders a native hover tooltip, which
+        // would be a new visible change for mouse users.
+        pnchyMarkers[m.id] = L.marker([m.lat, m.lng], { icon, keyboard: false }).addTo(pnchyMap);
       });
 
       // User location marker
@@ -8208,7 +8234,9 @@
         iconAnchor: [9, 9],
         iconSize: [18, 18],
       });
-      L.marker([MERCHANTS.coffee.lat - 0.0001, MERCHANTS.coffee.lng + 0.0003], { icon: userIcon }).addTo(pnchyMap);
+      // Decorative only (no onclick, no accessible name to give it) — keep it
+      // out of the tab order entirely rather than leave it as a dead stop.
+      L.marker([MERCHANTS.coffee.lat - 0.0001, MERCHANTS.coffee.lng + 0.0003], { icon: userIcon, keyboard: false, interactive: false }).addTo(pnchyMap);
 
       // Geofence circle around Bloom Coffee (active drop zone)
       L.circle([MERCHANTS.coffee.lat, MERCHANTS.coffee.lng], {
