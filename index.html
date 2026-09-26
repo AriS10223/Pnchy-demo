@@ -511,6 +511,19 @@
       box-shadow: 0 4px 20px rgba(201, 123, 106, 0.35);
     }
 
+    /* Touch target: the visible pin bubble (icon + padding) is only
+       ~36-39px tall depending on content, under the 44px minimum, even
+       though its Leaflet iconSize box is 152x58. ::after is already the
+       pin's tail triangle, so the invisible hit-area extension goes on
+       ::before instead — vertical only (left/right stay at 0) since the
+       bubble's width is always well over 44px already, and horizontal
+       growth risks reaching neighboring pins on the map. */
+    .pnchy-pin::before {
+      content: '';
+      position: absolute;
+      inset: -5px 0;
+    }
+
     .pnchy-pin::after {
       content: '';
       position: absolute;
@@ -797,6 +810,18 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      position: relative;
+    }
+
+    /* Touch target: chip is ~31px tall (under the 44px minimum) but already
+       wide enough. Grow the hit area vertically only (left/right stay at the
+       chip's own edges) so adjacent chips in this horizontally-scrolling row
+       never gain overlapping tap zones. Invisible — chip's painted box is
+       unchanged. */
+    .filter-chip::after {
+      content: '';
+      position: absolute;
+      inset: -6.5px 0;
     }
 
     .filter-chip .m-icon { width: 16px; height: 16px; }
@@ -1660,6 +1685,15 @@
       justify-content: center;
       cursor: pointer;
       margin-bottom: 16px;
+      position: relative;
+    }
+
+    /* Touch target: 40px visible box, 2px shy of 44px each way. Invisible
+       hit-area extension; the painted chevron button is unchanged. */
+    .qr-back::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
     }
 
     .qr-title {
@@ -3000,6 +3034,17 @@
       width: 38px; height: 38px; border-radius: 50%;
       background: var(--surface); border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center; font-size: 17px; cursor: pointer;
+      position: relative;
+    }
+
+    /* Touch target: 38px visible circle, 3px shy of 44px each way. Invisible
+       hit-area extension; the painted circle is unchanged. Also applies to
+       the non-interactive employee-profile avatar use of this class, which
+       is harmless since it has no click handler to begin with. */
+    .a-gear::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
     }
 
     /* Tier badge */
@@ -3363,6 +3408,15 @@
       width: 40px; height: 40px; border-radius: 12px; background: var(--white); border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center; font-size: 17px; cursor: pointer;
       flex-shrink: 0; font-family: 'DM Sans', sans-serif;
+      position: relative;
+    }
+
+    /* Touch target: 40px visible box, 2px shy of 44px each way. Invisible
+       hit-area extension; the painted button is unchanged. */
+    .drops-wallet-btn::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
     }
     .drops-building-card {
       margin: 16px 24px 0; background: var(--building-faint); border: 1px solid var(--building-subtle);
@@ -3508,6 +3562,20 @@
       background: rgba(255, 255, 255, 0.15); color: var(--cream);
       display: flex; align-items: center; justify-content: center;
       font-size: 12px; font-weight: 700; line-height: 1; cursor: pointer;
+      position: relative;
+    }
+
+    /* Touch target: 20px visible circle is well under 44px. The whole
+       .coach-mark bubble is already clickable (ancestor onclick dismisses
+       it), so this invisible hit-area extension is a belt-and-suspenders fix
+       that holds regardless of whether this element ever gets its own click
+       handler — it stays contained within the bubble's own padding (12px
+       vertical / 14px horizontal), so it never reaches outside the visible
+       card. The painted × circle is unchanged. */
+    .coach-mark-close::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
     }
     /* Customer's mark floats over the map (nothing critical sits beneath it
        there), so it's the one exception that needs real anchoring. */
@@ -5566,10 +5634,11 @@
       art: 'icons/merchants/art-hobby.png',
       comic: 'icons/merchants/comic.png',
     };
-    function merchantIconHTML(iconType, fallbackEmoji) {
+    function merchantIconHTML(iconType, fallbackEmoji, eager = false) {
       const src = MERCHANT_ICON[iconType];
       if (!src) return fallbackEmoji || '';
-      return `<img class="m-icon" src="${src}" alt="" draggable="false" decoding="async">`;
+      const loadingAttr = eager ? '' : ' loading="lazy"';
+      return `<img class="m-icon" src="${src}" alt="" draggable="false" decoding="async"${loadingAttr}>`;
     }
 
     // ===========================
@@ -7999,7 +8068,7 @@
       const overlay = document.getElementById('sheet-overlay');
 
       document.getElementById('sheet-header').innerHTML = `
-      <div class="sheet-merchant-icon" style="background: ${m.bg}">${merchantIconHTML(m.iconType, m.icon)}</div>
+      <div class="sheet-merchant-icon" style="background: ${m.bg}">${merchantIconHTML(m.iconType, m.icon, true)}</div>
       <div class="sheet-merchant-info">
         <div class="sheet-merchant-name">${m.name}</div>
         <div class="sheet-merchant-tagline">${m.tagline}</div>
@@ -8157,7 +8226,7 @@
       return `
       <div class="pnchy-pin${m.drop ? ' drop-active' : ''}${dropStateClass}" onclick="openSheet('${m.id}')" tabindex="0" role="button" aria-label="${m.name}">
         ${dropBadge}
-        <span class="pnchy-pin-emoji">${merchantIconHTML(m.iconType, m.icon)}</span>
+        <span class="pnchy-pin-emoji">${merchantIconHTML(m.iconType, m.icon, true)}</span>
         <div class="pnchy-pin-info">
           <div class="pnchy-pin-name">${m.name}</div>
           <div class="pnchy-pin-dots">${dots}</div>
