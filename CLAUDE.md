@@ -92,6 +92,40 @@ Density Drop cadence is tracked as a simple usage counter, not a fake calendar: 
 
 Every interactive-looking element either does something real or has had `cursor:pointer` (and any hover affordance) deliberately removed — there should be no dead buttons that merely look clickable. Follow the same rule for any new element: wire it to a real handler, or de-affordance it.
 
+### Keyboard access and semantics
+
+Every clickable `<div onclick>` (static markup or JS-template-generated) that represents a real control carries `tabindex="0" role="button"` (or just `tabindex="0"` if it already has a more specific role, like the tab bar's `role="tab"`) and an `aria-label` if it has no visible text. **Excluded on purpose:** full-screen backdrop closers (`#sheet-overlay`, `#review-overlay`) and the coach-mark bubble containers — making a full-screen click-anywhere-to-dismiss surface a tab stop is worse than the gap it would fix. Their keyboard path is the global Escape handler instead. When adding a new overlay/backdrop, follow the same pattern: backdrop stays untabbable, wire Escape to its existing close function.
+
+A single delegated `document.addEventListener('keydown', ...)` (near the other global listeners) handles all of this — never add a per-element keydown handler:
+- **Enter/Space** on any `[onclick][tabindex]` element (that isn't a native input/textarea/button/a) calls `.click()` on it, with `preventDefault()` so Space doesn't scroll the page.
+- **Escape** closes whatever overlay is currently open (review modal, then the forecast overlay, then the sheet — checked in that z-order so the topmost layer closes first).
+
+Every new focusable surface must stay out of the tab order while closed. Screens (`.screen`) and most overlays are already `display:none` when inactive, which handles this for free; anything hidden via opacity/transform instead needs the same treatment (checked case-by-case — verify before assuming display:none).
+
+A shared `*:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }` (end of the `<style>` block) is the one focus ring for the whole app — keyboard-only, invisible to mouse/touch. `<input>` fields override it back to `outline: none` since browsers treat them as always-focus-visible even on a plain click; `.map-search` and `.review-textarea` keep their own existing `:focus`/`:focus-within` border-color swap instead (their type-selector specificity already wins). Don't add a new `:focus` rule when `:focus-visible` covers it.
+
+Leaflet map markers are created with `keyboard: false` — the pin's own `.pnchy-pin` div carries the real `tabindex`/`role`/`onclick`/`aria-label` (the merchant name), so Leaflet's built-in marker focus would just add a second, redundant, unlabeled tab stop around it.
+
+**Known gap:** the QR tap-to-stamp frame (the `fake-qr` parent's click listener, not an `onclick` attribute) isn't keyboard-reachable yet — it falls outside the `[onclick][tabindex]` contract above and would need its own fix.
+
+### Contrast-safe accent tokens
+
+`--text-light` is `#6A645F` (darkened from the original `#8A847E` for AA text contrast). The **original** value is preserved as `--text-light-deco` for non-text chrome (icon strokes, decorative avatar-swatch backgrounds) that shouldn't visually shift just because the text color did — use `-deco` for anything that isn't literal text.
+
+The four accent colors (`--accent-green/rose/blue/purple`) fail AA contrast as text or as a background sitting directly behind white text. Each has a `-text` variant (`--accent-green-text`, etc.) darkened to clear 4.5:1 against both `--cream` and `--white`. **Use the base accent for fills, dots, borders, and gradients** (nothing sits on them); **use the `-text` variant only where the accent colors literal text, or is a solid background directly behind white/light text** (badges, buttons, hero cards, avatar-circle initials). Don't swap a fill/border/gradient stop to `-text` — it'll look muddier for no contrast benefit, since nothing reads it as text. One deliberate exception: `.a-drop-live-tag`/`.emp-drop-countdown` stayed on the base `--accent-green` because that pair is shared verbatim between a light card and a dark screen, and the `-text` variant regresses the dark-screen case; a light-context-only override class would be the real fix if this needs revisiting.
+
+Recurring one-off hex values are folded into named tokens the same way: `--gold-text`/`--gold-text-alt` (tier-badge/chip text-on-gold-tint), `--checker-light`/`--checker-dark` (the `.a-map` placeholder checkerboard), `--neutral-gradient-a`/`--neutral-gradient-b` (`.a-drop-btn` locked/expired states). A hex value that appears exactly once stays a literal — only fold what repeats.
+
+Functional text has an 11px floor (was 9–10px for weekday labels, uppercase eyebrows, period labels). Purely decorative glyphs (an emoji-only badge) are exempt.
+
+### Touch targets
+
+Controls under 44×44px (`.coach-mark-close`, `.a-gear`, `.qr-back`, `.drops-wallet-btn`, `.filter-chip`, map pins) grow their *tappable* area via an invisible `::before`/`::after` (whichever pseudo-element slot isn't already used by that control) or padding — never by resizing the visible element. Where full symmetric growth would overlap a neighbor (`.filter-chip` in its horizontally-scrolling row, map pins next to each other), grow only the axis that has clearance (vertical, for both of those) instead of forcing the full 44px on every side.
+
+### Lazy-loaded merchant icons
+
+`merchantIconHTML(iconType, fallbackEmoji, eager = false)` takes a third argument: pass `eager: true` only for artwork that renders immediately on first paint or would visibly pop in if lazy (map pins via `L.divIcon`, the bottom sheet header icon). Every other call site — loyalty cards, leaderboard/podium rows, review circles, drop cards — is lazy by default. When adding a new `merchantIconHTML()` call, default to lazy and only mark it eager if it's above-the-fold on initial screen load.
+
 **Service worker (`sw.js`):** Network-first strategy. `CACHE_NAME` is a version-suffixed string (`pnchy-demo-vN`) — bump the number on every deploy to force all clients to re-fetch.
 
 ## Design conventions
